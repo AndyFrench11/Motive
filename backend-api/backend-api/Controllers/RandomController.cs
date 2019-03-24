@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http.Cors;
+using backend_api.Models;
+
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -9,13 +12,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend_api.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class RandomController : Controller
     {
         // GET: api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public JsonResult Get()
         {
-            return new string[] { "value1", "value2" };
+            List<String> people = new List<string>() { "Andy", "Matilda", "Buzz" };
+            Random r = new Random();
+            int rInt = r.Next(0, 3);
+
+            return new JsonResult(new Person(people.ElementAt(rInt)));
+
         }
 
         // GET api/values/5
