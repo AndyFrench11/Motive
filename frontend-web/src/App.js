@@ -3,6 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 
 
+
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -29,7 +31,7 @@ class App extends Component {
       (error) => {
         this.setState({
           isLoaded: true,
-          error
+          chosenPerson: "Make sure you have the API running!"
         });
       }
     )
