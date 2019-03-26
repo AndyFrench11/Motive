@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import Home from './Home/Home'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
@@ -22,24 +24,7 @@ function AppRouter() {
   return (
     <Router>
       <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about/">About</Link>
-            </li>
-            <li>
-              <Link to="/users/">Users</Link>
-            </li>
-            <li>
-              <Link to="/test/">Test</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <Route path="/" exact component={Index} />
+        <Route path="/" component={Home} />
         <Route path="/about/" component={About} />
         <Route path="/users/" component={Users} />
         <Route path="/test/" component={App} />
@@ -56,3 +41,5 @@ ReactDOM.render(<AppRouter />, document.getElementById('root'));
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+//<Link to="/">Home</Link>

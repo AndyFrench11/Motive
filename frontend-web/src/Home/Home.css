@@ -1,0 +1,22 @@
+.title-header {
+    position: absolute;
+    width: 888px;
+    height: 73px;
+    left: 57px;
+    top: 124px;
+
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 64px;
+    line-height: normal;
+
+    color: #000000;
+}
+
+.nav-bar {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    line-height: normal;
+}
