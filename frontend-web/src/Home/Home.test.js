@@ -9,3 +9,10 @@ test('Link changes the class when hovered', () => {
     let tree = homeComponent.toJSON();
     expect(tree).toMatchSnapshot();
 });
+
+// test('Test that the state of the header changes', () => {
+//     const homeComponent = renderer.create(
+//         <Home/>,
+//     );
+//     expect('Welcome to Motive').toBe('Welcome to Motive.');
+// })

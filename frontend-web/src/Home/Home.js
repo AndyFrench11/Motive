@@ -1,17 +1,6 @@
 import React, { Component } from 'react';
 import './Home.css';
-import {
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    NavbarBrand,
-    Nav,
-    NavItem,
-    NavLink,
-    UncontrolledDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem } from 'reactstrap';
+import { Button, Header, Image, Modal } from 'semantic-ui-react'
 
 class Home extends Component {
     constructor(props) {
@@ -30,25 +19,36 @@ class Home extends Component {
     }
 
     render() {
+
+      const ModalModalExample = () => (
+        <Modal trigger={<Button>Show Modal</Button>}>
+          <Modal.Header>Select a Photo</Modal.Header>
+          <Modal.Content image>
+            <Image wrapped size='medium' src='/images/avatar/large/rachel.png' />
+            <Modal.Description>
+              <Header>Default Profile Image</Header>
+              <p>We've found the following gravatar image associated with your e-mail address.</p>
+              <p>Is it okay to use this photo?</p>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
+      )
+
+
+
       return (
         <div>
-          <Navbar color="light" light expand="md" className="nav-bar">
-            <NavbarBrand href="/">Motive.</NavbarBrand>
-            <NavbarToggler onClick={this.toggle} />
-            <Collapse isOpen={this.state.isOpen} navbar>
-              <Nav className="ml-auto" navbar>
-                {/* <NavItem>
-                  <NavLink href="/components/">Components</NavLink>
-                </NavItem> */}
-                
-              </Nav>
-            </Collapse>
-          </Navbar>
           <span className="title-header"> Welcome to Motive.</span>
-        </div>
+            {ModalModalExample()}
+          </div>
           
+
       );
-    }
+
+
+
+
+    };
   }
   
   export default Home;
