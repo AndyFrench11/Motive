@@ -1,12 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+// import App from './Test/App';
 import * as serviceWorker from './serviceWorker';
-import Home from './Home/Home'
-import 'semantic-ui-css/semantic.min.css'
-
+import Home from './Home/Home';
+import Project from './Project/Project';
+import 'semantic-ui-css/semantic.min.css';
+import 'semantic-ui/dist/semantic.min.css';
+// import { Provider } from 'react-redux'
+// import todoApp from './reducers'
+// import App from './Todo/components/App'
+// import { createStore } from 'redux'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+
+
+// const store = createStore(todoApp)
+
 
 function Index() {
   return <h2>Home</h2>;
@@ -24,10 +33,10 @@ function AppRouter() {
   return (
     <Router>
       <div>
-        <Route path="/" component={Home} />
+        <Route path="/" component={Project} />
         <Route path="/about/" component={About} />
         <Route path="/users/" component={Users} />
-        <Route path="/test/" component={App} />
+        <Route path="/test/" component={Users} />
       </div>
     </Router>
   );
@@ -35,7 +44,10 @@ function AppRouter() {
 
 export default AppRouter;
 
-ReactDOM.render(<AppRouter />, document.getElementById('root'));
+ReactDOM.render(
+                  <AppRouter />
+                  , 
+                    document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
