@@ -36,7 +36,7 @@ const FixedMenuLayout = () => (
 
         <Grid divided='vertically' style={{ marginTop: '7em' }}>
         <Grid.Row columns={2}>
-        <Grid.Column centered >
+        <Grid.Column width={2}>
             <Image src={SteveImage} size='small' circular />    
         </Grid.Column>
         <Grid.Column centered >
