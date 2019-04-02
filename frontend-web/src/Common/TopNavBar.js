@@ -34,7 +34,7 @@ class TopNavBar extends React.Component {
                 </Container>
                 </Menu>
         );
-    }2
+    }
 }
 
 export default TopNavBar;
