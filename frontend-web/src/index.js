@@ -34,11 +34,12 @@ function AppRouter() {
   return (
     <Router>
       <div>
-        <Route exact path="/" component={Project} />
+        <Route exact path="/" component={Index} />
         <Route path="/about" component={About} />
         <Route path="/users" component={Users} />
         <Route path="/test" component={Users} />
         <Route path="/profile" component={UserProfile} />
+        <Route path="/project" component={Project} />
       </div>
     </Router>
   );
