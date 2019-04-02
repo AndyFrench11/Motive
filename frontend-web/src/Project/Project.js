@@ -11,36 +11,22 @@ import {
   Segment,
 } from 'semantic-ui-react'
 
+import TopNavBar from '../Common/TopNavBar'
+
 import SteveImage from '../Images/steve.jpg'
 
 const FixedMenuLayout = () => (
   <div>
-    <Menu fixed='top' inverted>
-      <Container>
-        <Menu.Item as='a' header>
-          Motive.
-        </Menu.Item>
-        <Menu.Item as='a'>Home</Menu.Item>
 
-        <Dropdown item simple text='Profile'>
-          <Dropdown.Menu>
-            <Dropdown.Item>List Item</Dropdown.Item>
-            <Dropdown.Item>List Item</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Header>Header Item</Dropdown.Header>
-            <Dropdown.Item>List Item</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </Container>
-    </Menu>
+        <TopNavBar/>
 
-        <Grid divided='vertically' style={{ marginTop: '7em' }}>
+        <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
         <Grid.Row columns={2}>
         <Grid.Column width={2}>
-            <Image src={SteveImage} size='small' circular />    
+            <Image style={{'border-radius':8}} src={SteveImage} size='small' />    
         </Grid.Column>
         <Grid.Column centered >
-        <Header as='h1'>Andy French</Header>
+        <Header as='h1'>Project Title</Header>
             <p>This is a basic fixed menu template using fixed size containers.</p>
             <p>
                 A text container is used for the main container, which is useful for single column layouts.
