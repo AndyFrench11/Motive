@@ -12,6 +12,7 @@ import 'semantic-ui/dist/semantic.min.css';
 // import App from './Todo/components/App'
 // import { createStore } from 'redux'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import UserProfile from "./UserProfile/UserProfile";
 
 
 // const store = createStore(todoApp)
@@ -33,10 +34,11 @@ function AppRouter() {
   return (
     <Router>
       <div>
-        <Route path="/" component={Project} />
-        <Route path="/about/" component={About} />
-        <Route path="/users/" component={Users} />
-        <Route path="/test/" component={Users} />
+        <Route exact path="/" component={Project} />
+        <Route path="/about" component={About} />
+        <Route path="/users" component={Users} />
+        <Route path="/test" component={Users} />
+        <Route path="/profile" component={UserProfile} />
       </div>
     </Router>
   );
