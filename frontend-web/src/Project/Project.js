@@ -1,36 +1,79 @@
 import React from 'react'
 import {
-  Container,
-  Divider,
-  Dropdown,
-  Grid,
-  Header,
-  Image,
-  List,
-  Menu,
-  Segment,
-  Button,
+    Container,
+    Divider,
+    Dropdown,
+    Grid,
+    Header,
+    Image,
+    List,
+    Menu,
+    Segment,
+    Button, Modal,
 } from 'semantic-ui-react'
 
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 
 import SteveImage from '../Images/steve.jpg'
-import CreateProjectModal from './CreateProjectModal';
 
 class ProjectPageLayout extends React.Component {
 
-  render() {
+    constructor(props) {
+        super(props);
+        this.state = {
+            modalVisible: false
+        };
+    }
+
+    showModal = () => {
+        this.setState({
+            modalVisible: true
+        });
+    };
+
+    closeModal = () => {
+        this.setState({
+            modalVisible: false
+        });
+    };
+
+
+    render() {
     return (
       <div>
         <TopNavBar/>
 
-        <Button style={{ marginTop: '5em' }} onClick={CreateProjectModal}>Create Project</Button>
+          <Modal dimmer={'blurring'} open={this.state.modalVisible} onClose={this.closeModal} closeIcon>
+              <Modal.Header>Select a Photo</Modal.Header>
+              <Modal.Content image>
+                  <Image wrapped size='medium' src='/images/avatar/large/rachel.png' />
+                  <Modal.Description>
+                      <Header>Default Profile Image</Header>
+                      <p>We've found the following gravatar image associated with your e-mail address.</p>
+                      <p>Is it okay to use this photo?</p>
+                  </Modal.Description>
+              </Modal.Content>
+              <Modal.Actions>
+                  <Button color='black' onClick={this.close}>
+                      Nope
+                  </Button>
+                  <Button
+                      positive
+                      icon='checkmark'
+                      labelPosition='right'
+                      content="Yep, that's me"
+                      onClick={this.close}
+                  />
+              </Modal.Actions>
+          </Modal>
+
+        <Button style={{ marginTop: '5em' }} onClick={this.showModal}>Create Project</Button>
 
         <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
         <Grid.Row columns={2}>
         <Grid.Column width={2}>
-            <Image style={{'border-radius':8}} src={SteveImage} size='small' />    
+            <Image style={{'border-radius':8}} src={SteveImage} size='small' />
         </Grid.Column>
         <Grid.Column centered>
         <Header as='h1'>Project Title</Header>
@@ -56,7 +99,7 @@ class ProjectPageLayout extends React.Component {
 
     {/*</Container>*/}
       <Footer/>
-  </div>
+    </div>
     );
   }
 }
