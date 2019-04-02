@@ -41,13 +41,7 @@ class Home extends Component {
           <span className="title-header"> Welcome to Motive.</span>
             {ModalModalExample()}
           </div>
-          
-
       );
-
-
-
-
     };
   }
   
