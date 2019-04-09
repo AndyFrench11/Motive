@@ -9,7 +9,7 @@ import {reducer as formReducer} from "redux-form";
 function posts(
     state = {
         isFetching: false,
-        items: []
+        result: []
     },
     action
 ) {
@@ -17,13 +17,13 @@ function posts(
         case REQUEST_POSTS:
             return Object.assign({}, state, {
                 isFetching: true,
-            })
+            });
         case RECEIVE_POSTS:
             return Object.assign({}, state, {
                 isFetching: false,
-                items: action.result,
+                result: action.result,
                 lastUpdated: action.receivedAt
-            })
+            });
         default:
             return state
     }

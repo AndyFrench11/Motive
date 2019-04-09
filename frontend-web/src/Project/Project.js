@@ -52,7 +52,7 @@ class ProjectPageLayout extends React.Component {
 
     handleModalSubmit = () => {
         console.log("Hey");
-        console.log(this.props)
+        console.log(this.props);
         this.props.dispatch(fetchPosts())
     };
 
@@ -112,7 +112,7 @@ class ProjectPageLayout extends React.Component {
 
 const mapStateToProps = state => {
     const { postsBySubreddit } = state;
-    const { isFetching, lastUpdated, result } = postsBySubreddit
+    const { isFetching, lastUpdated, result } = postsBySubreddit;
     return state.form.createProject
         ? {
             values: state.form.createProject.values,
