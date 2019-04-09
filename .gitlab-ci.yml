@@ -1,11 +1,10 @@
 stages:
-  - test
-  - package
+  - deploy
 
-test:
-  stage: test
-  script: echo 'Hello Test!'
-
-package:
-  stage: package
-  script: echo 'Hello package!'
+deploy:
+  stage: deploy
+  script: 
+  - docker container stop motive-backend
+  - docker container prune -f
+  - docker-compose build
+  - docker run -d -p 8080:80 --name motive-backend backend-api
