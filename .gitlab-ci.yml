@@ -4,7 +4,7 @@ stages:
 deploy:
   stage: deploy
   script: 
-  - docker container stop motive-backend
-  - docker container prune -f
-  - docker-compose build
-  - docker run -d -p 8080:80 --name motive-backend backend-api
+  - sudo docker container stop motive-backend
+  - sudo docker container prune -f
+  - sudo docker-compose build
+  - sudo docker run -d -p 8080:80 --name motive-backend backend-api
