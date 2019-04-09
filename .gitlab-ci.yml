@@ -8,3 +8,5 @@ deploy:
   - sudo docker container prune -f
   - sudo docker-compose build
   - sudo docker run -d -p 8080:80 --name motive-backend backend-api
+  only:
+  - dev@afr66/Motive
