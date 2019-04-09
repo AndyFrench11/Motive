@@ -1,10 +1,10 @@
 import React from 'react';
-import Home from './Home';
+import Landing from './Landing';
 import renderer from 'react-test-renderer';
 
 test('Link changes the class when hovered', () => {
     const homeComponent = renderer.create(
-        <Home/>,
+        <Landing/>,
     );
     let tree = homeComponent.toJSON();
     expect(tree).toMatchSnapshot();
@@ -12,7 +12,7 @@ test('Link changes the class when hovered', () => {
 
 // test('Test that the state of the header changes', () => {
 //     const homeComponent = renderer.create(
-//         <Home/>,
+//         <Landing/>,
 //     );
 //     expect('Welcome to Motive').toBe('Welcome to Motive.');
 // })
