@@ -12,5 +12,5 @@ RUN dotnet publish -c Release -o out
 # Build runtime image
 FROM microsoft/dotnet:aspnetcore-runtime
 WORKDIR /backend-api
-COPY --from=build-env /out .
+COPY --from=build-env /backend-api/out .
 ENTRYPOINT ["dotnet", "backend-api.dll"]
