@@ -1,0 +1,11 @@
+stages:
+  - test
+  - package
+
+test:
+  stage: test
+  script: echo 'Hello Test!'
+
+package:
+  stage: package
+  script: echo 'Hello package!'
