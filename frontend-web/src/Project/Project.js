@@ -17,11 +17,17 @@ import {
     Checkbox
 } from 'semantic-ui-react'
 
+import { fetchPosts } from '../actions'
+
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 
 import SteveImage from '../Images/steve.jpg'
 import BookImage from '../Images/Hobbies Icons/010-book.png'
+
+import { Field, reduxForm } from "redux-form";
+import ModalForm from "./ModalForm";
+import { connect } from "react-redux";
 
 class ProjectPageLayout extends React.Component {
 
@@ -44,8 +50,15 @@ class ProjectPageLayout extends React.Component {
         });
     };
 
+    handleModalSubmit = () => {
+        console.log("Hey");
+        console.log(this.props)
+        this.props.dispatch(fetchPosts())
+    };
+
 
     render() {
+
     return (
       <div>
         <TopNavBar/>
@@ -53,38 +66,9 @@ class ProjectPageLayout extends React.Component {
           <TransitionablePortal open={this.state.modalVisible}  transition={{ animation:'fade up', duration: 500 }}>
           <Modal open={true} onClose={this.closeModal} closeIcon>
               <Modal.Header>Create a New Project</Modal.Header>
-              <Modal.Content >
+              <Modal.Content>
 
-                  <Form>
-                      <Form.Field>
-                          <label>First Name</label>
-                          <input placeholder='First Name' />
-                      </Form.Field>
-                      <Form.Field>
-                          <label>Last Name</label>
-                          <input placeholder='Last Name' />
-                      </Form.Field>
-                      <Form.Field>
-                          <Checkbox label='I agree to the Terms and Conditions' />
-                      </Form.Field>
-                      <Button type='submit'>Submit</Button>
-                  </Form>
-
-                  <Input label='Name' placeholder='My Awesome New Project!' />
-                  <br/>
-                  <Input label='Description' placeholder='My Awesome New Project!' />
-                  <br/>
-
-                  <Input
-                      icon='tags'
-                      iconPosition='left'
-                      label={{ tag: true, content: 'Add Tag' }}
-                      labelPosition='right'
-                      placeholder='Enter tags'
-
-                  />
-
-                  <Image wrapped size='small' src={BookImage} />
+                  <ModalForm onSubmit={this.handleModalSubmit}/>
 
               </Modal.Content>
               <Modal.Actions>
@@ -96,7 +80,7 @@ class ProjectPageLayout extends React.Component {
                       icon='checkmark'
                       labelPosition='right'
                       content="All good to go!"
-                      onClick={this.close}
+                      onClick={this.handleModalSubmit}
                   />
               </Modal.Actions>
           </Modal>
@@ -118,26 +102,77 @@ class ProjectPageLayout extends React.Component {
 
         <Divider/>
 
-        {/* <Grid.Row columns={3}>
-        <Grid.Column>
-            <Image src='/images/wireframe/paragraph.png' />
-        </Grid.Column>
-        <Grid.Column>
-            <Image src='/images/wireframe/paragraph.png' />
-        </Grid.Column>
-        <Grid.Column>
-            <Image src='/images/wireframe/paragraph.png' />
-        </Grid.Column>
-        </Grid.Row> */}
         </Grid>
 
-    {/*<Container text >*/}
-
-    {/*</Container>*/}
       <Footer/>
     </div>
     );
   }
 }
 
-export default ProjectPageLayout
+const mapStateToProps = state => {
+    const { postsBySubreddit } = state;
+    const { isFetching, lastUpdated, result } = postsBySubreddit
+    return state.form.createProject
+        ? {
+            values: state.form.createProject.values,
+            submitSucceeded: state.form.createProject.submitSucceeded,
+            isFetching: isFetching,
+            result: result,
+            lastUpdated: lastUpdated
+        }
+        : {};
+};
+
+export default connect(mapStateToProps)(ProjectPageLayout);
+
+// AsyncApp.propTypes = {
+//     selectedSubreddit: PropTypes.string.isRequired,
+//     posts: PropTypes.array.isRequired,
+//     isFetching: PropTypes.bool.isRequired,
+//     lastUpdated: PropTypes.number,
+//     dispatch: PropTypes.func.isRequired
+// }
+//
+// function mapStateToProps(state) {
+//     const { selectedSubreddit, postsBySubreddit } = state
+//     const { isFetching, lastUpdated, items: posts } = postsBySubreddit[
+//         selectedSubreddit
+//         ] || {
+//         isFetching: true,
+//         items: []
+//     }
+//
+//     return {
+//         selectedSubreddit,
+//         posts,
+//         isFetching,
+//         lastUpdated
+//     }
+// }
+
+// componentDidMount() {
+//     const { dispatch, selectedSubreddit } = this.props
+//
+//
+// }
+//
+// componentDidUpdate(prevProps) {
+//     if (this.props.selectedSubreddit !== prevProps.selectedSubreddit) {
+//         const { dispatch, selectedSubreddit } = this.props
+//         dispatch(fetchPostsIfNeeded(selectedSubreddit))
+//     }
+// }
+//
+// handleChange(nextSubreddit) {
+//     this.props.dispatch(selectSubreddit(nextSubreddit))
+//     this.props.dispatch(fetchPostsIfNeeded(nextSubreddit))
+// }
+//
+// handleRefreshClick(e) {
+//     e.preventDefault()
+//
+//     const { dispatch, selectedSubreddit } = this.props
+//     dispatch(invalidateSubreddit(selectedSubreddit))
+//     dispatch(fetchPostsIfNeeded(selectedSubreddit))
+// }
