@@ -67,13 +67,11 @@ class ProjectPageLayout extends React.Component {
           <Modal open={true} onClose={this.closeModal} closeIcon>
               <Modal.Header>Create a New Project</Modal.Header>
               <Modal.Content>
-
                   <ModalForm onSubmit={this.handleModalSubmit}/>
-
               </Modal.Content>
               <Modal.Actions>
-                  <Button color='black' onClick={this.close}>
-                      Nope
+                  <Button color='grey' onClick={this.close}>
+                      Cancel
                   </Button>
                   <Button
                       positive
@@ -119,7 +117,7 @@ const mapStateToProps = state => {
             submitSucceeded: state.form.createProject.submitSucceeded,
             isFetching: isFetching,
             result: result,
-            lastUpdated: lastUpdated
+            lastUpdated: lastUpdated,
         }
         : {};
 };
