@@ -26,7 +26,7 @@ import SteveImage from '../Images/steve.jpg'
 import BookImage from '../Images/Hobbies Icons/010-book.png'
 
 import { Field, reduxForm } from "redux-form";
-import ModalForm from "./ModalForm";
+import NewProjectForm from "./ModalForm";
 import { connect } from "react-redux";
 
 class ProjectPageLayout extends React.Component {
@@ -67,7 +67,7 @@ class ProjectPageLayout extends React.Component {
           <Modal open={true} onClose={this.closeModal} closeIcon>
               <Modal.Header>Create a New Project</Modal.Header>
               <Modal.Content>
-                  <ModalForm onSubmit={this.handleModalSubmit}/>
+                  <NewProjectForm/>
               </Modal.Content>
               <Modal.Actions>
                   <Button color='grey' onClick={this.close}>

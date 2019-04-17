@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "redux-form";
 import {Form, Message, Modal, Input, Label, Icon, Header, List, Image, Divider, Segment, Button} from "semantic-ui-react";
+import { connect } from "react-redux"
 
 const renderCheckbox = field => (
     <Form.Checkbox
@@ -66,63 +67,82 @@ const renderNameInput = field => (
 
 const renderMilestoneInput = field => (
     <Form.Field>
-        <Input action={{ icon: 'add', onClick: addNewItemToList(field)}}
-               placeholder={field.placeholder} />
+        <Input
+            {...field.input}
+            placeholder='Add a new milestone...' />
     </Form.Field>
-)
+);
 
-const addNewItemToList = field => {
-    console.log("gday mate!");
-    console.log("--------------------------------------------");
-    console.log(field);
-    console.log("--------------------------------------------");
-};
 
-const ProfileForm = props => {
-    const { handleSubmit } = props;
+
+{/*<li key={index}>*/}
+{/*<button*/}
+{/*    type="button"*/}
+{/*    title="Remove Member"*/}
+{/*    onClick={() => fields.remove(index)}/>*/}
+{/*<h4>Member #{index + 1}</h4>*/}
+{/*<Field*/}
+{/*    name={`${task}.firstName`}*/}
+{/*    type="text"*/}
+{/*    component={renderField}*/}
+{/*    label="First Name"/>*/}
+{/*<Field*/}
+{/*    name={`${member}.lastName`}*/}
+{/*    type="text"*/}
+{/*    component={renderField}*/}
+{/*    label="Last Name"/>*/}
+{/*<FieldArray name={`${member}.hobbies`} component={renderHobbies}/>*/}
+{/*</li>*/}
+let NewProjectForm = props => {
+    const {
+        tagInputValue,
+        milestoneInputValue,
+    } = props;
+
+    const renderTaskList = ({ fields }) => (
+        <Form.Field>
+            {console.log(milestoneInputValue)}
+            <Button type="button" onClick={() => fields.push({name: milestoneInputValue})}>Add Task</Button>
+
+            <List animated divided verticalAlign='middle' size='large'>
+                {fields.map((task, index) =>
+                    <List.Item key={index}>
+                        <Image avatar src='https://react.semantic-ui.com/images/avatar/small/helen.jpg' />
+                        <List.Content>
+                            <List.Header>{fields.get(index).name}</List.Header>
+                        </List.Content>
+                    </List.Item>
+                )}
+
+            </List>
+        </Form.Field>
+
+
+    );
 
     return (
         <Fragment>
 
-            {/*<Form onSubmit={this.handleModalSubmit}>*/}
-            {/*    <Field />*/}
-            {/*    <Field>*/}
-            {/*        <label>Last Name</label>*/}
-            {/*        <input placeholder='Last Name' />*/}
-            {/*    </Field>*/}
-            {/*    <Field>*/}
-            {/*        <Checkbox label='I agree to the Terms and Conditions' />*/}
-            {/*    </Field>*/}
-            {/*    <Button type='submit'>Submit</Button>*/}
-            {/*</Form>*/}
-
-            {/*<Input label='Name' placeholder='My Awesome New Project!' />*/}
-            {/*<br/>*/}
-            {/*<Input label='Description' placeholder='My Awesome New Project!' />*/}
-            {/*<br/>*/}
-
-
-
-            {/*<Image wrapped size='small' src={BookImage} />*/}
-
-            <Form onSubmit={handleSubmit}>
+            <Form>
                 <Segment padded>
                     <Label attached='top' size="medium">Project Details</Label>
                     {/*<Header as='h3'>Project Details</Header>*/}
                     <Field
                         component={renderNameInput}
                         label="Project name"
-                        name="projectName"
+                        name="projectNameInput"
                         placeholder="e.g. Rewiring the Mainframe!"
                     />
                     <Field
                         component={renderTextArea}
-                        name="description"
+                        name="descriptionInput"
                         placeholder="Tell us more about the project..."
                     />
                     <Field
                         component={renderTagInput}
-                        name="tags"
+                        name="tagInput"
+                        id="tagInput"
+
                     />
                     <Label>
                         Rewiring
@@ -139,90 +159,36 @@ const ProfileForm = props => {
                     <Message floating>If you wish, you may add predefined milestones that outline the journey your project will take!</Message>
 
                     <Field
-                        component={renderMilestoneInput}
+                        component="input"
                         name="milestoneInput"
-                        placeholder='Add a new milestone...'
+                        id="milestoneInput"
+                        type="text"
                     />
 
-                    <List animated divided verticalAlign='middle' size='large'>
-                        {/*<List.Item>*/}
-                        {/*    <Image avatar src='https://react.semantic-ui.com/images/avatar/small/helen.jpg' />*/}
-                        {/*    <List.Content>*/}
-                        {/*        <List.Header>Helen</List.Header>*/}
-                        {/*    </List.Content>*/}
-                        {/*</List.Item>*/}
-                        {/*<List.Item>*/}
-                        {/*    <Image avatar src='https://react.semantic-ui.com/images/avatar/small/christian.jpg' />*/}
-                        {/*    <List.Content>*/}
-                        {/*        <List.Header>Christian</List.Header>*/}
-                        {/*    </List.Content>*/}
-                        {/*</List.Item>*/}
-                        {/*<List.Item>*/}
-                        {/*    <Image avatar src='https://react.semantic-ui.com/images/avatar/small/daniel.jpg' />*/}
-                        {/*    <List.Content>*/}
-                        {/*        <List.Header>Daniel</List.Header>*/}
-                        {/*    </List.Content>*/}
-                        {/*</List.Item>*/}
-                    </List>
+                    <FieldArray name="taskList" component={renderTaskList}/>
+
                 </Segment>
-
-                {/*    <Field*/}
-                {/*        component={renderSelect}*/}
-                {/*        label="Gender"*/}
-                {/*        name="gender"*/}
-                {/*        options={[*/}
-                {/*            { key: "m", text: "Male", value: "male" },*/}
-                {/*            { key: "f", text: "Female", value: "female" }*/}
-                {/*        ]}*/}
-                {/*        placeholder="Gender"*/}
-                {/*    />*/}
-
-                {/*<Form.Group inline>*/}
-                {/*    <label>Quantity</label>*/}
-
-                {/*    <Field*/}
-                {/*        component={renderRadio}*/}
-                {/*        label="One"*/}
-                {/*        name="quantity"*/}
-                {/*        radioValue={1}*/}
-                {/*    />*/}
-                {/*    <Field*/}
-                {/*        component={renderRadio}*/}
-                {/*        label="Two"*/}
-                {/*        name="quantity"*/}
-                {/*        radioValue={2}*/}
-                {/*    />*/}
-                {/*    <Field*/}
-                {/*        component={renderRadio}*/}
-                {/*        label="Three"*/}
-                {/*        name="quantity"*/}
-                {/*        radioValue={3}*/}
-                {/*    />*/}
-                {/*</Form.Group>*/}
-
-                {/*<Field*/}
-                {/*    component={renderTextArea}*/}
-                {/*    label="About"*/}
-                {/*    name="about"*/}
-                {/*    placeholder="Tell us more about you..."*/}
-                {/*/>*/}
-
-                {/*<Field*/}
-                {/*    component={renderCheckbox}*/}
-                {/*    label="I agree to the Terms and Conditions"*/}
-                {/*    name="isAgreed"*/}
-                {/*/>*/}
-
-                {/*<Form.Group inline>*/}
-                {/*    <Form.Button primary>Submit</Form.Button>*/}
-                {/*</Form.Group>*/}
             </Form>
         </Fragment>
     );
 };
 
-export default reduxForm({
-    form: "createProject"
-})(ProfileForm);
+NewProjectForm = reduxForm({
+    form: 'newProject'
+})(NewProjectForm);
+
+// Decorate with connect to read form values
+const selector = formValueSelector('newProject'); // <-- same as form name
+NewProjectForm = connect(state => {
+    // can select values individually
+    const tagInputValue = selector(state, 'tagInput');
+    const milestoneInputValue = selector(state, 'milestoneInput');
+    return {
+        tagInputValue,
+        milestoneInputValue,
+    }
+})(NewProjectForm);
+
+export default NewProjectForm;
 
 
