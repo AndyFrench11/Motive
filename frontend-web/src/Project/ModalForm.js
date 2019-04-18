@@ -3,35 +3,6 @@ import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "red
 import {Form, Message, Modal, Input, Label, Icon, Header, List, Image, Divider, Segment, Button} from "semantic-ui-react";
 import { connect } from "react-redux"
 
-const renderCheckbox = field => (
-    <Form.Checkbox
-        checked={!!field.input.value}
-        name={field.input.name}
-        label={field.label}
-        onChange={(e, { checked }) => field.input.onChange(checked)}
-    />
-);
-
-const renderRadio = field => (
-    <Form.Radio
-        checked={field.input.value === field.radioValue}
-        label={field.label}
-        name={field.input.name}
-        onChange={(e, { checked }) => field.input.onChange(field.radioValue)}
-    />
-);
-
-const renderSelect = field => (
-    <Form.Select
-        label={field.label}
-        name={field.input.name}
-        onChange={(e, { value }) => field.input.onChange(value)}
-        options={field.options}
-        placeholder={field.placeholder}
-        value={field.input.value}
-    />
-);
-
 const renderTextArea = field => (
     <Form.TextArea
         {...field.input}
@@ -74,25 +45,6 @@ const renderMilestoneInput = field => (
 );
 
 
-
-{/*<li key={index}>*/}
-{/*<button*/}
-{/*    type="button"*/}
-{/*    title="Remove Member"*/}
-{/*    onClick={() => fields.remove(index)}/>*/}
-{/*<h4>Member #{index + 1}</h4>*/}
-{/*<Field*/}
-{/*    name={`${task}.firstName`}*/}
-{/*    type="text"*/}
-{/*    component={renderField}*/}
-{/*    label="First Name"/>*/}
-{/*<Field*/}
-{/*    name={`${member}.lastName`}*/}
-{/*    type="text"*/}
-{/*    component={renderField}*/}
-{/*    label="Last Name"/>*/}
-{/*<FieldArray name={`${member}.hobbies`} component={renderHobbies}/>*/}
-{/*</li>*/}
 let NewProjectForm = props => {
     const {
         tagInputValue,
@@ -101,23 +53,40 @@ let NewProjectForm = props => {
 
     const renderTaskList = ({ fields }) => (
         <Form.Field>
-            {console.log(milestoneInputValue)}
-            <Button type="button" onClick={() => fields.push({name: milestoneInputValue})}>Add Task</Button>
+            <Button type="button" onClick={() => fields.push({taskName: milestoneInputValue})}>Add Task</Button>
 
             <List animated divided verticalAlign='middle' size='large'>
                 {fields.map((task, index) =>
                     <List.Item key={index}>
+                        <List.Content floated='right'>
+                            <Button icon onClick={() => fields.remove(index)}>
+                                <Icon name='delete'/>
+                            </Button>
+
+                        </List.Content>
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/small/helen.jpg' />
                         <List.Content>
-                            <List.Header>{fields.get(index).name}</List.Header>
+                            {fields.get(index).taskName}
                         </List.Content>
                     </List.Item>
                 )}
 
             </List>
         </Form.Field>
+    );
 
+    const renderTags = ({ fields }) => (
+        <Form.Field>
+            <Button type="button" onClick={() => fields.push({tagName: tagInputValue})}>Add Tag</Button>
 
+            {fields.map((task, index) =>
+                <Label key={index} >
+                    {fields.get(index).tagName}
+                    <Icon name='delete' onClick={() => fields.remove(index)}/>
+                </Label>
+            )}
+
+        </Form.Field>
     );
 
     return (
@@ -144,10 +113,9 @@ let NewProjectForm = props => {
                         id="tagInput"
 
                     />
-                    <Label>
-                        Rewiring
-                        <Icon name='delete' />
-                    </Label>
+
+                    <FieldArray name="tags" component={renderTags}/>
+
                     <br/>
                 </Segment>
 
@@ -159,7 +127,7 @@ let NewProjectForm = props => {
                     <Message floating>If you wish, you may add predefined milestones that outline the journey your project will take!</Message>
 
                     <Field
-                        component="input"
+                        component={renderMilestoneInput}
                         name="milestoneInput"
                         id="milestoneInput"
                         type="text"
@@ -191,4 +159,50 @@ NewProjectForm = connect(state => {
 
 export default NewProjectForm;
 
-
+{/*<li key={index}>*/}
+{/*<button*/}
+{/*    type="button"*/}
+{/*    title="Remove Member"*/}
+{/*    onClick={() => fields.remove(index)}/>*/}
+{/*<h4>Member #{index + 1}</h4>*/}
+{/*<Field*/}
+{/*    name={`${task}.firstName`}*/}
+{/*    type="text"*/}
+{/*    component={renderField}*/}
+{/*    label="First Name"/>*/}
+{/*<Field*/}
+{/*    name={`${member}.lastName`}*/}
+{/*    type="text"*/}
+{/*    component={renderField}*/}
+{/*    label="Last Name"/>*/}
+{/*<FieldArray name={`${member}.hobbies`} component={renderHobbies}/>*/}
+{/*</li>*/}
+//
+// const renderCheckbox = field => (
+//     <Form.Checkbox
+//         checked={!!field.input.value}
+//         name={field.input.name}
+//         label={field.label}
+//         onChange={(e, { checked }) => field.input.onChange(checked)}
+//     />
+// );
+//
+// const renderRadio = field => (
+//     <Form.Radio
+//         checked={field.input.value === field.radioValue}
+//         label={field.label}
+//         name={field.input.name}
+//         onChange={(e, { checked }) => field.input.onChange(field.radioValue)}
+//     />
+// );
+//
+// const renderSelect = field => (
+//     <Form.Select
+//         label={field.label}
+//         name={field.input.name}
+//         onChange={(e, { value }) => field.input.onChange(value)}
+//         options={field.options}
+//         placeholder={field.placeholder}
+//         value={field.input.value}
+//     />
+// );
