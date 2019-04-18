@@ -93,9 +93,10 @@ let NewProjectForm = props => {
         <Fragment>
 
             <Form>
-                <Segment padded>
+                <Segment>
                     <Label attached='top' size="medium">Project Details</Label>
-                    {/*<Header as='h3'>Project Details</Header>*/}
+                    <br/>
+                    <br/>
                     <Field
                         component={renderNameInput}
                         label="Project name"
@@ -115,8 +116,6 @@ let NewProjectForm = props => {
                     />
 
                     <FieldArray name="tags" component={renderTags}/>
-
-                    <br/>
                 </Segment>
 
                 <Divider/>

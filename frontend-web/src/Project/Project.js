@@ -70,7 +70,7 @@ class ProjectPageLayout extends React.Component {
                   <NewProjectForm/>
               </Modal.Content>
               <Modal.Actions>
-                  <Button color='grey' onClick={this.close}>
+                  <Button color='grey' onClick={this.closeModal}>
                       Cancel
                   </Button>
                   <Button
@@ -111,10 +111,10 @@ class ProjectPageLayout extends React.Component {
 const mapStateToProps = state => {
     const { postsBySubreddit } = state;
     const { isFetching, lastUpdated, result } = postsBySubreddit;
-    return state.form.createProject
+    return state.form.newProject
         ? {
-            values: state.form.createProject.values,
-            submitSucceeded: state.form.createProject.submitSucceeded,
+            values: state.form.newProject.values,
+            submitSucceeded: state.form.newProject.submitSucceeded,
             isFetching: isFetching,
             result: result,
             lastUpdated: lastUpdated,
