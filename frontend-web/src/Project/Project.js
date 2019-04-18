@@ -1,33 +1,14 @@
 import React from 'react'
 import {
-    Container,
-    Divider,
-    Dropdown,
-    Grid,
-    Header,
-    Image,
-    List,
-    Menu,
-    Segment,
-    Button,
-    Modal,
-    Input,
-    TransitionablePortal,
-    Form,
-    Checkbox
+    Divider, Grid, Header, Image, Button, Modal, TransitionablePortal,
 } from 'semantic-ui-react'
-
-import { fetchPosts } from '../actions'
 
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
-
-import SteveImage from '../Images/steve.jpg'
 import BookImage from '../Images/Hobbies Icons/010-book.png'
-
-import { Field, reduxForm } from "redux-form";
 import NewProjectForm from "./ModalForm";
 import { connect } from "react-redux";
+import {postProject} from "../actions";
 
 class ProjectPageLayout extends React.Component {
 
@@ -52,8 +33,7 @@ class ProjectPageLayout extends React.Component {
 
     handleModalSubmit = () => {
         console.log("Hey");
-        console.log(this.props);
-        this.props.dispatch(fetchPosts())
+        this.props.dispatch(postProject(this.props.values))
     };
 
 
@@ -109,13 +89,13 @@ class ProjectPageLayout extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { postsBySubreddit } = state;
-    const { isFetching, lastUpdated, result } = postsBySubreddit;
+    const { projectController } = state;
+    const { isPosting, lastUpdated, result } = projectController;
     return state.form.newProject
         ? {
             values: state.form.newProject.values,
             submitSucceeded: state.form.newProject.submitSucceeded,
-            isFetching: isFetching,
+            isPosting: isPosting,
             result: result,
             lastUpdated: lastUpdated,
         }
