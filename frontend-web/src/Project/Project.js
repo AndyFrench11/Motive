@@ -32,7 +32,6 @@ class ProjectPageLayout extends React.Component {
     };
 
     handleModalSubmit = () => {
-        console.log("Hey");
         this.props.dispatch(postProject(this.props.values))
     };
 

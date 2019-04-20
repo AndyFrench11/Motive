@@ -53,7 +53,7 @@ let NewProjectForm = props => {
 
     const renderTaskList = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({taskName: milestoneInputValue})}>Add Task</Button>
+            <Button type="button" onClick={() => fields.push({name: milestoneInputValue})}>Add Task</Button>
 
             <List animated divided verticalAlign='middle' size='large'>
                 {fields.map((task, index) =>
@@ -66,7 +66,7 @@ let NewProjectForm = props => {
                         </List.Content>
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/small/helen.jpg' />
                         <List.Content>
-                            {fields.get(index).taskName}
+                            {fields.get(index).name}
                         </List.Content>
                     </List.Item>
                 )}
@@ -77,11 +77,11 @@ let NewProjectForm = props => {
 
     const renderTags = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({tagName: tagInputValue})}>Add Tag</Button>
+            <Button type="button" onClick={() => fields.push({name: tagInputValue})}>Add Tag</Button>
 
             {fields.map((task, index) =>
                 <Label key={index} >
-                    {fields.get(index).tagName}
+                    {fields.get(index).name}
                     <Icon name='delete' onClick={() => fields.remove(index)}/>
                 </Label>
             )}
