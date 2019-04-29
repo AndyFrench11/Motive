@@ -83,7 +83,8 @@ namespace backend_api.Controllers
             foreach(Tag tag in project.tagList)
             {
                 //Add the tag node to the database
-                tx.Run("MERGE(t:Tag {name: $tagName})", new { tag.name });
+                string tagName = tag.name;
+                tx.Run("MERGE(t:Tag {name: $tagName})", new { tagName });
             }
 
         }
@@ -93,7 +94,9 @@ namespace backend_api.Controllers
             foreach (Tag tag in project.tagList)
             {
                 //Create the relationship to the project
-                tx.Run("MATCH (p:Project),(t:Tag) WHERE p.guid = $projectGuid AND t.name = $tagName CREATE (p)-[:HAS]->(t)", new { project.guid, tag.name});
+                string projectGuid = project.guid;
+                string tagName = tag.name;
+                tx.Run("MATCH (p:Project),(t:Tag) WHERE p.guid = $projectGuid AND t.name = $tagName CREATE (p)-[:HAS]->(t)", new { projectGuid, tagName});
             }
 
         }
@@ -101,10 +104,15 @@ namespace backend_api.Controllers
 
 
         private void CreateTaskNodes(ITransaction tx, Project project) {
-            foreach(ProjectTask task in project.taskList)
-            { 
+            Guid guid;
+            foreach (ProjectTask task in project.taskList)
+            {
                 //Add the tag node to the database
-                tx.Run("CREATE(pt:ProjectTask {name: $taskName, guid: $projectGuid})", new { task.name, project.guid });
+                string taskName = task.name;
+                guid = Guid.NewGuid();
+                task.guid = guid.ToString();
+                string taskGuid = task.guid;
+                tx.Run("CREATE(pt:ProjectTask {name: $taskName, guid: $taskGuid})", new { taskName, taskGuid });
             }
         }
 
@@ -113,7 +121,9 @@ namespace backend_api.Controllers
             foreach (ProjectTask task in project.taskList)
             {
                 //Create the relationship to the project
-                tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectGuid AND t.name = $taskName CREATE (p)-[:HAS]->(t)", new { project.guid, task.name});
+                string taskName = task.name;
+                string projectGuid = project.guid;
+                tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectGuid AND t.name = $taskName CREATE (p)-[:HAS]->(t)", new { projectGuid, taskName});
             }
         }
 
