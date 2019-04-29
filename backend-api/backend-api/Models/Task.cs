@@ -1,10 +1,10 @@
 ﻿using System;
 namespace backend_api.Models
 {
-    public class Task
+    public class ProjectTask
     {
         public string name { get; set; }
-        public Task()
+        public ProjectTask()
         {
         }
     }

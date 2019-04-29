@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -29,27 +32,88 @@ namespace backend_api.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
+            //private static long MatchPersonNode(ITransaction tx, string name)
+            //{
+            //    var result = tx.Run("MATCH (a:Person {name: $name}) RETURN id(a)", new { name });
+            //    return result.Single()[0].As<long>();
+            //}
             return "value";
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]Project project)
+        public ActionResult Post([FromBody]Project project)
         {
-
-            using (var driver = GraphDatabase.Driver(localDatabaseUrl, AuthTokens.Basic("neo4j", "motive")))
+            var driver = GraphDatabase.Driver(localDatabaseUrl, AuthTokens.Basic("neo4j", "motive"));
+            Guid guid = Guid.NewGuid();
+            project.guid = guid.ToString();
+            try
             {
+
                 using (var session = driver.Session())
                 {
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("----------------------");
-
-                    var creationString = "CREATE(Project {name:'" + project.name + "', description: '" + project.description + "', tasks: '', tags: ''})";
-                    var result = session.Run(creationString);
-                    Console.WriteLine("----------------------");
-
+                    session.WriteTransaction(tx => CreateProjectNode(tx, project));
+                    session.WriteTransaction(tx => CreateTagNodes(tx, project));
+                    session.WriteTransaction(tx => CreateTagRelationships(tx, project));
+                    session.WriteTransaction(tx => CreateTaskNodes(tx, project));
+                    session.WriteTransaction(tx => CreateTaskRelationships(tx, project));
+                    return Ok();
                 }
+            }
+            catch (ServiceUnavailableException)
+            {
+                return StatusCode(503);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+        }
 
+        private void CreateProjectNode(ITransaction tx, Project project)
+        {
+            string projectName = project.name;
+            string projectDescription = project.description;
+            string projectGuid = project.guid;
+            tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, guid: $projectGuid})", new { projectName, projectDescription, projectGuid });
+        }
+
+        private void CreateTagNodes(ITransaction tx, Project project) {
+            foreach(Tag tag in project.tagList)
+            {
+                //Add the tag node to the database
+                tx.Run("MERGE(t:Tag {name: $tagName})", new { tag.name });
+            }
+
+        }
+
+        private void CreateTagRelationships(ITransaction tx, Project project)
+        {
+            foreach (Tag tag in project.tagList)
+            {
+                //Create the relationship to the project
+                tx.Run("MATCH (p:Project),(t:Tag) WHERE p.guid = $projectGuid AND t.name = $tagName CREATE (p)-[:HAS]->(t)", new { project.guid, tag.name});
+            }
+
+        }
+
+
+
+        private void CreateTaskNodes(ITransaction tx, Project project) {
+            foreach(ProjectTask task in project.taskList)
+            { 
+                //Add the tag node to the database
+                tx.Run("CREATE(pt:ProjectTask {name: $taskName, guid: $projectGuid})", new { task.name, project.guid });
+            }
+        }
+
+        private void CreateTaskRelationships(ITransaction tx, Project project)
+        {
+            foreach (ProjectTask task in project.taskList)
+            {
+                //Create the relationship to the project
+                tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectGuid AND t.name = $taskName CREATE (p)-[:HAS]->(t)", new { project.guid, task.name});
             }
         }
 
@@ -63,6 +127,7 @@ namespace backend_api.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+
         }
     }
 }
