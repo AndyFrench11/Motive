@@ -51,8 +51,12 @@ export function postProject(valuesJson) {
                 'Content-Type': 'application/json'
             }
         })
-            .catch(error => console.log(error))
             .then(response => dispatch(receiveNewProjectResponse(response)))
+            .catch(error =>  {
+                console.log("The server is not running!");
+                console.log("Need to update UI with error!");
+                console.log(error.response)
+            })
 
     }
 };
@@ -64,9 +68,18 @@ function requestNewProject() {
 };
 
 function receiveNewProjectResponse(response) {
-    return {
-        type: RECEIVE_NEW_PROJECT_RESPONSE,
-        result: response.data,
-        receivedAt: Date.now()
+    if(response.status === 200) {
+        return {
+            type: RECEIVE_NEW_PROJECT_RESPONSE,
+            result: "OK",
+            receivedAt: Date.now()
+        }
+    } else if(response.status === 500) {
+        return {
+            type: RECEIVE_NEW_PROJECT_RESPONSE,
+            result: "Internal Server Error",
+            receivedAt: Date.now()
+        }
     }
+
 };
