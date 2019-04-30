@@ -4,7 +4,7 @@ import {Button, Form, Grid, Header, Container, Segment} from 'semantic-ui-react'
 import {DateInput} from '@opuscapita/react-dates'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
-import {postLogin} from "./actions";
+import {postLogin, postSignUp} from "./actions";
 import {connect} from "react-redux";
 
 class Landing extends Component {
@@ -16,7 +16,7 @@ class Landing extends Component {
             signUpName: '',
             signUpEmail: '',
             signUpPassword: '',
-            birthdayDate: new Date()
+            signUpBirthday: new Date()
         };
     }
 
@@ -28,20 +28,32 @@ class Landing extends Component {
 
     handleDateChange = (date) => {
         this.setState({
-            birthdayDate: date
+            signUpBirthday: date
         });
     };
 
     handleLoginSubmit = () => {
         console.log("login");
         console.log(this.state);
+        const loginDetails = {
+            email: this.state.loginEmail,
+            password: this.state.loginPassword
+        };
         const {dispatch} = this.props;
-        dispatch(postLogin({email: this.state.loginEmail, password: this.state.loginPassword}));
+        dispatch(postLogin(loginDetails));
     };
 
     handleSignUpSubmit = () => {
         console.log("sign up");
         console.log(this.state);
+        const signUpDetails = {
+            name: this.state.signUpName,
+            email: this.state.signUpEmail,
+            password: this.state.signUpPassword,
+            birthday: this.state.signUpBirthday
+        };
+        const {dispatch} = this.props;
+        dispatch(postSignUp(signUpDetails));
     };
 
     render() {
@@ -167,7 +179,7 @@ class Landing extends Component {
                                     />
                                     <span>Birthday</span>
                                     <DateInput
-                                        value={this.state.birthdayDate}
+                                        value={this.state.signUpBirthday}
                                         dateFormat="dd/MM/yyyy"
                                         disabled={false}
                                         locale="en"
@@ -189,8 +201,8 @@ class Landing extends Component {
 }
 
 const mapStateToProps = state => {
-    const { loginReducer } = state;
-    const { loginController } = loginReducer;
+    const { landingReducers } = state;
+    const { loginController } = landingReducers;
     const { isPosting, lastUpdated, result } = loginController;
     return {
             isPosting: isPosting,

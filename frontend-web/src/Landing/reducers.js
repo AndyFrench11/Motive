@@ -1,7 +1,9 @@
-import { combineReducers } from 'redux'
+import {combineReducers} from 'redux'
 import {
+    REQUEST_LOGIN,
     RECEIVE_LOGIN_RESPONSE,
-    REQUEST_LOGIN
+    REQUEST_SIGN_UP,
+    RECEIVE_SIGN_UP_RESPONSE
 } from './actions'
 
 function loginController(state = {
@@ -24,8 +26,29 @@ function loginController(state = {
     }
 }
 
-const loginReducer = combineReducers({
-    loginController
+function signUpController(state = {
+    isPosting: false,
+    result: ""
+}, action) {
+    switch (action.type) {
+        case REQUEST_SIGN_UP:
+            return Object.assign({}, state, {
+                isPosting: true,
+            });
+        case RECEIVE_SIGN_UP_RESPONSE:
+            return Object.assign({}, state, {
+                isPosting: false,
+                result: action.result,
+                lastUpdated: action.receivedAt
+            });
+        default:
+            return state
+    }
+}
+
+const landingReducers = combineReducers({
+    loginController,
+    signUpController
 });
 
-export default loginReducer
+export default landingReducers
