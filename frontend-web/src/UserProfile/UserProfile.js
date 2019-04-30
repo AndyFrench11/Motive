@@ -12,7 +12,7 @@ import SteveImage from '../Images/matthew_nuezrz.png'
 import {createStore} from "redux";
 import reducer from "./reducers"
 import {connect} from "react-redux";
-import {fetchProjects} from "./actions";
+import {fetchProfile, fetchProjects} from "./actions";
 
 class UserProfile extends React.Component {
     constructor(props) {
@@ -22,7 +22,8 @@ class UserProfile extends React.Component {
     componentDidMount() {
         const { userguid } = this.props.match.params;
         console.log(userguid);
-        this.props.fetchProjects();
+        //this.props.fetchProjects();
+        this.props.fetchProfile(userguid);
     }
 
     render() {
@@ -75,12 +76,16 @@ class UserProfile extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchProjects: () => dispatch(fetchProjects())
+        fetchProjects: () => dispatch(fetchProjects()),
+        fetchProfile: (guid) => dispatch(fetchProfile(guid))
     };
 }
 
 const mapStateToProps = state => {
-    return { projects: state.projects };
+    return {
+        profile: state.profile,
+        projects: state.projects
+    }
 };
 
 const ProfilePage = connect(mapStateToProps, mapDispatchToProps) (UserProfile);

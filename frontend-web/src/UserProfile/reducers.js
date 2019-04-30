@@ -1,17 +1,24 @@
 import { combineReducers } from 'redux'
 import {
     REQUEST_PROJECTS,
-    RECEIVE_PROJECTS
+    RECEIVE_PROJECTS, REQUEST_PROFILE, RECEIVE_PROFILE
 } from './actions'
 
-const initialState = {
+const projectsInitialState = {
     projects: {
         isFetching: false,
         items: []
     }
 };
 
-function projects(state = initialState, action) {
+const profileInitialState = {
+    profile: {
+        isFetching: false,
+        profileContent: null
+    }
+};
+
+function projects(state = projectsInitialState, action) {
     switch (action.type) {
         case REQUEST_PROJECTS:
             return {...state,
@@ -33,8 +40,29 @@ function projects(state = initialState, action) {
     }
 }
 
-const rootReducer = combineReducers({
-    projects
+function profile(state = profileInitialState, action) {
+    switch (action.type) {
+        case REQUEST_PROFILE:
+            return {...state,
+                profile: {
+                    isFetching: true
+                }
+            };
+        case RECEIVE_PROFILE:
+            return {...state,
+                profile : {
+                    isFetching: false,
+                    profileContent: action.profile
+                }
+            };
+        default:
+            return state
+    }
+}
+
+const profilePage = combineReducers({
+    projects,
+    profile
 });
 
-export default rootReducer
+export default profilePage
