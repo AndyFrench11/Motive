@@ -2,30 +2,26 @@ import React from 'react'
 import {
     Button,
     Container,
-    Divider,
     Dropdown,
-    Grid,
-    Header,
-    Image,
-    List,
     Menu,
     Modal,
-    Segment,
     TransitionablePortal,
 } from 'semantic-ui-react'
-import {Link, Route} from "react-router-dom";
-import UserProfile from "../UserProfile/UserProfile";
+
 import NewProjectForm from "../Project/ModalForm";
 import {postProject} from "../actions";
 import {connect} from "react-redux";
 
+import {Link, Route} from "react-router-dom";
+import UserProfile from "../UserProfile/UserProfile";
 
 class TopNavBar extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            modalVisible: false
+            modalVisible: false,
+            submitButtonDisabled: true
         };
     }
 
@@ -48,24 +44,50 @@ class TopNavBar extends React.Component {
         })
     };
 
+    componentDidUpdate(oldProps) {
+        const newProps = this.props;
+        if(oldProps.values !== newProps.values) {
+            const values = newProps.values;
+            console.log(values);
+            if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
+                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')))) {
+                this.setState({
+                    submitButtonDisabled: false
+                })
+            }
+
+        }
+    }
+
     render() {
+
         return (
             <div>
-                <Menu fixed='top' inverted>
-                    <Container>
-                        <Menu.Item as='a' header>
-                            Motive.
-                        </Menu.Item>
+            <Menu fixed='top' inverted>
+                <Container>
+                <Menu.Item as='a' header>
+                    Motive.
+                </Menu.Item>
 
-                        <Menu.Item item simple text='Home'
-                                   as={Link} to='/'>
-                            Home
-                        </Menu.Item>
+                <Menu.Item item simple text='Home'
+                           as={Link} to='/'>
+                    Home
+                </Menu.Item>
 
-                        <Menu.Item item simple text='Profile'
-                                   as={Link} to='/profile'>
-                            Profile
-                        </Menu.Item>
+                <Menu.Item item simple text='Profile'
+                    as={Link} to='/profile'>
+                    Profile
+                </Menu.Item>
+
+                        <Dropdown item simple text='Profile'>
+                            <Dropdown.Menu>
+                                <Dropdown.Item>List Item</Dropdown.Item>
+                                <Dropdown.Item>List Item</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Header>Header Item</Dropdown.Header>
+                                <Dropdown.Item>List Item</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
 
                         <Menu.Item>
                             <Button onClick={this.showModal}>Create Project</Button>
@@ -80,15 +102,13 @@ class TopNavBar extends React.Component {
                             <NewProjectForm/>
                         </Modal.Content>
                         <Modal.Actions>
-                            <Button color='grey' onClick={this.closeModal}>
-                                Cancel
-                            </Button>
                             <Button
                                 positive
                                 icon='checkmark'
                                 labelPosition='right'
                                 content="All good to go!"
                                 onClick={this.handleModalSubmit}
+                                disabled={this.state.submitButtonDisabled}
                             />
                         </Modal.Actions>
                     </Modal>
@@ -100,8 +120,8 @@ class TopNavBar extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { projectController } = state;
-    const { isPosting, lastUpdated, result } = projectController;
+    const { createProjectController } = state;
+    const { isPosting, lastUpdated, result } = createProjectController;
     return state.form.newProject
         ? {
             values: state.form.newProject.values,

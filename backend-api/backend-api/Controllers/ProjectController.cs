@@ -7,15 +7,24 @@ using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Neo4j.Driver.V1;
+using Neo4jClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace backend_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/person/{userId}/[controller]")]
     public class ProjectController : Controller
     {
+        public string userId { get; set; }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            this.userId = context.RouteData.Values["userId"].ToString();
+            base.OnActionExecuting(context);
+        }
 
         public string localDatabaseUrl = "bolt://localhost:7687";
         public string serverDatabaseUrl = "bolt://csse-s402g2.canterbury.ac.nz:7687";
@@ -25,19 +34,107 @@ namespace backend_api.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+
+                var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
+                client.Connect();
+
+                var taskResult = client.Cypher
+                       .Match("(project:Project) -- (person:Person, projectTask:ProjectTask, tag:Tag)")
+                       .Where((Person person) => person.guid == userId)
+                       .Return((project, projectTask, tag) => new
+                       {
+                           Project = project.As<Project>(),
+                           Tasks = projectTask.CollectAs<ProjectTask>(),
+                           Tags = tag.CollectAs<Tag>()
+                       })
+                       .Results;
+
+                if (projectResult.Count() == 0)
+                {
+                    return StatusCode(404);
+                }
+                else
+                {
+                    Project returnedProject = projectResult.ElementAt(0);
+
+                    return returnedProject;
+                }
+
+            }
+            catch (ServiceUnavailableException)
+            {
+                return StatusCode(503);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+
+            //return result.Select(record => record[0].As<string>()).ToList(); 
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{projectId}")]
+        public ActionResult<Project> Get(int projectId)
         {
-            //private static long MatchPersonNode(ITransaction tx, string name)
-            //{
-            //    var result = tx.Run("MATCH (a:Person {name: $name}) RETURN id(a)", new { name });
-            //    return result.Single()[0].As<long>();
-            //}
-            return "value";
+            //DO DATABASE CALL TO RETRIEVE ALL DETAILS OF PROJECT NODE AND RELATIONSHIPS TO TAGS AND NODES
+            //Convert into a Project Object
+            //Send back to front end 
+
+            try
+            {
+
+                var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
+                client.Connect();
+
+                var projectResult = client.Cypher
+                    .Match("(project:Project)")
+                    .Where((Project project) => project.name == "Hello My Good Friends")
+                    .Return(project => project.As<Project>())
+                    .Results;
+
+                if (projectResult.Count() == 0)
+                {
+                    return StatusCode(404);
+                }
+                else
+                {
+                    Project returnedProject = projectResult.ElementAt(0);
+                    //Get all the tags
+                    var tagResult = client.Cypher
+                        .Match("(project:Project) -- (tag:Tag)")
+                        .Where((Project project) => project.name == "Hello My Good Friends")
+                        .Return(tag => tag.As<Tag>())
+                        .Results;
+
+                    returnedProject.tagList = tagResult.ToList();
+
+                    var taskResult = client.Cypher
+                       .Match("(project:Project) -- (projectTask:ProjectTask)")
+                       .Where((Project project) => project.name == "Hello My Good Friends")
+                       .Return(projectTask => projectTask.As<ProjectTask>())
+                       .Results;
+
+                    returnedProject.taskList = taskResult.ToList();
+
+
+                    return returnedProject;
+                }
+
+            }
+            catch (ServiceUnavailableException)
+            {
+                return StatusCode(503);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+        
         }
 
         // POST api/values
@@ -128,13 +225,13 @@ namespace backend_api.Controllers
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
+        [HttpPut("{projectId}")]
         public void Put(int id, [FromBody]string value)
         {
         }
 
         // DELETE api/values/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{projectId}")]
         public void Delete(int id)
         {
 
