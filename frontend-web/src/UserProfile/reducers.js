@@ -12,10 +12,7 @@ const projectsInitialState = {
 };
 
 const profileInitialState = {
-    profile: {
-        isFetching: false,
-        profileContent: null
-    }
+
 };
 
 function projects(state = projectsInitialState, action) {
@@ -44,16 +41,13 @@ function profile(state = profileInitialState, action) {
     switch (action.type) {
         case REQUEST_PROFILE:
             return {...state,
-                profile: {
-                    isFetching: true
-                }
+                isFetching: true
+
             };
         case RECEIVE_PROFILE:
             return {...state,
-                profile : {
-                    isFetching: false,
-                    profileContent: action.profile
-                }
+                isFetching: false,
+                profileContent: action.profile
             };
         default:
             return state
