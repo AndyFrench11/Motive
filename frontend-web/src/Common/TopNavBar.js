@@ -46,10 +46,10 @@ class TopNavBar extends React.Component {
 
     componentDidUpdate(oldProps) {
         const newProps = this.props;
-        if(oldProps.values !== newProps.values) {
+        if (oldProps.values !== newProps.values) {
             const values = newProps.values;
             console.log(values);
-            if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
+            if ((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
                 && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')))) {
                 this.setState({
                     submitButtonDisabled: false
@@ -63,31 +63,21 @@ class TopNavBar extends React.Component {
 
         return (
             <div>
-            <Menu fixed='top' inverted>
-                <Container>
-                <Menu.Item as='a' header>
-                    Motive.
-                </Menu.Item>
+                <Menu fixed='top' inverted>
+                    <Container>
+                        <Menu.Item as='a' header>
+                            Motive.
+                        </Menu.Item>
 
-                <Menu.Item item simple text='Home'
-                           as={Link} to='/'>
-                    Home
-                </Menu.Item>
+                        <Menu.Item item simple text='Home'
+                                   as={Link} to='/'>
+                            Home
+                        </Menu.Item>
 
-                <Menu.Item item simple text='Profile'
-                    as={Link} to='/profile'>
-                    Profile
-                </Menu.Item>
-
-                        <Dropdown item simple text='Profile'>
-                            <Dropdown.Menu>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Header>Header Item</Dropdown.Header>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
+                        <Menu.Item item simple text='Profile'
+                                   as={Link} to='/profile'>
+                            Profile
+                        </Menu.Item>
 
                         <Menu.Item>
                             <Button onClick={this.showModal}>Create Project</Button>
@@ -95,7 +85,7 @@ class TopNavBar extends React.Component {
                     </Container>
                 </Menu>
 
-                <TransitionablePortal open={this.state.modalVisible}  transition={{ animation:'fade up', duration: 500 }}>
+                <TransitionablePortal open={this.state.modalVisible} transition={{animation: 'fade up', duration: 500}}>
                     <Modal open={true} onClose={this.closeModal} closeIcon>
                         <Modal.Header>Create a New Project</Modal.Header>
                         <Modal.Content>
@@ -120,8 +110,8 @@ class TopNavBar extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { createProjectController } = state;
-    const { isPosting, lastUpdated, result } = createProjectController;
+    const {createProjectController} = state;
+    const {isPosting, lastUpdated, result} = createProjectController;
     return state.form.newProject
         ? {
             values: state.form.newProject.values,

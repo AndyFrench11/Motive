@@ -4,7 +4,7 @@ import {Button, Form, Grid, Header, Container, Segment} from 'semantic-ui-react'
 import {DateInput} from '@opuscapita/react-dates'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
-import {postLogin} from "../actions";
+import {postLogin} from "./actions";
 import {connect} from "react-redux";
 
 class Landing extends Component {
@@ -189,7 +189,8 @@ class Landing extends Component {
 }
 
 const mapStateToProps = state => {
-    const { loginController } = state;
+    const { loginReducer } = state;
+    const { loginController } = loginReducer;
     const { isPosting, lastUpdated, result } = loginController;
     return {
             isPosting: isPosting,
