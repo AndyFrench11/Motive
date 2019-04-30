@@ -24,10 +24,10 @@ function receiveSingleProject(json) {
     }
 }
 
-export function fetchProject(projectId) {
+export function fetchProject(projectId, personGuid) {
     return dispatch => {
         dispatch(requestSingleProject());
-        return axios.get(localUrl + "/person/1/project/" + projectId)
+        return axios.get(localUrl + "/person/" + personGuid + "/project/" + projectId)
             .then(response => dispatch(receiveSingleProject(response)))
             .catch(error =>  {
                 console.log("The server is not running!");
@@ -37,7 +37,7 @@ export function fetchProject(projectId) {
     }
 }
 
-export function postProject(valuesJson) {
+export function postProject(guid, valuesJson) {
     return dispatch => {
         dispatch(requestNewProject());
         console.log(valuesJson);
@@ -50,8 +50,8 @@ export function postProject(valuesJson) {
         };
 
         console.log(newProject);
-
-        return axios.post(localUrl + "/project", newProject, {headers: {
+        console.log(guid);
+        return axios.post(localUrl + "/person/" + guid + "/project", newProject, {headers: {
                 'Content-Type': 'application/json'
             }
         })
@@ -72,10 +72,10 @@ function requestNewProject() {
 };
 
 function receiveNewProjectResponse(response) {
-    if(response.status === 200) {
+    if(response.status === 201) {
         return {
             type: RECEIVE_NEW_PROJECT_RESPONSE,
-            result: "OK",
+            result: response.data,
             receivedAt: Date.now()
         }
     } else if(response.status === 500) {

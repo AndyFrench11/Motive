@@ -171,7 +171,7 @@ namespace backend_api.Controllers
 
                     session.WriteTransaction(tx => CreateTaskNodes(tx, project));
                     session.WriteTransaction(tx => CreateTaskRelationships(tx, project));
-                    return Ok();
+                    return StatusCode(201, project.guid);
                 }
             }
             catch (ServiceUnavailableException)
