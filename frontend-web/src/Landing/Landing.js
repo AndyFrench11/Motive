@@ -4,6 +4,8 @@ import {Button, Form, Grid, Header, Container, Segment} from 'semantic-ui-react'
 import {DateInput} from '@opuscapita/react-dates'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
+import {postLogin} from "../actions";
+import {connect} from "react-redux";
 
 class Landing extends Component {
     constructor(props) {
@@ -33,6 +35,8 @@ class Landing extends Component {
     handleLoginSubmit = () => {
         console.log("login");
         console.log(this.state);
+        const {dispatch} = this.props;
+        dispatch(postLogin({email: this.state.loginEmail, password: this.state.loginPassword}));
     };
 
     handleSignUpSubmit = () => {
@@ -184,4 +188,14 @@ class Landing extends Component {
     };
 }
 
-export default Landing;
+const mapStateToProps = state => {
+    const { loginController } = state;
+    const { isPosting, lastUpdated, result } = loginController;
+    return {
+            isPosting: isPosting,
+            result: result,
+            lastUpdated: lastUpdated,
+        };
+};
+
+export default connect(mapStateToProps) (Landing);

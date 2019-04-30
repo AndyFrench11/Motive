@@ -13,7 +13,7 @@ import { connect } from "react-redux";
 import Landing from "./Landing/Landing";
 import Home from "./Home/Home";
 
-const store = configureStore()
+const store = configureStore();
 
 
 function About() {
@@ -33,7 +33,7 @@ function AppRouter() {
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />
             <Route path="/test" component={Users} />
-            <Route path="/profile" component={UserProfile} />
+            <Route path="/profile/:userguid" component={UserProfile} />
             <Route path="/project" component={Project} />
           </div>
         </Router>

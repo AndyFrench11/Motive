@@ -8,9 +8,13 @@ import {
     Header,
     Image,
     List,
-    Menu, Modal,
-    Segment, TransitionablePortal,
+    Menu,
+    Modal,
+    Segment,
+    TransitionablePortal,
 } from 'semantic-ui-react'
+import {Link, Route} from "react-router-dom";
+import UserProfile from "../UserProfile/UserProfile";
 import NewProjectForm from "../Project/ModalForm";
 import {postProject} from "../actions";
 import {connect} from "react-redux";
@@ -52,17 +56,16 @@ class TopNavBar extends React.Component {
                         <Menu.Item as='a' header>
                             Motive.
                         </Menu.Item>
-                        <Menu.Item as='a'>Home</Menu.Item>
 
-                        <Dropdown item simple text='Profile'>
-                            <Dropdown.Menu>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Header>Header Item</Dropdown.Header>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
+                        <Menu.Item item simple text='Home'
+                                   as={Link} to='/'>
+                            Home
+                        </Menu.Item>
+
+                        <Menu.Item item simple text='Profile'
+                                   as={Link} to='/profile'>
+                            Profile
+                        </Menu.Item>
 
                         <Menu.Item>
                             <Button onClick={this.showModal}>Create Project</Button>
