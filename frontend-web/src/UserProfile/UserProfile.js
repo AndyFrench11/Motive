@@ -53,14 +53,7 @@ class UserProfile extends React.Component {
     componentDidUpdate(oldProps) {
         const newProps = this.props;
         if(oldProps.values !== newProps.values) {
-
-            if(typeof this.props.result !== 'undefined') {
-                const { userguid } = this.props.match.params;
-                this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
-            }
-
             const values = newProps.values;
-            console.log(values);
             if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
                 && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')))) {
                 this.setState({
@@ -73,14 +66,16 @@ class UserProfile extends React.Component {
 
     componentDidMount() {
         const { userguid } = this.props.match.params;
-        console.log(userguid);
-        //this.props.fetchProjects();
         this.props.fetchProfile(userguid);
     }
 
 
     ProfileHeader() {
-        if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
+        if(typeof this.props.result !== 'undefined') {
+            const { userguid } = this.props.match.params;
+            this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
+        }
+        else if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>

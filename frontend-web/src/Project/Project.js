@@ -15,8 +15,10 @@ class ProjectPageLayout extends React.Component {
 
     componentDidMount() {
         const { dispatch } = this.props;
-        const { userguid, projectGuid } = this.props.match.params;
-        dispatch(fetchProject(projectGuid, userguid));
+        const { userguid, projectguid } = this.props.match.params;
+        console.log(userguid);
+        console.log(projectguid);
+        dispatch(fetchProject(projectguid, userguid));
     }
 
     checkRender() {
