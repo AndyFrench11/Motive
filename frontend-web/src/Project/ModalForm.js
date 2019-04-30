@@ -1,54 +1,92 @@
 import React, { Fragment } from "react";
 import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "redux-form";
-import {Form, Message, Modal, Input, Label, Icon, Header, List, Image, Divider, Segment, Button} from "semantic-ui-react";
+import {Form, Message, Modal, Input, Label, Icon, Header, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
 import { connect } from "react-redux"
 
-const renderTextArea = field => (
-    <Form.TextArea
-        {...field.input}
-        label={field.label}
-        placeholder={field.placeholder}
-    />
-);
-
-const renderTagInput = field => (
+const renderTextArea = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
     <Form.Field>
-        <Input
-            {...field.input}
-            icon='tags'
-            iconPosition='left'
-            label={{ tag: true, content: 'Add Tag' }}
-            labelPosition='right'
-            placeholder="Enter tags"
-        >
-        </Input>
-    </Form.Field>
-
-);
-
-const renderNameInput = field => (
-    <Form.Field>
-        <Input
-            {...field.input}
-            label={field.label}
-            placeholder={field.placeholder}
+        <TextArea
+            {...input}
+            label={label}
+            placeholder={placeholder}
         />
+        {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+    </Form.Field>
+
+);
+
+const renderTagInput = ({ input, meta: { touched, error, warning } }) => (
+    <Form.Field>
+        <div>
+            <Input
+                {...input}
+                icon='tags'
+                iconPosition='left'
+                placeholder="Enter tags"
+            >
+            </Input>
+            {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+        </div>
+    </Form.Field>
+
+);
+
+const renderNameInput = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
+    <Form.Field>
+        <div>
+            <Input
+                {...input}
+                label={label}
+                placeholder={placeholder}
+            />
+            {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+        </div>
+
     </Form.Field>
 );
 
-const renderMilestoneInput = field => (
+const renderMilestoneInput = ({ input, meta: { touched, error, warning } }) => (
     <Form.Field>
+        <div>
         <Input
-            {...field.input}
-            placeholder='Add a new milestone...' />
+            {...input}
+            placeholder='Add a new milestone...'
+            required/>
+        {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+        </div>
     </Form.Field>
 );
+
+
+
+const requiredDescription = value => value ? undefined :
+    <Label pointing>
+        Please enter a description
+    </Label>;
+
+
+const requiredName = value => value ? undefined :
+    <Label pointing>
+        Please enter a value
+    </Label>;
+
+const requiredTags = value => value ? undefined :
+    <Label pointing>
+        Please enter a value
+    </Label>;
+
+const requiredMilestones = value => value ? undefined :
+    <Label pointing>
+        Please enter a value
+    </Label>;
+
+
 
 
 let NewProjectForm = props => {
     const {
         tagInputValue,
-        milestoneInputValue,
+        milestoneInputValue
     } = props;
 
     const renderTaskList = ({ fields }) => (
@@ -102,16 +140,19 @@ let NewProjectForm = props => {
                         label="Project name"
                         name="projectNameInput"
                         placeholder="e.g. Rewiring the Mainframe!"
+                        validate={requiredName}
                     />
                     <Field
                         component={renderTextArea}
                         name="descriptionInput"
                         placeholder="Tell us more about the project..."
+                        validate={requiredDescription}
                     />
                     <Field
                         component={renderTagInput}
                         name="tagInput"
                         id="tagInput"
+                        validate={requiredTags}
 
                     />
 
@@ -130,6 +171,7 @@ let NewProjectForm = props => {
                         name="milestoneInput"
                         id="milestoneInput"
                         type="text"
+                        validate={requiredMilestones}
                     />
 
                     <FieldArray name="taskList" component={renderTaskList}/>
@@ -158,50 +200,3 @@ NewProjectForm = connect(state => {
 
 export default NewProjectForm;
 
-{/*<li key={index}>*/}
-{/*<button*/}
-{/*    type="button"*/}
-{/*    title="Remove Member"*/}
-{/*    onClick={() => fields.remove(index)}/>*/}
-{/*<h4>Member #{index + 1}</h4>*/}
-{/*<Field*/}
-{/*    name={`${task}.firstName`}*/}
-{/*    type="text"*/}
-{/*    component={renderField}*/}
-{/*    label="First Name"/>*/}
-{/*<Field*/}
-{/*    name={`${member}.lastName`}*/}
-{/*    type="text"*/}
-{/*    component={renderField}*/}
-{/*    label="Last Name"/>*/}
-{/*<FieldArray name={`${member}.hobbies`} component={renderHobbies}/>*/}
-{/*</li>*/}
-//
-// const renderCheckbox = field => (
-//     <Form.Checkbox
-//         checked={!!field.input.value}
-//         name={field.input.name}
-//         label={field.label}
-//         onChange={(e, { checked }) => field.input.onChange(checked)}
-//     />
-// );
-//
-// const renderRadio = field => (
-//     <Form.Radio
-//         checked={field.input.value === field.radioValue}
-//         label={field.label}
-//         name={field.input.name}
-//         onChange={(e, { checked }) => field.input.onChange(field.radioValue)}
-//     />
-// );
-//
-// const renderSelect = field => (
-//     <Form.Select
-//         label={field.label}
-//         name={field.input.name}
-//         onChange={(e, { value }) => field.input.onChange(value)}
-//         options={field.options}
-//         placeholder={field.placeholder}
-//         value={field.input.value}
-//     />
-// );

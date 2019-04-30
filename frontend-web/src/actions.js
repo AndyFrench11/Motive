@@ -1,35 +1,39 @@
 import fetch from 'cross-fetch'
 import axios from 'axios'
 
-export const REQUEST_POSTS = 'REQUEST_POSTS';
-export const RECEIVE_POSTS = 'RECEIVE_POSTS';
+export const REQUEST_SINGLE_PROJECT = 'REQUEST_PROJECT';
+export const RECEIVE_SINGLE_PROJECT = 'RECEIVE_PROJECT';
 
 export const RECEIVE_NEW_PROJECT_RESPONSE = 'RECEIVE_NEW_PROJECT_RESPONSE';
 export const REQUEST_NEW_PROJECT = 'REQUEST_NEW_PROJECT';
 
-const localUrl = `http://localhost:8080/api/project`;
+const localUrl = `http://localhost:8080/api`;
 const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api/project`;
 
-function requestPosts() {
+function requestSingleProject() {
     return {
-        type: REQUEST_POSTS,
+        type: REQUEST_SINGLE_PROJECT,
     }
 }
 
-function receivePosts(json) {
+function receiveSingleProject(json) {
     return {
-        type: RECEIVE_POSTS,
+        type: RECEIVE_SINGLE_PROJECT,
         result: json.data,
         receivedAt: Date.now()
     }
 }
 
-export function fetchPosts() {
+export function fetchProject(projectId) {
     return dispatch => {
-        dispatch(requestPosts());
-        return fetch(`https://www.reddit.com/r/nbastreams.json`)
-            .then(response => response.json())
-            .then(json => dispatch(receivePosts(json)))
+        dispatch(requestSingleProject());
+        return axios.get(localUrl + "/person/1/project/" + projectId)
+            .then(response => dispatch(receiveSingleProject(response)))
+            .catch(error =>  {
+                console.log("The server is not running!");
+                console.log("Need to update UI with error!");
+                console.log(error)
+            })
     }
 }
 
@@ -47,12 +51,16 @@ export function postProject(valuesJson) {
 
         console.log(newProject);
 
-        return axios.post(localUrl, newProject, {headers: {
+        return axios.post(localUrl + "/project", newProject, {headers: {
                 'Content-Type': 'application/json'
             }
         })
-            .catch(error => console.log(error))
             .then(response => dispatch(receiveNewProjectResponse(response)))
+            .catch(error =>  {
+                console.log("The server is not running!");
+                console.log("Need to update UI with error!");
+                console.log(error.response)
+            })
 
     }
 };
@@ -64,9 +72,23 @@ function requestNewProject() {
 };
 
 function receiveNewProjectResponse(response) {
-    return {
-        type: RECEIVE_NEW_PROJECT_RESPONSE,
-        result: response.data,
-        receivedAt: Date.now()
+    if(response.status === 200) {
+        return {
+            type: RECEIVE_NEW_PROJECT_RESPONSE,
+            result: "OK",
+            receivedAt: Date.now()
+        }
+    } else if(response.status === 500) {
+        return {
+            type: RECEIVE_NEW_PROJECT_RESPONSE,
+            result: "Internal Server Error",
+            receivedAt: Date.now()
+        }
     }
+
 };
+
+//UPDATE UI
+function updateCurrentProject() {
+
+}
