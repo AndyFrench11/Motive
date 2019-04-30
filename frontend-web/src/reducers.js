@@ -6,6 +6,7 @@ import {
     REQUEST_LOGIN
 } from './actions'
 import {reducer as formReducer} from "redux-form";
+import profilePage from "./UserProfile/reducers";
 
 function newProject(
     state = {
@@ -65,7 +66,8 @@ function loginController(state = {
 const rootReducer = combineReducers({
     form: formReducer,
     projectController,
-    loginController
+    loginController,
+    profilePage
 });
 
 export default rootReducer
