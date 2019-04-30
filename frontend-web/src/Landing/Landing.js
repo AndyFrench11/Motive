@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './Landing.css';
-import {Button, Form, Grid, Header, Container, Segment} from 'semantic-ui-react'
+import {Button, Form, Grid, Header, Container, Segment, Icon} from 'semantic-ui-react'
 import {DateInput} from '@opuscapita/react-dates'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
@@ -41,6 +41,11 @@ class Landing extends Component {
         };
         const {dispatch} = this.props;
         dispatch(postLogin(loginDetails));
+
+        this.setState({
+            loginEmail: '',
+            loginPassword: ''
+        })
     };
 
     handleSignUpSubmit = () => {
@@ -54,6 +59,13 @@ class Landing extends Component {
         };
         const {dispatch} = this.props;
         dispatch(postSignUp(signUpDetails));
+
+        this.setState({
+            signUpName: '',
+            signUpEmail: '',
+            signUpPassword: '',
+            signUpBirthday: new Date()
+        })
     };
 
     render() {
@@ -92,13 +104,13 @@ class Landing extends Component {
                 <br/>
                 <br/>
                 <Container>
-                    <Grid textAlign='center' verticalAlign='middle'>
-                        <Grid.Column width={10} style={{maxWidth: 450}}>
+                    <Grid textAlign='center'>
+                        <Grid.Column width={10} style={{maxWidth: 450}} floated='left'>
                             <Grid.Row>
                                 <Header as='h2' color='black' textAlign='center'>
                                     Login
                                 </Header>
-                                <Form size='large' onSubmit={this.handleLoginSubmit}>
+                                <Form id="loginForm" size='large' onSubmit={this.handleLoginSubmit}>
                                     <Segment>
                                         <Form.Input
                                             fluid icon='envelope outline'
@@ -120,29 +132,22 @@ class Landing extends Component {
                                             value={loginPassword}
                                             onChange={this.handleChange}
                                         />
-
-                                        <Button color='teal' fluid size='large'>
+                                        <Button color='black' fluid size='large'>
                                             Login!
                                         </Button>
                                     </Segment>
                                 </Form>
-                            </Grid.Row>
-                            <Grid.Row>
-                                <Button
-                                    basic
-                                    color='blue'
-                                    content='Facebook'
-                                    icon='thumbs up'
-                                />
-                                <Button
-                                    basic
-                                    color='red'
-                                    content='Google'
-                                    icon='envelope'
-                                />
+                                <br/>
+                                <br/>
+                                <Button color='facebook'>
+                                    <Icon name='facebook' /> Facebook
+                                </Button>
+                                <Button color='google plus'>
+                                    <Icon name='google plus' /> Google Plus
+                                </Button>
                             </Grid.Row>
                         </Grid.Column>
-                        <Grid.Column width={10} style={{maxWidth: 450}}>
+                        <Grid.Column width={10} style={{maxWidth: 450}} floated='right'>
                             <Header as='h2' color='black' textAlign='center'>
                                 Sign Up
                             </Header>
@@ -186,7 +191,7 @@ class Landing extends Component {
                                         onChange={this.handleDateChange}
                                         showToTop={true}
                                     />
-                                    <Button color='teal' fluid size='large'>
+                                    <Button color='black' fluid size='large'>
                                         Sign up!
                                     </Button>
                                 </Segment>
