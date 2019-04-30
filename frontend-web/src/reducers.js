@@ -1,45 +1,12 @@
 import { combineReducers } from 'redux'
 import {
-    REQUEST_POSTS,
-    RECEIVE_POSTS,
+    REQUEST_SINGLE_PROJECT,
+    RECEIVE_SINGLE_PROJECT,
     RECEIVE_NEW_PROJECT_RESPONSE,
-    REQUEST_NEW_PROJECT
+    REQUEST_NEW_PROJECT,
 } from './actions'
 import {reducer as formReducer} from "redux-form";
 
-
-function posts(
-    state = {
-        isFetching: false,
-        result: []
-    },
-    action
-) {
-    switch (action.type) {
-        case REQUEST_POSTS:
-            return Object.assign({}, state, {
-                isFetching: true,
-            });
-        case RECEIVE_POSTS:
-            return Object.assign({}, state, {
-                isFetching: false,
-                result: action.result,
-                lastUpdated: action.receivedAt
-            });
-        default:
-            return state
-    }
-}
-
-function postsBySubreddit(state = {}, action) {
-    switch (action.type) {
-        case RECEIVE_POSTS:
-        case REQUEST_POSTS:
-            return posts(state, action);
-        default:
-            return state
-    }
-}
 
 function newProject(
     state = {
@@ -64,7 +31,7 @@ function newProject(
     }
 }
 
-function projectController(state = {}, action) {
+function createProjectController(state = {}, action) {
     switch (action.type) {
         case REQUEST_NEW_PROJECT:
         case RECEIVE_NEW_PROJECT_RESPONSE:
@@ -74,11 +41,44 @@ function projectController(state = {}, action) {
     }
 }
 
+function retrieveProject(
+    state = {
+        isRetrieving: false,
+        result: ""
+    },
+    action
+) {
+    switch (action.type) {
+        case REQUEST_SINGLE_PROJECT:
+            return Object.assign({}, state, {
+                isRetrieving: true,
+            });
+        case RECEIVE_SINGLE_PROJECT:
+            return Object.assign({}, state, {
+                isRetrieving: false,
+                result: action.result,
+                lastUpdated: action.receivedAt
+            });
+        default:
+            return state
+    }
+}
+
+function projectController(state = {}, action) {
+    switch (action.type) {
+        case RECEIVE_SINGLE_PROJECT:
+        case REQUEST_SINGLE_PROJECT:
+            return retrieveProject(state, action);
+        default:
+            return state
+    }
+}
+
 
 
 const rootReducer = combineReducers({
     form: formReducer,
-    postsBySubreddit,
+    createProjectController,
     projectController
 });
 

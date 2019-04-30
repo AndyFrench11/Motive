@@ -2,14 +2,9 @@ import React from 'react'
 import {
     Button,
     Container,
-    Divider,
     Dropdown,
-    Grid,
-    Header,
-    Image,
-    List,
     Menu, Modal,
-    Segment, TransitionablePortal,
+    TransitionablePortal,
 } from 'semantic-ui-react'
 import NewProjectForm from "../Project/ModalForm";
 import {postProject} from "../actions";
@@ -21,7 +16,8 @@ class TopNavBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalVisible: false
+            modalVisible: false,
+            submitButtonDisabled: true
         };
     }
 
@@ -44,7 +40,23 @@ class TopNavBar extends React.Component {
         })
     };
 
+    componentDidUpdate(oldProps) {
+        const newProps = this.props;
+        if(oldProps.values !== newProps.values) {
+            const values = newProps.values;
+            console.log(values);
+            if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
+                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')))) {
+                this.setState({
+                    submitButtonDisabled: false
+                })
+            }
+
+        }
+    }
+
     render() {
+
         return (
             <div>
                 <Menu fixed='top' inverted>
@@ -77,15 +89,13 @@ class TopNavBar extends React.Component {
                             <NewProjectForm/>
                         </Modal.Content>
                         <Modal.Actions>
-                            <Button color='grey' onClick={this.closeModal}>
-                                Cancel
-                            </Button>
                             <Button
                                 positive
                                 icon='checkmark'
                                 labelPosition='right'
                                 content="All good to go!"
                                 onClick={this.handleModalSubmit}
+                                disabled={this.state.submitButtonDisabled}
                             />
                         </Modal.Actions>
                     </Modal>
@@ -97,8 +107,8 @@ class TopNavBar extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { projectController } = state;
-    const { isPosting, lastUpdated, result } = projectController;
+    const { createProjectController } = state;
+    const { isPosting, lastUpdated, result } = createProjectController;
     return state.form.newProject
         ? {
             values: state.form.newProject.values,
