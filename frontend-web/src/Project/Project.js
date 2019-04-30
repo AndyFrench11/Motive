@@ -1,104 +1,85 @@
 import React from 'react'
 import {
-    Divider, Grid, Header, Image, Button, Modal, TransitionablePortal,
+    Divider, Grid, Header, Image, Segment, Dimmer, Loader,
 } from 'semantic-ui-react'
 
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 import BookImage from '../Images/Hobbies Icons/010-book.png'
-import NewProjectForm from "./ModalForm";
-import { connect } from "react-redux";
-import {postProject} from "../actions";
+import {connect} from "react-redux";
+import {fetchProject} from "../actions";
+
+
 
 class ProjectPageLayout extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            modalVisible: false
-        };
+    componentDidMount() {
+        const { dispatch } = this.props;
+        dispatch(fetchProject(13));
     }
 
-    showModal = () => {
-        this.setState({
-            modalVisible: true
-        });
-    };
+    checkRender() {
+        if(typeof this.props.result === 'undefined') {
+            return null
+        } else {
+            const { result } = this.props;
+            return (<div>
+                <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
+                    <Grid.Row columns={2}>
+                        <Grid.Column width={2}>
+                            <Image style={{'border-radius':8}} src={BookImage} size='small' />
+                        </Grid.Column>
+                        <Grid.Column centered>
+                            <Header as='h1'>{result.name}</Header>
+                            <p>{result.description}</p>
+                        </Grid.Column>
+                    </Grid.Row>
 
-    closeModal = () => {
-        this.setState({
-            modalVisible: false
-        });
-    };
+                    <Divider/>
 
-    handleModalSubmit = () => {
-        this.props.dispatch(postProject(this.props.values))
-    };
-
+                </Grid>
+            </div>
+            )
+        }
+    }
 
     render() {
 
-    return (
-      <div>
-        <TopNavBar/>
+        const { isRetrieving, result, lastUpdated } = this.props;
 
-          <TransitionablePortal open={this.state.modalVisible}  transition={{ animation:'fade up', duration: 500 }}>
-          <Modal open={true} onClose={this.closeModal} closeIcon>
-              <Modal.Header>Create a New Project</Modal.Header>
-              <Modal.Content>
-                  <NewProjectForm/>
-              </Modal.Content>
-              <Modal.Actions>
-                  <Button color='grey' onClick={this.closeModal}>
-                      Cancel
-                  </Button>
-                  <Button
-                      positive
-                      icon='checkmark'
-                      labelPosition='right'
-                      content="All good to go!"
-                      onClick={this.handleModalSubmit}
-                  />
-              </Modal.Actions>
-          </Modal>
-          </TransitionablePortal>
+        return (
+          <div>
+            <TopNavBar/>
 
-        <Button style={{ marginTop: '5em' }} onClick={this.showModal}>Create Project</Button>
+              {!isRetrieving &&
+                this.checkRender()
+              }
 
-        <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
-        <Grid.Row columns={2}>
-        <Grid.Column width={2}>
-            <Image style={{'border-radius':8}} src={BookImage} size='small' />
-        </Grid.Column>
-        <Grid.Column centered>
-        <Header as='h1'>Project Title</Header>
-            <p>Description</p>
 
-        </Grid.Column>
-        </Grid.Row>
+            {isRetrieving &&
+                <div>
+                    <Segment style={{ marginTop: '5em' }}>
+                        <Dimmer active inverted>
+                            <Loader inverted content='Loading' />
+                        </Dimmer>
+                    </Segment>
+                </div>
+            }
 
-        <Divider/>
-
-        </Grid>
-
-      <Footer/>
-    </div>
-    );
+          <Footer/>
+        </div>
+        );
   }
 }
 
 const mapStateToProps = state => {
     const { projectController } = state;
-    const { isPosting, lastUpdated, result } = projectController;
-    return state.form.newProject
-        ? {
-            values: state.form.newProject.values,
-            submitSucceeded: state.form.newProject.submitSucceeded,
-            isPosting: isPosting,
-            result: result,
-            lastUpdated: lastUpdated,
-        }
-        : {};
+    const { isRetrieving, lastUpdated, result } = projectController;
+    return {
+        isRetrieving: isRetrieving,
+        result: result,
+        lastUpdated: lastUpdated,
+    };
 };
 
 export default connect(mapStateToProps)(ProjectPageLayout);
@@ -128,11 +109,7 @@ export default connect(mapStateToProps)(ProjectPageLayout);
 //     }
 // }
 
-// componentDidMount() {
-//     const { dispatch, selectedSubreddit } = this.props
-//
-//
-// }
+
 //
 // componentDidUpdate(prevProps) {
 //     if (this.props.selectedSubreddit !== prevProps.selectedSubreddit) {
