@@ -10,6 +10,8 @@ import {
   Menu,
   Segment,
 } from 'semantic-ui-react'
+import {Link, Route} from "react-router-dom";
+import UserProfile from "../UserProfile/UserProfile";
 
 class TopNavBar extends React.Component {
 
@@ -20,17 +22,29 @@ class TopNavBar extends React.Component {
                 <Menu.Item as='a' header>
                     Motive.
                 </Menu.Item>
-                <Menu.Item as='a'>Home</Menu.Item>
 
-                <Dropdown item simple text='Profile'>
+                <Menu.Item item simple text='Home'
+                           as={Link} to='/'>
+                    Home
+                </Menu.Item>
+
+                <Menu.Item item simple text='Profile'
+                    as={Link} to='/profile'>
+                    Profile
+                </Menu.Item>
+
+
+
+                <Dropdown item simple text='Magic'>
                     <Dropdown.Menu>
-                    <Dropdown.Item>List Item</Dropdown.Item>
-                    <Dropdown.Item>List Item</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Header>Header Item</Dropdown.Header>
-                    <Dropdown.Item>List Item</Dropdown.Item>
+                        <Dropdown.Item>List Item</Dropdown.Item>
+                        <Dropdown.Item>List Item</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Header>Header Item</Dropdown.Header>
+                        <Dropdown.Item>List Item</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
+
                 </Container>
                 </Menu>
         );

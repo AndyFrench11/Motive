@@ -11,7 +11,7 @@ import { Provider } from "react-redux";
 import configureStore from "./configureStore";
 import { connect } from "react-redux";
 
-const store = configureStore()
+const store = configureStore();
 
 function Index() {
   return <h2>Home</h2>;
@@ -33,7 +33,7 @@ function AppRouter() {
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />
             <Route path="/test" component={Users} />
-            <Route path="/profile" component={UserProfile} />
+            <Route path="/profile/:userguid" component={UserProfile} />
             <Route path="/project" component={Project} />
           </div>
         </Router>
