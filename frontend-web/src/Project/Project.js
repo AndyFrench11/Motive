@@ -8,19 +8,22 @@ import Footer from '../Common/Footer'
 import BookImage from '../Images/Hobbies Icons/010-book.png'
 import {connect} from "react-redux";
 import {fetchProject} from "../actions";
-
+import LoaderInlineCentered from "../Common/Loader";
 
 
 class ProjectPageLayout extends React.Component {
 
     componentDidMount() {
         const { dispatch } = this.props;
-        dispatch(fetchProject(13));
+        const { userguid, projectGuid } = this.props.match.params;
+        dispatch(fetchProject(projectGuid, userguid));
     }
 
     checkRender() {
         if(typeof this.props.result === 'undefined') {
-            return null
+            return(<Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                <LoaderInlineCentered/>
+            </Grid>)
         } else {
             const { result } = this.props;
             return (<div>
@@ -50,21 +53,7 @@ class ProjectPageLayout extends React.Component {
         return (
           <div>
             <TopNavBar/>
-
-              {!isRetrieving &&
-                this.checkRender()
-              }
-
-
-            {isRetrieving &&
-                <div>
-                    <Segment style={{ marginTop: '5em' }}>
-                        <Dimmer active inverted>
-                            <Loader inverted content='Loading' />
-                        </Dimmer>
-                    </Segment>
-                </div>
-            }
+              {this.checkRender()}
 
           <Footer/>
         </div>

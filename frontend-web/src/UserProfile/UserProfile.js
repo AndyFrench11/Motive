@@ -3,7 +3,7 @@ import {
     Grid,
     Header,
     Image, List,
-    Button, Item
+    Button, Item, Modal, TransitionablePortal
 } from 'semantic-ui-react'
 
 import TopNavBar from '../Common/TopNavBar'
@@ -15,11 +15,60 @@ import reducer from "./reducers"
 import {connect} from "react-redux";
 import {fetchProfile, fetchProjects} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
+import NewProjectForm from "../Project/ModalForm";
+import {postProject} from "../actions";
 
 
 class UserProfile extends React.Component {
+
     constructor(props) {
         super(props);
+        this.state = {
+            modalVisible: false,
+            submitButtonDisabled: true
+        };
+    }
+
+    showModal = () => {
+        this.setState({
+            modalVisible: true
+        });
+    };
+
+    closeModal = () => {
+        this.setState({
+            modalVisible: false
+        });
+    };
+
+    handleModalSubmit = () => {
+        const { userguid } = this.props.match.params;
+        this.props.postProject(userguid, this.props.values);
+        this.setState({
+            modalVisible: false
+        });
+
+    };
+
+    componentDidUpdate(oldProps) {
+        const newProps = this.props;
+        if(oldProps.values !== newProps.values) {
+
+            if(typeof this.props.result !== 'undefined') {
+                const { userguid } = this.props.match.params;
+                this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
+            }
+
+            const values = newProps.values;
+            console.log(values);
+            if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
+                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')))) {
+                this.setState({
+                    submitButtonDisabled: false
+                })
+            }
+
+        }
     }
 
     componentDidMount() {
@@ -39,6 +88,7 @@ class UserProfile extends React.Component {
             )
         } else {
             return (
+                <div>
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <Grid.Row columns={2}>
                         <Grid.Column width={2}>
@@ -51,10 +101,31 @@ class UserProfile extends React.Component {
                             <div>
                                 <Button primary>Follow</Button>
                                 <Button secondary>Message</Button>
+                                <Button onClick={this.showModal}>Create Project</Button>
                             </div>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
+                    <TransitionablePortal open={this.state.modalVisible}
+                                          transition={{animation: 'fade up', duration: 500}}>
+                        <Modal open={true} onClose={this.closeModal} closeIcon>
+                            <Modal.Header>Create a New Project</Modal.Header>
+                            <Modal.Content>
+                                <NewProjectForm/>
+                            </Modal.Content>
+                            <Modal.Actions>
+                                <Button
+                                    positive
+                                    icon='checkmark'
+                                    labelPosition='right'
+                                    content="All good to go!"
+                                    onClick={this.handleModalSubmit}
+                                    disabled={this.state.submitButtonDisabled}
+                                />
+                            </Modal.Actions>
+                        </Modal>
+                    </TransitionablePortal>
+                </div>
             )
         }
     }
@@ -126,15 +197,28 @@ class UserProfile extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         fetchProjects: () => dispatch(fetchProjects()),
-        fetchProfile: (guid) => dispatch(fetchProfile(guid))
+        fetchProfile: (guid) => dispatch(fetchProfile(guid)),
+        postProject: (guid, values) => dispatch(postProject(guid, values))
     };
 }
 
 const mapStateToProps = state => {
-    return {
-        profile: state.profilePage.profile,
-        projects: state.profilePage.projects
-    }
+    const { createProjectController } = state;
+    const { isPosting, lastUpdated, result } = createProjectController;
+    return state.form.newProject
+        ? {
+            values: state.form.newProject.values,
+            submitSucceeded: state.form.newProject.submitSucceeded,
+            isPosting: isPosting,
+            result: result,
+            lastUpdated: lastUpdated,
+            profile: state.profilePage.profile,
+            projects: state.profilePage.projects
+        }
+        : {
+            profile: state.profilePage.profile,
+            projects: state.profilePage.projects
+        };
 };
 
 const ProfilePage = connect(mapStateToProps, mapDispatchToProps) (UserProfile);
