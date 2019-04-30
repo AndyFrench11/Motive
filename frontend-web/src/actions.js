@@ -1,4 +1,3 @@
-import fetch from 'cross-fetch'
 import axios from 'axios'
 
 export const REQUEST_SINGLE_PROJECT = 'REQUEST_PROJECT';
@@ -7,7 +6,6 @@ export const RECEIVE_SINGLE_PROJECT = 'RECEIVE_PROJECT';
 export const RECEIVE_NEW_PROJECT_RESPONSE = 'RECEIVE_NEW_PROJECT_RESPONSE';
 export const REQUEST_NEW_PROJECT = 'REQUEST_NEW_PROJECT';
 
-const localUrl = `http://localhost:8080/api`;
 export const RECEIVE_LOGIN_RESPONSE = 'RECEIVE_LOGIN_RESPONSE';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
 
@@ -90,12 +88,11 @@ function receiveNewProjectResponse(response) {
         }
     }
 
-};
+}
 
 //UPDATE UI
 function updateCurrentProject() {
 
-}
 }
 
 export function postLogin(valuesJson) {
