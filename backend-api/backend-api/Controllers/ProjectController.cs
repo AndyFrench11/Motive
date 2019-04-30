@@ -32,7 +32,7 @@ namespace backend_api.Controllers
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public ActionResult<List<Project>> Get()
         {
             try
             {
@@ -40,26 +40,42 @@ namespace backend_api.Controllers
                 var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
                 client.Connect();
 
-                var taskResult = client.Cypher
-                       .Match("(project:Project) -- (person:Person, projectTask:ProjectTask, tag:Tag)")
-                       .Where((Person person) => person.guid == userId)
-                       .Return((project, projectTask, tag) => new
-                       {
-                           Project = project.As<Project>(),
-                           Tasks = projectTask.CollectAs<ProjectTask>(),
-                           Tags = tag.CollectAs<Tag>()
-                       })
+                var projectResult = client.Cypher
+                        .Match("(person:Person) -- (project:Project)")
+                        .Where((Person person) => person.guid == userId)
+                       .Return(project => project.CollectAs<Project>())
                        .Results;
 
-                if (projectResult.Count() == 0)
+                if (!projectResult.Any())
                 {
                     return StatusCode(404);
                 }
                 else
                 {
-                    Project returnedProject = projectResult.ElementAt(0);
+                    List<Project> returnedProjects = projectResult.ElementAt(0).ToList();
 
-                    return returnedProject;
+                    foreach(Project currentProject in returnedProjects)
+                    {
+                        var tagResult = client.Cypher
+                        .Match("(project:Project) -- (tag:Tag)")
+                        .Where((Project project) => project.guid == currentProject.guid)
+                        .Return(tag => tag.As<Tag>())
+                        .Results;
+
+                        currentProject.tagList = tagResult.ToList();
+
+                        var taskResult = client.Cypher
+                           .Match("(project:Project) -- (projectTask:ProjectTask)")
+                           .Where((Project project) => project.guid == currentProject.guid)
+                           .Return(projectTask => projectTask.As<ProjectTask>())
+                           .Results;
+
+                        currentProject.taskList = taskResult.ToList();
+                    }
+
+
+
+                    return returnedProjects;
                 }
 
             }
@@ -72,13 +88,11 @@ namespace backend_api.Controllers
                 Console.WriteLine(e);
                 return StatusCode(500);
             }
-
-            //return result.Select(record => record[0].As<string>()).ToList(); 
         }
 
         // GET api/values/5
         [HttpGet("{projectId}")]
-        public ActionResult<Project> Get(int projectId)
+        public ActionResult<Project> Get(string projectId)
         {
             //DO DATABASE CALL TO RETRIEVE ALL DETAILS OF PROJECT NODE AND RELATIONSHIPS TO TAGS AND NODES
             //Convert into a Project Object
@@ -150,8 +164,11 @@ namespace backend_api.Controllers
                 using (var session = driver.Session())
                 {
                     session.WriteTransaction(tx => CreateProjectNode(tx, project));
+                    session.WriteTransaction(tx => CreateProjectRelationship(tx, project));
+
                     session.WriteTransaction(tx => CreateTagNodes(tx, project));
                     session.WriteTransaction(tx => CreateTagRelationships(tx, project));
+
                     session.WriteTransaction(tx => CreateTaskNodes(tx, project));
                     session.WriteTransaction(tx => CreateTaskRelationships(tx, project));
                     return Ok();
@@ -174,6 +191,16 @@ namespace backend_api.Controllers
             string projectDescription = project.description;
             string projectGuid = project.guid;
             tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, guid: $projectGuid})", new { projectName, projectDescription, projectGuid });
+        }
+
+        private void CreateProjectRelationship(ITransaction tx, Project project)
+        {
+            //Create the relationship to the project
+            string projectGuid = project.guid;
+            string typeString = "owner";
+            tx.Run("MATCH (p:Project),(pe:Person) WHERE p.guid = $projectGuid AND pe.guid = $userId CREATE (pe)-[:CONTRIBUTES_TO {type:[$typeString]}]->(p)", new { projectGuid, userId, typeString });
+
+
         }
 
         private void CreateTagNodes(ITransaction tx, Project project) {

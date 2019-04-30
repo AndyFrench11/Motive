@@ -23,7 +23,7 @@ namespace backend_api.Controllers
         private string serverDatabaseUrl = "bolt://csse-s402g2.canterbury.ac.nz:7687";
 
         private string dbUser = "neo4j";
-        private string dbPw = "ijwf4ufw";
+        private string dbPw = "motive";
 
         // GET api/person/{guid}
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
