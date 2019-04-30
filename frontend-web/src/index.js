@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import configureStore from "./configureStore";
 import { connect } from "react-redux";
 import Landing from "./Landing/Landing";
+import Home from "./Home/Home";
 
 const store = configureStore()
 
@@ -28,6 +29,7 @@ function AppRouter() {
         <Router>
           <div>
             <Route exact path="/" component={Landing} />
+            <Route exact path ="/home" component={Home}/>
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />
             <Route path="/test" component={Users} />
