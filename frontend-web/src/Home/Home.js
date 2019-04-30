@@ -1,9 +1,56 @@
 import React, {Component} from 'react';
 import './Home.css';
-import {Button, TransitionablePortal, Modal, Form, Grid, Header, Container, Segment} from 'semantic-ui-react'
+import PersonImage from '../Images/stevie.jpg';
+import {
+    Button,
+    TransitionablePortal,
+    Modal,
+    Item,
+    Icon,
+    Label,
+    Container,
+    Segment,
+    Placeholder
+} from 'semantic-ui-react'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 import UpdateModal from "./UpdateModal";
+import _ from 'lodash'
+
+
+const paragraph =
+    <Placeholder>
+        <Placeholder.Paragraph>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+            <Placeholder.Line/>
+        </Placeholder.Paragraph>
+    </Placeholder>;
+
+
+const UpdateItem = props => (
+    <Item>
+        <Item.Image src={PersonImage}/>
+
+        <Item.Content>
+            <Item.Header as='a'>{props.title}</Item.Header>
+            <Item.Meta>
+                <span>Update by {props.author}</span>
+            </Item.Meta>
+            <Item.Description>
+                {paragraph}
+            </Item.Description>
+        </Item.Content>
+    </Item>
+
+);
 
 class Home extends Component {
     constructor(props) {
@@ -31,16 +78,21 @@ class Home extends Component {
         return (
             <div className='home'>
                 <TopNavBar/>
-                <h3>Home Page</h3>
-                <TransitionablePortal open={this.state.modalVisible}  transition={{ animation:'fade up', duration: 500 }}>
+                <TransitionablePortal open={this.state.modalVisible} transition={{animation: 'fade up', duration: 500}}>
                     <Modal open={true} onClose={this.closeModal} closeIcon>
-                        <Modal.Header>Update</Modal.Header>
                         <Modal.Content>
                             <UpdateModal/>
                         </Modal.Content>
                     </Modal>
                 </TransitionablePortal>
-                <Button style={{ marginTop: '5em' }} onClick={this.showModal}>View Update</Button>
+                <Container>
+                    <Button style={{marginTop: '5em'}} onClick={this.showModal}>View Update</Button>
+                    <Item.Group divided>
+                        {_.times(8, i => (
+                            <UpdateItem author={"Stevie"} title={"Update One"}/>
+                        ))}
+                    </Item.Group>
+                </Container>
                 <Footer/>
             </div>
         );

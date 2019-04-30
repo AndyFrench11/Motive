@@ -182,7 +182,6 @@ class Landing extends Component {
                                         value={signUpPassword}
                                         onChange={this.handleChange}
                                     />
-                                    <span>Birthday</span>
                                     <DateInput
                                         value={this.state.signUpBirthday}
                                         dateFormat="dd/MM/yyyy"
@@ -191,6 +190,8 @@ class Landing extends Component {
                                         onChange={this.handleDateChange}
                                         showToTop={true}
                                     />
+                                    <br/>
+
                                     <Button color='black' fluid size='large'>
                                         Sign up!
                                     </Button>

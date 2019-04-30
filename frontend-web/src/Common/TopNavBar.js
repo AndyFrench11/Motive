@@ -65,12 +65,13 @@ class TopNavBar extends React.Component {
             <div>
                 <Menu fixed='top' inverted>
                     <Container>
-                        <Menu.Item as='a' header>
+                        <Menu.Item item simple text='Home'
+                                   as={Link} to='/'>
                             Motive.
                         </Menu.Item>
 
                         <Menu.Item item simple text='Home'
-                                   as={Link} to='/'>
+                                   as={Link} to='/home'>
                             Home
                         </Menu.Item>
 
