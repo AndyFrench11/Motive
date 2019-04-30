@@ -10,6 +10,8 @@ import NewProjectForm from "../Project/ModalForm";
 import {postProject} from "../actions";
 import {connect} from "react-redux";
 
+import {Link, Route} from "react-router-dom";
+import UserProfile from "../UserProfile/UserProfile";
 
 class TopNavBar extends React.Component {
 
@@ -59,12 +61,21 @@ class TopNavBar extends React.Component {
 
         return (
             <div>
-                <Menu fixed='top' inverted>
-                    <Container>
-                        <Menu.Item as='a' header>
-                            Motive.
-                        </Menu.Item>
-                        <Menu.Item as='a'>Home</Menu.Item>
+            <Menu fixed='top' inverted>
+                <Container>
+                <Menu.Item as='a' header>
+                    Motive.
+                </Menu.Item>
+
+                <Menu.Item item simple text='Home'
+                           as={Link} to='/'>
+                    Home
+                </Menu.Item>
+
+                <Menu.Item item simple text='Profile'
+                    as={Link} to='/profile'>
+                    Profile
+                </Menu.Item>
 
                         <Dropdown item simple text='Profile'>
                             <Dropdown.Menu>

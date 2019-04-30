@@ -18,13 +18,13 @@ namespace backend_api.Controllers
     {
         // GET: api/values
         [HttpGet]
-        public JsonResult Get()
+        public String Get()
         {
             List<String> people = new List<string>() { "Andy", "Matilda", "Buzz" };
             Random r = new Random();
             int rInt = r.Next(0, 3);
 
-            return new JsonResult(new Person(people.ElementAt(rInt)));
+            return people.ElementAt(rInt);
 
         }
 

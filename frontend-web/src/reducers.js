@@ -6,6 +6,7 @@ import {
     REQUEST_NEW_PROJECT,
 } from './actions'
 import {reducer as formReducer} from "redux-form";
+import profilePage from "./UserProfile/reducers";
 
 
 function newProject(
@@ -79,7 +80,8 @@ function projectController(state = {}, action) {
 const rootReducer = combineReducers({
     form: formReducer,
     createProjectController,
-    projectController
+    projectController,
+    profilePage
 });
 
 export default rootReducer
