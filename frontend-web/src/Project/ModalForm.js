@@ -102,7 +102,7 @@ let NewProjectForm = props => {
                             </Button>
 
                         </List.Content>
-                        <Image avatar src='https://reac.semantic-ui.com/images/avatar/small/helen.jpg' />
+                        <Image avatar src='https://react.semantic-ui.com/images/avatar/small/helen.jpg' />
                         <List.Content>
                             {fields.get(index).name}
                         </List.Content>

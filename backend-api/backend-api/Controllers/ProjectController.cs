@@ -36,7 +36,6 @@ namespace backend_api.Controllers
         {
             try
             {
-
                 var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
                 client.Connect();
 
@@ -224,8 +223,6 @@ namespace backend_api.Controllers
             }
 
         }
-
-
 
         private void CreateTaskNodes(ITransaction tx, Project project) {
             Guid guid;

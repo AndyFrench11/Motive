@@ -83,7 +83,8 @@ namespace backend_api.Controllers
                $"dateJoined: '{personToCreate.dateJoined}', " +
                $"dateOfBirth: '{personToCreate.dateOfBirth}', " +
                $"email: '{personToCreate.email}', " +
-               $"profileBio: '{personToCreate.profileBio}'" +
+               $"profileBio: '{personToCreate.profileBio}'," +
+               $"password: '{personToCreate.password}'" +
             "})");
         }
     }

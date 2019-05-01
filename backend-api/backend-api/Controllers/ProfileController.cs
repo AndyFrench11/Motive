@@ -47,7 +47,7 @@ namespace backend_api.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}z")]
+        [HttpGet("{id}")]
         public string Get(int id)
         {
 
