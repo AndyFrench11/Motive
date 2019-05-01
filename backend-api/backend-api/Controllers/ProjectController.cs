@@ -106,7 +106,7 @@ namespace backend_api.Controllers
 
                 var projectResult = client.Cypher
                     .Match("(project:Project)")
-                    .Where((Project project) => project.name == "Hello My Good Friends")
+                    .Where((Project project) => project.guid == projectId)
                     .Return(project => project.As<Project>())
                     .Results;
 
@@ -120,7 +120,7 @@ namespace backend_api.Controllers
                     //Get all the tags
                     var tagResult = client.Cypher
                         .Match("(project:Project) -- (tag:Tag)")
-                        .Where((Project project) => project.name == "Hello My Good Friends")
+                        .Where((Project project) => project.guid == projectId)
                         .Return(tag => tag.As<Tag>())
                         .Results;
 
@@ -128,7 +128,7 @@ namespace backend_api.Controllers
 
                     var taskResult = client.Cypher
                        .Match("(project:Project) -- (projectTask:ProjectTask)")
-                       .Where((Project project) => project.name == "Hello My Good Friends")
+                       .Where((Project project) => project.guid == projectId)
                        .Return(projectTask => projectTask.As<ProjectTask>())
                        .Results;
 
