@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "redux-form";
 import {Form, Message, Modal, Input, Label, Icon, Transition, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
 import { connect } from "react-redux"
+import {image} from './ProjectImages'
 
 const renderTextArea = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
     <Form.Field>
@@ -137,7 +138,7 @@ let NewProjectForm = props => {
             <Segment style={{overflow: 'auto', maxHeight: 200 }}>
                 <Label attached='top' size="medium">Project Photo</Label>
                 {photoList.map((index) =>
-                    <Image key={index} src={`../ProjectImages/image${index}`} size='medium' rounded/>
+                    <Image key={index} src={projectPhotos[`image${index}`]} size='medium' rounded/>
                 )}
             </Segment>
         )
