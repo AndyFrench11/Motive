@@ -130,6 +130,19 @@ let NewProjectForm = props => {
         </Form.Field>
     );
 
+    const renderPhotos = () => {
+        var photoList = new Array(86);
+
+        return (
+            <Segment style={{overflow: 'auto', maxHeight: 200 }}>
+                <Label attached='top' size="medium">Project Photo</Label>
+                {photoList.map((index) =>
+                    <Image key={index} src={`../ProjectImages/image${index}`} size='medium' rounded/>
+                )}
+            </Segment>
+        )
+    };
+
     return (
         <Fragment>
 
@@ -138,6 +151,7 @@ let NewProjectForm = props => {
                     <Label attached='top' size="medium">Project Details</Label>
                     <br/>
                     <br/>
+                    <Image src={`ProjectImages/image3.png`} size='medium' rounded/>
                     <Field
                         component={renderNameInput}
                         label="Project name"
@@ -160,6 +174,11 @@ let NewProjectForm = props => {
                     />
 
                     <FieldArray name="tags" component={renderTags}/>
+
+                    {renderPhotos()}
+
+
+
                 </Segment>
 
                 <Divider/>
