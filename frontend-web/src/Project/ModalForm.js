@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "redux-form";
-import {Form, Message, Modal, Input, Label, Icon, Header, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
+import {Form, Message, Modal, Input, Label, Icon, Transition, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
 import { connect } from "react-redux"
 
 const renderTextArea = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
@@ -93,7 +93,7 @@ let NewProjectForm = props => {
         <Form.Field>
             <Button type="button" onClick={() => fields.push({name: milestoneInputValue})}>Add Task</Button>
 
-            <List animated divided verticalAlign='middle' size='large'>
+            <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
                 {fields.map((task, index) =>
                     <List.Item key={index}>
                         <List.Content floated='right'>
@@ -108,8 +108,7 @@ let NewProjectForm = props => {
                         </List.Content>
                     </List.Item>
                 )}
-
-            </List>
+            </Transition.Group>
         </Form.Field>
     );
 
@@ -117,12 +116,16 @@ let NewProjectForm = props => {
         <Form.Field>
             <Button type="button" onClick={() => fields.push({name: tagInputValue})}>Add Tag</Button>
 
+            <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle' horizontal>
             {fields.map((task, index) =>
-                <Label key={index} >
-                    {fields.get(index).name}
-                    <Icon name='delete' onClick={() => fields.remove(index)}/>
-                </Label>
+
+                    <Label key={index} >
+                        #{fields.get(index).name}
+                        <Icon name='delete' onClick={() => fields.remove(index)}/>
+                    </Label>
+
             )}
+            </Transition.Group>
 
         </Form.Field>
     );
