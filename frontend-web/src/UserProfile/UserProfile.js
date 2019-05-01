@@ -73,6 +73,7 @@ class UserProfile extends React.Component {
     ProfileHeader() {
         if(typeof this.props.result !== 'undefined') {
             const { userguid } = this.props.match.params;
+            //this.props.history.push(`/project`);
             this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
         }
         else if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {

@@ -16,8 +16,6 @@ class ProjectPageLayout extends React.Component {
     componentDidMount() {
         const { dispatch } = this.props;
         const { userguid, projectguid } = this.props.match.params;
-        console.log(userguid);
-        console.log(projectguid);
         dispatch(fetchProject(projectguid, userguid));
     }
 
@@ -75,49 +73,3 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps)(ProjectPageLayout);
 
-// AsyncApp.propTypes = {
-//     selectedSubreddit: PropTypes.string.isRequired,
-//     posts: PropTypes.array.isRequired,
-//     isFetching: PropTypes.bool.isRequired,
-//     lastUpdated: PropTypes.number,
-//     dispatch: PropTypes.func.isRequired
-// }
-//
-// function mapStateToProps(state) {
-//     const { selectedSubreddit, postsBySubreddit } = state
-//     const { isFetching, lastUpdated, items: posts } = postsBySubreddit[
-//         selectedSubreddit
-//         ] || {
-//         isFetching: true,
-//         items: []
-//     }
-//
-//     return {
-//         selectedSubreddit,
-//         posts,
-//         isFetching,
-//         lastUpdated
-//     }
-// }
-
-
-//
-// componentDidUpdate(prevProps) {
-//     if (this.props.selectedSubreddit !== prevProps.selectedSubreddit) {
-//         const { dispatch, selectedSubreddit } = this.props
-//         dispatch(fetchPostsIfNeeded(selectedSubreddit))
-//     }
-// }
-//
-// handleChange(nextSubreddit) {
-//     this.props.dispatch(selectSubreddit(nextSubreddit))
-//     this.props.dispatch(fetchPostsIfNeeded(nextSubreddit))
-// }
-//
-// handleRefreshClick(e) {
-//     e.preventDefault()
-//
-//     const { dispatch, selectedSubreddit } = this.props
-//     dispatch(invalidateSubreddit(selectedSubreddit))
-//     dispatch(fetchPostsIfNeeded(selectedSubreddit))
-// }
