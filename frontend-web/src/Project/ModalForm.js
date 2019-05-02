@@ -2,12 +2,6 @@ import React, { Fragment } from "react";
 import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "redux-form";
 import {Form, Message, Modal, Input, Label, Icon, Transition, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
 import { connect } from "react-redux"
-import {
-    DateInput,
-    TimeInput,
-    DateTimeInput,
-    DatesRangeInput
-} from 'semantic-ui-calendar-react';
 
 
 function importAll(r) {
