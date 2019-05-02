@@ -12,7 +12,7 @@ build:
 deploy-frontend:
   stage: deploy-frontend
   script: 
-  - sudo docker container stop motive-frontend || true && sudo docker motive-frontend || true
+  - sudo docker container stop motive-frontend || true && sudo docker rm motive-frontend || true
   - sudo docker run -p 80:8082 -d --name motive-frontend frontend-web
   only:
   - dev@afr66/Motive
