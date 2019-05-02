@@ -21,7 +21,7 @@ deploy-frontend:
 deploy-backend:
   stage: deploy-backend
   script: 
-  - sudo docker container stop motive-backend
+  - sudo docker container stop motive-backend || true && sudo docker rm motive-backend || true
   - sudo docker run -d -p 8080:80 --name motive-backend backend-api
   only:
   - dev@afr66/Motive
