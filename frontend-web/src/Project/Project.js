@@ -15,7 +15,7 @@ class ProjectPageLayout extends React.Component {
     state = { activeMenuItem: "Updates" };
 
     handleItemClick = (e, { name }) => this.setState({ activeMenuItem: name });
-    handleTaskButtonClick = () => this.setState({ activeTaskButton: !this.state.activeTaskButton })
+    handleTaskButtonClick = () => this.setState({ activeTaskButton: !this.state.activeTaskButton });
 
 
     componentDidMount() {
