@@ -3,7 +3,7 @@ stages:
   - deploy-backend
 
 deploy-frontend:
-  stage: frontend
+  stage: deploy-frontend
   script: 
   - sudo docker container stop motive-frontend
   - sudo docker container prune -f
