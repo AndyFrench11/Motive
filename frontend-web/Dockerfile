@@ -9,7 +9,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY semantic.json .
 COPY semantic/ .
-COPY node_modules/ .
 
 RUN npm install
 # If you are building your code for production
