@@ -1,5 +1,8 @@
 import fetch from 'cross-fetch'
 
+const localUrl = `http://localhost:8080/api`;
+const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api`;
+
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 function requestProjects() {
     return {
@@ -37,7 +40,7 @@ function receiveProfile(json) {
 export function fetchProjects() {
     return function(dispatch) {
         dispatch(requestProjects());
-        return fetch('http://csse-s402g2.canterbury.ac.nz:8080/api/profile')
+        return fetch(serverUrl + '/profile')
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred", error)
@@ -51,7 +54,7 @@ export function fetchProjects() {
 export function fetchProfile (guid) {
     return function (dispatch) {
         dispatch(requestProfile());
-        return fetch(`http://csse-s402g2.canterbury.ac.nz:8080/api/person/${guid}`)
+        return fetch(serverUrl + `/person/${guid}`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred!!", error)
