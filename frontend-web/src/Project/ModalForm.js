@@ -1,7 +1,16 @@
 import React, { Fragment } from "react";
 import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "redux-form";
-import {Form, Message, Modal, Input, Label, Icon, Header, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
+import {Form, Message, Modal, Input, Label, Icon, Transition, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
 import { connect } from "react-redux"
+
+
+function importAll(r) {
+    let images = {};
+    r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+    return images;
+}
+
+const images = importAll(require.context('./ProjectImages', false, /\.(png|jpe?g|svg)$/));
 
 const renderTextArea = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
     <Form.Field>
@@ -45,17 +54,18 @@ const renderNameInput = ({ input, label, placeholder, meta: { touched, error, wa
     </Form.Field>
 );
 
-const renderMilestoneInput = ({ input, meta: { touched, error, warning } }) => (
+const renderTaskInput = ({ input, meta: { touched, error, warning } }) => (
     <Form.Field>
         <div>
         <Input
             {...input}
-            placeholder='Add a new milestone...'
-            required/>
+            placeholder='Add a new task...'
+            />
         {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
         </div>
     </Form.Field>
 );
+
 
 
 
@@ -67,33 +77,37 @@ const requiredDescription = value => value ? undefined :
 
 const requiredName = value => value ? undefined :
     <Label pointing>
-        Please enter a value
+        Please enter a name
     </Label>;
 
 const requiredTags = value => value ? undefined :
     <Label pointing>
-        Please enter a value
+        Please enter a tag
     </Label>;
 
-const requiredMilestones = value => value ? undefined :
+const requiredTasks = value => value ? undefined :
     <Label pointing>
-        Please enter a value
+        Please enter a task
     </Label>;
 
+const requiredStartDate = value => value ? undefined :
+    <Label pointing>
+        Please enter a start date
+    </Label>;
 
 
 
 let NewProjectForm = props => {
     const {
         tagInputValue,
-        milestoneInputValue
+        taskInputValue
     } = props;
 
     const renderTaskList = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({name: milestoneInputValue})}>Add Task</Button>
+            <Button type="button" onClick={() => fields.push({name: taskInputValue})}>Add Task</Button>
 
-            <List animated divided verticalAlign='middle' size='large'>
+            <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
                 {fields.map((task, index) =>
                     <List.Item key={index}>
                         <List.Content floated='right'>
@@ -108,8 +122,7 @@ let NewProjectForm = props => {
                         </List.Content>
                     </List.Item>
                 )}
-
-            </List>
+            </Transition.Group>
         </Form.Field>
     );
 
@@ -117,19 +130,67 @@ let NewProjectForm = props => {
         <Form.Field>
             <Button type="button" onClick={() => fields.push({name: tagInputValue})}>Add Tag</Button>
 
+            <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle' horizontal>
             {fields.map((task, index) =>
-                <Label key={index} >
-                    {fields.get(index).name}
-                    <Icon name='delete' onClick={() => fields.remove(index)}/>
-                </Label>
+
+                    <Label key={index} >
+                        #{fields.get(index).name}
+                        <Icon name='delete' onClick={() => fields.remove(index)}/>
+                    </Label>
+
             )}
+            </Transition.Group>
 
         </Form.Field>
     );
 
+    const renderStartDateInput = ({ input, placeholder, label, meta: { touched, error, warning } }) => {
+        let today = new Date();
+        let dd = today.getDate();
+        let mm = today.getMonth()+1; //As January is 0.
+        let yyyy = today.getFullYear();
+
+        if(dd<10) dd='0'+dd;
+        if(mm<10) mm='0'+mm;
+
+        return (
+            <Form.Field>
+                <div>
+                    <Input
+                        {...input}
+                        label={label}
+                        placeholder={dd+"/"+mm+"/"+yyyy}
+                    />
+
+                    {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+                </div>
+            </Form.Field>
+        );
+    };
+
+
+    const renderPhotos = () => {
+        var photoList = Object.keys(images);
+
+        return (
+            <Segment style={{overflow: 'auto', maxHeight: 200 }}>
+                <Label attached='top' size="medium">Project Photo</Label>
+                <Image.Group size='tiny'>
+                    {photoList.map((photo, index) =>
+                        <Button basic toggle active={false} index={index}>
+                            <Image src={images[photoList[index]]} fluid
+                                   />
+                        </Button>
+
+                    )}
+
+                </Image.Group>
+            </Segment>
+        )
+    };
+
     return (
         <Fragment>
-
             <Form>
                 <Segment>
                     <Label attached='top' size="medium">Project Details</Label>
@@ -148,6 +209,23 @@ let NewProjectForm = props => {
                         placeholder="Tell us more about the project..."
                         validate={requiredDescription}
                     />
+
+                    <Field
+                        component={renderStartDateInput}
+                        name="startDateInput"
+                        id="startDateInput"
+                        label="Start Date"
+                        validate={requiredStartDate}
+                    />
+
+                    {/*<Field*/}
+                    {/*    component={renderEndDateInput}*/}
+                    {/*    name="endDateInput"*/}
+                    {/*    id="endDateInput"*/}
+                    {/*    label="End Date and Time"*/}
+                    {/*/>*/}
+
+
                     <Field
                         component={renderTagInput}
                         name="tagInput"
@@ -157,21 +235,24 @@ let NewProjectForm = props => {
                     />
 
                     <FieldArray name="tags" component={renderTags}/>
+
+                    {renderPhotos()}
+
                 </Segment>
 
                 <Divider/>
 
                 <Segment>
-                    <Label attached='top' size="medium">Milestones</Label>
+                    <Label attached='top' size="medium">Tasks</Label>
 
-                    <Message floating>If you wish, you may add predefined milestones that outline the journey your project will take!</Message>
+                    <Message floating>If you wish, you may add predefined tasks that outline the journey your project will take!</Message>
 
                     <Field
-                        component={renderMilestoneInput}
-                        name="milestoneInput"
-                        id="milestoneInput"
+                        component={renderTaskInput}
+                        name="taskInput"
+                        id="taskInput"
                         type="text"
-                        validate={requiredMilestones}
+                        validate={requiredTasks}
                     />
 
                     <FieldArray name="taskList" component={renderTaskList}/>
@@ -191,10 +272,10 @@ const selector = formValueSelector('newProject'); // <-- same as form name
 NewProjectForm = connect(state => {
     // can select values individually
     const tagInputValue = selector(state, 'tagInput');
-    const milestoneInputValue = selector(state, 'milestoneInput');
+    const taskInputValue = selector(state, 'taskInput');
     return {
         tagInputValue,
-        milestoneInputValue,
+        taskInputValue,
     }
 })(NewProjectForm);
 

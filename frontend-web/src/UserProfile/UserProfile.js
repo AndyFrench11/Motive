@@ -55,7 +55,8 @@ class UserProfile extends React.Component {
         if(oldProps.values !== newProps.values) {
             const values = newProps.values;
             if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
-                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')))) {
+                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList') && ((values.hasOwnProperty('startDateInput')) &&
+                    (/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/.test(values.startDateInput)))))) {
                 this.setState({
                     submitButtonDisabled: false
                 })
