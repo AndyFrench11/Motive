@@ -29,8 +29,11 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "Motive");
+            Console.WriteLine("Hello");
+            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), dbUser, dbPw);
+            Console.WriteLine("Hello1");
             client.Connect();
+            Console.WriteLine("Hello2");
 
             var result = client.Cypher
                 .Match("(fetchedPerson:Person)")
