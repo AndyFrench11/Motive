@@ -28,12 +28,12 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-            Console.WriteLine("Hello");
-            var client = new GraphClient(new Uri(_databaseUrl), _dbUser, _dbPw);
-            Console.WriteLine("Hello1");
+            
+            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), _dbUser, _dbPw);
+            
             // TODO rewrite using official driver + replace credentials with proper values
             client.Connect();
-            Console.WriteLine("Hello2");
+         
 
             var result = client.Cypher
                 .Match("(fetchedPerson:Person)")
