@@ -29,7 +29,7 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
+            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "Motive");
             client.Connect();
 
             var result = client.Cypher
@@ -76,7 +76,7 @@ namespace backend_api.Controllers
 
         private void CreatePersonNode(ITransaction tx, Person personToCreate)
         {
-            tx.Run("CREATE(:Person {" +
+            tx.Run("CREATE(person:Person {" +
                $"firstName: '{personToCreate.firstName}', " +
                $"lastName: '{personToCreate.lastName}', " +
                $"guid: '{personToCreate.guid}', " +
