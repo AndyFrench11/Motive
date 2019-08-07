@@ -28,9 +28,13 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
+            Console.WriteLine("Hello");
+            var client = new GraphClient(new Uri(serverDatabaseUrlGraphClient), dbUser, dbPw);
+            Console.WriteLine("Hello1");
             // TODO rewrite using official driver + replace credentials with proper values
             var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
             client.Connect();
+            Console.WriteLine("Hello2");
 
             var result = client.Cypher
                 .Match("(fetchedPerson:Person)")
@@ -53,7 +57,7 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpPost]
         public ActionResult Post([Microsoft.AspNetCore.Mvc.FromBody]Person personToCreate)
         {
-            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
+            var driver = GraphDatabase.Driver(localDatabaseUrl, AuthTokens.Basic(dbUser, dbPw));
             
             try
             {
@@ -76,7 +80,7 @@ namespace backend_api.Controllers
 
         private void CreatePersonNode(ITransaction tx, Person personToCreate)
         {
-            tx.Run("CREATE(:Person {" +
+            tx.Run("CREATE(person:Person {" +
                $"firstName: '{personToCreate.firstName}', " +
                $"lastName: '{personToCreate.lastName}', " +
                $"guid: '{personToCreate.guid}', " +
