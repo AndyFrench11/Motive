@@ -35,8 +35,8 @@ function AppRouter() {
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />
             <Route path="/test" component={Users} />
-            <Route exact path="/person/:userguid" component={UserProfile} />
-            <Route exact path="/person/:userguid/project/:projectguid" component={Project} />
+            <Route exact path="/profile/:userguid" component={UserProfile} />
+            <Route exact path="/profile/:userguid/project/:projectguid" component={Project} />
           </div>
         </Router>
   );
