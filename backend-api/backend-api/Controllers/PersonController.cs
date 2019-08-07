@@ -29,10 +29,9 @@ namespace backend_api.Controllers
         public ActionResult<Person> Get(string guid)
         {
             Console.WriteLine("Hello");
-            var client = new GraphClient(new Uri(serverDatabaseUrlGraphClient), dbUser, dbPw);
+            var client = new GraphClient(new Uri(_databaseUrl), _dbUser, _dbPw);
             Console.WriteLine("Hello1");
             // TODO rewrite using official driver + replace credentials with proper values
-            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
             client.Connect();
             Console.WriteLine("Hello2");
 
@@ -57,7 +56,7 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpPost]
         public ActionResult Post([Microsoft.AspNetCore.Mvc.FromBody]Person personToCreate)
         {
-            var driver = GraphDatabase.Driver(localDatabaseUrl, AuthTokens.Basic(dbUser, dbPw));
+            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
             
             try
             {
