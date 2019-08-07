@@ -7,6 +7,7 @@ using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
 using backend_api.Models;
+using System.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Neo4j.Driver.V1;
@@ -19,16 +20,15 @@ namespace backend_api.Controllers
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     public class PersonController : Controller
     {
-        private string localDatabaseUrl = "bolt://localhost:7687";
-        private string serverDatabaseUrl = "bolt://csse-s402g2.canterbury.ac.nz:7687";
-
-        private string dbUser = "neo4j";
-        private string dbPw = "motive";
+        private readonly string _databaseUrl = ConfigurationManager.AppSettings["databaseURL"];
+        private readonly string _dbUser = ConfigurationManager.AppSettings["databaseUsername"];
+        private readonly string _dbPw = ConfigurationManager.AppSettings["databasePassword"];
 
         // GET api/person/{guid}
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
+            // TODO rewrite using official driver + replace credentials with proper values
             var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
             client.Connect();
 
@@ -53,7 +53,7 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpPost]
         public ActionResult Post([Microsoft.AspNetCore.Mvc.FromBody]Person personToCreate)
         {
-            var driver = GraphDatabase.Driver(localDatabaseUrl, AuthTokens.Basic(dbUser, dbPw));
+            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
             
             try
             {
