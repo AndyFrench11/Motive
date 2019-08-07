@@ -40,7 +40,7 @@ function receiveProfile(json) {
 export function fetchProjects() {
     return function(dispatch) {
         dispatch(requestProjects());
-        return fetch(serverUrl + '/profile')
+        return fetch(serverUrl + '/person')
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred", error)
