@@ -2,3 +2,7 @@ version: '3'
 services:
   backend-api:
     build: './backend-api/backend-api'
+  
+  frontend-web:
+    build: './frontend-web'
+    

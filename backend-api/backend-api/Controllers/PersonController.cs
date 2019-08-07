@@ -29,7 +29,7 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-            var client = new BoltGraphClient(new Uri(localDatabaseUrl), dbUser, dbPw);
+            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
             client.Connect();
 
             var result = client.Cypher
