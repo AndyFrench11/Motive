@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import configureStore from "./configureStore";
 import { connect } from "react-redux";
 import history from "./history"
+import "react-datepicker/dist/react-datepicker.css";
 
 const store = configureStore();
 
