@@ -13,8 +13,6 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Neo4j.Driver.V1;
 using Neo4jClient;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace backend_api.Controllers
 {
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
@@ -28,9 +26,7 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-            
-            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), _dbUser, _dbPw);
-            
+            var client = new BoltGraphClient(new Uri(_databaseUrl), _dbUser, _dbPw);
             // TODO rewrite using official driver + replace credentials with proper values
             client.Connect();
          

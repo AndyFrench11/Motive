@@ -17,6 +17,7 @@ namespace backend_api.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ProfileController : Controller
     {
+        
         [HttpGet]
         public String Get()
         {
@@ -51,12 +52,10 @@ namespace backend_api.Controllers
         public string Get(int id)
         {
 
-            using (var driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "ijwf4ufw")))
+            using (var driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "motive")))
             {
                 using (var session = driver.Session())
                 {
-
-
                     var greeting = session.WriteTransaction(tx =>
                     {
                         // var result = tx.Run("CREATE (Buzz:Person {firstName:'Buzz', lastName:'Knightyear'})");
