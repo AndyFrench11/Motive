@@ -22,6 +22,9 @@ namespace backend_api.Controllers
         private string localDatabaseUrl = "bolt://localhost:7687";
         private string serverDatabaseUrl = "bolt://csse-s402g2.canterbury.ac.nz:7687";
 
+        private string serverDatabaseUrlGraphClient = "http://csse-s402g2.canterbury.ac.nz:7474/db/data";
+        private string localDatabaseUrlGraphClient = "http://localhost:7474/db/data";
+
         private string dbUser = "neo4j";
         private string dbPw = "motive";
 
@@ -30,7 +33,7 @@ namespace backend_api.Controllers
         public ActionResult<Person> Get(string guid)
         {
             Console.WriteLine("Hello");
-            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), dbUser, dbPw);
+            var client = new GraphClient(new Uri(serverDatabaseUrlGraphClient), dbUser, dbPw);
             Console.WriteLine("Hello1");
             client.Connect();
             Console.WriteLine("Hello2");
