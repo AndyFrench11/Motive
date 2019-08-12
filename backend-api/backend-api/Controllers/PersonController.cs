@@ -28,7 +28,9 @@ namespace backend_api.Controllers
         {
             Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
             
+            Console.WriteLine(_databaseUrl);
             var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
+            Console.WriteLine(_databaseUrl);
 
             try
             {
