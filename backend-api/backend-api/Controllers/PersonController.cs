@@ -27,14 +27,7 @@ namespace backend_api.Controllers
         public ActionResult<Person> Get(string guid)
         {
             Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
-            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
-
-            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
-            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
-            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
-            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
-            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
-
+            
             var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
 
             try
