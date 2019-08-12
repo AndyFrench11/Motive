@@ -28,29 +28,50 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-            
-            var client = new GraphClient(new Uri("http://localhost:7474/db/data"), _dbUser, _dbPw);
-            
-            // TODO rewrite using official driver + replace credentials with proper values
-            client.Connect();
-         
 
-            var result = client.Cypher
-                .Match("(fetchedPerson:Person)")
-                .Where((Person fetchedPerson) => fetchedPerson.guid == guid)
-                .Return(fetchedPerson => fetchedPerson.As<Person>())
-                .Results;
+            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
 
-            if (!result.Any())
+            try
             {
-                return StatusCode(404);
+                using (var session = driver.Session())
+                {
+
+                    var returnedPerson = session.ReadTransaction(tx =>
+                    {
+                        var result = tx.Run($"MATCH (a:Person) WHERE a.guid = '{guid}' RETURN a");
+
+                        //Do a check to see if result.single() is empty
+                        var record = result.SingleOrDefault();
+                        if (record == null)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            var properties = record[0].As<INode>().Properties;
+                            return new Person(properties);
+                        }
+                    });
+
+                    if (returnedPerson == null)
+                    {
+                        return StatusCode(404);
+                    }
+
+                    return StatusCode(200, returnedPerson);
+                }
             }
 
-            Person returnedPerson = result.ElementAt(0);
-            returnedPerson.guid = guid;
-            return StatusCode(200, returnedPerson);        
+            catch (ServiceUnavailableException)
+            {
+                return StatusCode(503);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
         }
-        
 
         // POST api/person
         [Microsoft.AspNetCore.Mvc.HttpPost]
