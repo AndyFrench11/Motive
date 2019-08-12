@@ -61,8 +61,9 @@ namespace backend_api.Controllers
                 }
             }
 
-            catch (ServiceUnavailableException)
+            catch (ServiceUnavailableException e)
             {
+                Console.WriteLine(e);
                 return StatusCode(503);
             }
             catch (Exception e)
