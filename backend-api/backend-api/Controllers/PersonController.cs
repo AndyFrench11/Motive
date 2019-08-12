@@ -13,8 +13,6 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Neo4j.Driver.V1;
 using Neo4jClient;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace backend_api.Controllers
 {
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
