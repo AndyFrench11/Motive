@@ -76,7 +76,7 @@ namespace backend_api.Controllers
         public ActionResult Post([Microsoft.AspNetCore.Mvc.FromBody]Person personToCreate)
         {
             var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
-            
+
             try
             {
                 using (var session = driver.Session())
@@ -108,5 +108,44 @@ namespace backend_api.Controllers
                $"profileBio: '{personToCreate.profileBio}'" +
             "})");
         }
+
+       
+        [Microsoft.AspNetCore.Mvc.HttpGet("allpeople")]
+        public ActionResult<List<Person>> GetAllPeople()
+        {
+            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
+
+            try
+            {
+                using (var session = driver.Session())
+                {
+
+                    var returnedPeople = session.ReadTransaction(tx =>
+                    {
+                        var result = tx.Run("MATCH (a:Person) RETURN a");
+
+                        //Do a check for no people
+
+                        var records = result.Select(record => new Person(record[0].As<INode>().Properties)).ToList();
+
+                        return records;
+
+                    });
+
+                    return StatusCode(200, returnedPeople);
+                }
+            }
+
+            catch (ServiceUnavailableException)
+            {
+                return StatusCode(503);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+        }
     }
+
 }

@@ -12,6 +12,7 @@ import configureStore from "./configureStore";
 import { connect } from "react-redux";
 import history from "./history"
 import "react-datepicker/dist/react-datepicker.css";
+import Home from './Home/Home';
 
 const store = configureStore();
 
@@ -31,7 +32,7 @@ function AppRouter() {
   return (
         <Router history={history}>
           <div>
-            <Route exact path="/" component={Index} />
+            <Route exact path="/" component={Home} />
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />
             <Route path="/test" component={Users} />
