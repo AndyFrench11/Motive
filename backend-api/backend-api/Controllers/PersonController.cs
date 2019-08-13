@@ -26,8 +26,11 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-
+            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
+            
+            Console.WriteLine(_databaseUrl);
             var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
+            Console.WriteLine(_databaseUrl);
 
             try
             {
@@ -60,8 +63,9 @@ namespace backend_api.Controllers
                 }
             }
 
-            catch (ServiceUnavailableException)
+            catch (ServiceUnavailableException e)
             {
+                Console.WriteLine(e);
                 return StatusCode(503);
             }
             catch (Exception e)
