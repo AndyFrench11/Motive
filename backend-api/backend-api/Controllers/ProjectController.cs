@@ -27,6 +27,7 @@ namespace backend_api.Controllers
         }
 
         private readonly string _databaseUrl = ConfigurationManager.AppSettings["databaseURL"];
+        private readonly string _databaseHttpUrl = ConfigurationManager.AppSettings["databaseHttpURL"];
         private readonly string _dbUser = ConfigurationManager.AppSettings["databaseUsername"];
         private readonly string _dbPw = ConfigurationManager.AppSettings["databasePassword"];
         
@@ -37,8 +38,7 @@ namespace backend_api.Controllers
         {
             try
             {
-                // TODO rewrite using official driver + replace credentials with proper values
-                var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
+                var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
                 client.Connect();
 
                 var projectResult = client.Cypher

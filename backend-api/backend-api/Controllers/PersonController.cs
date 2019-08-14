@@ -26,11 +26,8 @@ namespace backend_api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpGet("{guid}")]
         public ActionResult<Person> Get(string guid)
         {
-            Console.WriteLine("SD^A&^&^^^^^^^^^^^^P_______________________________________1=1=1=1=+!+!+!+!");
             
-            Console.WriteLine(_databaseUrl);
             var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
-            Console.WriteLine(_databaseUrl);
 
             try
             {
@@ -49,8 +46,7 @@ namespace backend_api.Controllers
                         }
                         else
                         {
-                            var properties = record[0].As<INode>().Properties;
-                            return new Person(properties);
+                            return new Person(record[0].As<INode>().Properties);
                         }
                     });
 

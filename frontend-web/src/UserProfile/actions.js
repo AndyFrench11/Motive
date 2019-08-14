@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch'
 
-//const localUrl = `http://localhost:8080/api`;
-const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api`;
+const localUrl = `https://localhost:8081/api`;
+//const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api`;
 
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 function requestProjects() {
@@ -12,10 +12,9 @@ function requestProjects() {
 
 export const RECEIVE_PROJECTS = 'RECEIVE_PROJECTS';
 function receiveProjects(json) {
-    console.log(json);
     return {
         type: RECEIVE_PROJECTS,
-        //projects: json.data.children.map(child => child.data),
+        projects: json,
         receivedAt: Date.now()
     }
 }
@@ -29,7 +28,6 @@ function requestProfile() {
 
 export const RECEIVE_PROFILE = 'RECEIVE_PROFILE';
 function receiveProfile(json) {
-    console.log(json);
     return {
         type: RECEIVE_PROFILE,
         profile: json,
@@ -37,10 +35,10 @@ function receiveProfile(json) {
     }
 }
 
-export function fetchProjects() {
+export function fetchProjects(guid) {
     return function(dispatch) {
         dispatch(requestProjects());
-        return fetch(serverUrl + '/person')
+        return fetch(localUrl + `/person/${guid}/project`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred", error)
@@ -54,7 +52,7 @@ export function fetchProjects() {
 export function fetchProfile (guid) {
     return function (dispatch) {
         dispatch(requestProfile());
-        return fetch(serverUrl + `/person/${guid}`)
+        return fetch(localUrl + `/person/${guid}`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred!!", error)
