@@ -7,8 +7,7 @@ export const RECEIVE_SINGLE_PROJECT = 'RECEIVE_PROJECT';
 export const RECEIVE_NEW_PROJECT_RESPONSE = 'RECEIVE_NEW_PROJECT_RESPONSE';
 export const REQUEST_NEW_PROJECT = 'REQUEST_NEW_PROJECT';
 
-const localUrl = `http://localhost:8080/api`;
-const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api`;
+const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
 function requestSingleProject() {
     return {

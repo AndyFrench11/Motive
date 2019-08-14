@@ -1,7 +1,6 @@
 import fetch from 'cross-fetch'
 
-//const localUrl = `http://localhost:8080/api`;
-const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api`;
+const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 function requestProjects() {
