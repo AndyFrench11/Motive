@@ -4,7 +4,8 @@ import { Button, Header, Image, Modal } from 'semantic-ui-react'
 import axios from 'axios';
 import { Route } from 'react-router-dom';
 
-const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
+//const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
+const serverUrl = "http://csse-s402g2.canterbury.ac.nz:8080/api";
 
 class Home extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
-      axios.get(serverUrl + "/api/person/allpeople")
+      axios.get(serverUrl + "/person/allpeople")
             .then(response => 
               this.setState({
                 users: response.data
