@@ -102,7 +102,7 @@ namespace backend_api.Controllers
             try
             {
 
-                var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
+                var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
                 client.Connect();
 
                 var projectResult = client.Cypher
@@ -156,7 +156,7 @@ namespace backend_api.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]Project project)
         {
-            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic("neo4j", "motive"));
+            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
             Guid guid = Guid.NewGuid();
             project.guid = guid.ToString();
             try
