@@ -13,6 +13,8 @@ namespace backend_api.Models
         public string lastName { get; set; }
         
         public string email { get; set; }
+
+        public string password { get; set; }
         
         public string dateOfBirth { get; set; }
         
@@ -20,11 +22,12 @@ namespace backend_api.Models
         
         public string profileBio { get; set; }
 
-        public Person(string firstName, string lastName, string email, string dateOfBirth, string profileBio)
+        public Person(string firstName, string lastName, string email, string password, string dateOfBirth, string profileBio)
         {
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
+            this.password = password;
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
             

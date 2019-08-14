@@ -10,15 +10,13 @@ import UserProfile from "./UserProfile/UserProfile";
 import { Provider } from "react-redux";
 import configureStore from "./configureStore";
 import { connect } from "react-redux";
+import Landing from "./Landing/Landing";
+import Home from "./Home/Home";
 import history from "./history"
 import "react-datepicker/dist/react-datepicker.css";
-import Home from './Home/Home';
 
 const store = configureStore();
 
-function Index() {
-  return <h2>Home</h2>;
-}
 
 function About() {
   return <h2>About</h2>;
@@ -32,7 +30,8 @@ function AppRouter() {
   return (
         <Router history={history}>
           <div>
-            <Route exact path="/" component={Home} />
+            <Route exact path="/" component={Landing} />
+            <Route exact path ="/home" component={Home}/>
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />
             <Route path="/test" component={Users} />

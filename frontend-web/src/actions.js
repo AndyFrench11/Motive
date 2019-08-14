@@ -1,4 +1,3 @@
-import fetch from 'cross-fetch'
 import axios from 'axios'
 
 export const REQUEST_SINGLE_PROJECT = 'REQUEST_PROJECT';
@@ -59,13 +58,13 @@ export function postProject(guid, valuesJson) {
             })
 
     }
-};
+}
 
 function requestNewProject() {
     return {
         type: REQUEST_NEW_PROJECT,
     }
-};
+}
 
 function receiveNewProjectResponse(response) {
     if(response.status === 201) {
@@ -82,9 +81,10 @@ function receiveNewProjectResponse(response) {
         }
     }
 
-};
+}
 
 //UPDATE UI
 function updateCurrentProject() {
 
 }
+

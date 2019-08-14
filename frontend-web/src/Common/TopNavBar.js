@@ -3,7 +3,8 @@ import {
     Button,
     Container,
     Dropdown,
-    Menu, Modal,
+    Menu,
+    Modal,
     TransitionablePortal,
 } from 'semantic-ui-react'
 import NewProjectForm from "../Project/ModalForm";
@@ -19,21 +20,22 @@ class TopNavBar extends React.Component {
 
         return (
             <div>
-            <Menu fixed='top' inverted>
-                <Container>
-                <Menu.Item as='a' header>
-                    Motive.
-                </Menu.Item>
+                <Menu fixed='top' inverted>
+                    <Container>
+                        <Menu.Item item simple text='Home'
+                                   as={Link} to='/'>
+                            Motive.
+                        </Menu.Item>
 
-                <Menu.Item item simple text='Home'
-                           as={Link} to='/'>
-                    Home
-                </Menu.Item>
+                        <Menu.Item item simple text='Home'
+                                   as={Link} to='/home'>
+                            Home
+                        </Menu.Item>
 
-                <Menu.Item item simple text='Profile'
-                    as={Link} to='/profile'>
-                    Profile
-                </Menu.Item>
+                        <Menu.Item item simple text='Profile'
+                                   as={Link} to='/profile'>
+                            Profile
+                        </Menu.Item>
 
                         <Dropdown item simple text='Profile'>
                             <Dropdown.Menu>

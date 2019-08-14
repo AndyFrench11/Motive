@@ -30,8 +30,8 @@ namespace backend_api.Controllers
         private readonly string _databaseHttpUrl = ConfigurationManager.AppSettings["databaseHttpURL"];
         private readonly string _dbUser = ConfigurationManager.AppSettings["databaseUsername"];
         private readonly string _dbPw = ConfigurationManager.AppSettings["databasePassword"];
-        
-        
+
+
         // GET: api/values
         [HttpGet]
         public ActionResult<List<Project>> Get()
@@ -225,8 +225,6 @@ namespace backend_api.Controllers
             }
 
         }
-
-
 
         private void CreateTaskNodes(ITransaction tx, Project project) {
             Guid guid;
