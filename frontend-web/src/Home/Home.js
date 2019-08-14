@@ -1,46 +1,60 @@
 import React, { Component } from 'react';
 import './Home.css';
 import { Button, Header, Image, Modal } from 'semantic-ui-react'
+import axios from 'axios';
+import { Route } from 'react-router-dom';
 
 class Home extends Component {
     constructor(props) {
       super(props);
 
-      this.toggle = this.toggle.bind(this);
       this.state = {
-        isOpen: false
+        users: []
       };
     }
 
-    toggle() {
-      this.setState({
-        isOpen: !this.state.isOpen
-      });
+    componentDidMount() {
+      const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api`;
+      console.log("Hello")
+      axios.get(serverUrl + "/person/allpeople")
+            .then(response => 
+              this.setState({
+                users: response.data
+              }
+            ))
+            .catch(error => {
+                console.log("The server is not running!");
+                console.log(error)
+            })
+    }
+
+    redirectToUserPage(userguid) {
+      this.props.history.push()
+    }
+
+    userlist() {
+      return this.state.users.map((item, key) =>
+
+          <Route render={({ history }) => (
+            <button
+              type='button'
+              onClick={() => { history.push(`/profile/${item.guid}/`) }}
+            >
+              {item.firstName} {item.lastName}
+            </button>
+          )} />
+        )
     }
 
     render() {
 
-      const ModalModalExample = () => (
-        <Modal trigger={<Button>Show Modal</Button>}>
-          <Modal.Header>Select a Photo</Modal.Header>
-          <Modal.Content image>
-            <Image wrapped size='medium' src='/images/avatar/large/rachel.png' />
-            <Modal.Description>
-              <Header>Default Profile Image</Header>
-              <p>We've found the following gravatar image associated with your e-mail address.</p>
-              <p>Is it okay to use this photo?</p>
-            </Modal.Description>
-          </Modal.Content>
-        </Modal>
-      )
-
-
-
       return (
         <div>
-          <span className="title-header"> Welcome to Motive.</span>
-            {ModalModalExample()}
-          </div>
+          <h2>Home</h2>
+          <h3>All Users:</h3>
+          {this.userlist()}
+        </div>
+
       );
     };
   }
