@@ -4,8 +4,8 @@ import { Button, Header, Image, Modal } from 'semantic-ui-react'
 import axios from 'axios';
 import { Route } from 'react-router-dom';
 
-//const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
-const serverUrl = "http://csse-s402g2.canterbury.ac.nz:8080/api";
+const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
+//const serverUrl = "http://csse-s402g2.canterbury.ac.nz:8080/api";
 
 class Home extends Component {
     constructor(props) {
@@ -17,6 +17,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
+      console.log(serverUrl)
       axios.get(serverUrl + "/person/allpeople")
             .then(response => 
               this.setState({
@@ -27,10 +28,6 @@ class Home extends Component {
                 console.log("The server is not running!");
                 console.log(error)
             })
-    }
-
-    redirectToUserPage(userguid) {
-      this.props.history.push()
     }
 
     userlist() {
