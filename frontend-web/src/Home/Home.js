@@ -16,7 +16,6 @@ import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 import UpdateModal from "./UpdateModal";
 import _ from 'lodash'
-import { Button, Header, Image, Modal } from 'semantic-ui-react'
 import axios from 'axios';
 import { Route } from 'react-router-dom';
 
@@ -62,12 +61,10 @@ class Home extends Component {
       super(props);
 
       this.state = {
-        users: []
+        users: [],
+        modalVisible: false
       };
-        super(props);
-        this.state = {
-            modalVisible: false
-        };
+
     }
 
     componentDidMount() {
@@ -115,6 +112,8 @@ class Home extends Component {
         return (
             <div className='home'>
                 <TopNavBar/>
+                <h3 style={{marginTop: '5em'}}> All Users:</h3>
+                {this.userlist()}
                 <TransitionablePortal open={this.state.modalVisible} transition={{animation: 'fade up', duration: 500}}>
                     <Modal open={true} onClose={this.closeModal} closeIcon>
                         <Modal.Content>
@@ -130,9 +129,6 @@ class Home extends Component {
                         ))}
                     </Item.Group>
                 </Container>
-                <h2>Home</h2>
-                <h3>All Users:</h3>
-                {this.userlist()}
 
                 <Footer/>
             </div>

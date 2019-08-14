@@ -14,7 +14,6 @@ import Landing from "./Landing/Landing";
 import Home from "./Home/Home";
 import history from "./history"
 import "react-datepicker/dist/react-datepicker.css";
-import Home from './Home/Home';
 
 const store = configureStore();
 
