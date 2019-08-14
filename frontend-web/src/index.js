@@ -5,13 +5,16 @@ import './index.css';
 import Project from './Project/Project';
 import 'semantic-ui-css/semantic.min.css';
 import 'semantic-ui/dist/semantic.min.css';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Router, Route, Link } from "react-router-dom";
 import UserProfile from "./UserProfile/UserProfile";
 import { Provider } from "react-redux";
 import configureStore from "./configureStore";
 import { connect } from "react-redux";
 import Landing from "./Landing/Landing";
 import Home from "./Home/Home";
+import history from "./history"
+import "react-datepicker/dist/react-datepicker.css";
+import Home from './Home/Home';
 
 const store = configureStore();
 
@@ -26,16 +29,15 @@ function Users() {
 
 function AppRouter() {
   return (
-        <Router>
+        <Router history={history}>
           <div>
             <Route exact path="/" component={Landing} />
             <Route exact path ="/home" component={Home}/>
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />
             <Route path="/test" component={Users} />
-            <Route path="/profile/:userguid" component={UserProfile} />
-            <Route path="/profile/:userguid/project/:projectGuid" component={Project} />
-            <Route path="/project" component={Project} />
+            <Route exact path="/profile/:userguid" component={UserProfile} />
+            <Route exact path="/profile/:userguid/project/:projectguid" component={Project} />
           </div>
         </Router>
   );
@@ -44,7 +46,7 @@ function AppRouter() {
 export default AppRouter;
 
 ReactDOM.render(<Provider store={store}>
-                  <AppRouter />
+                  <AppRouter/>
                 </Provider>,
                     document.getElementById('root'));
 

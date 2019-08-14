@@ -16,6 +16,11 @@ import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 import UpdateModal from "./UpdateModal";
 import _ from 'lodash'
+import { Button, Header, Image, Modal } from 'semantic-ui-react'
+import axios from 'axios';
+import { Route } from 'react-router-dom';
+
+const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
 
 const paragraph =
@@ -54,12 +59,44 @@ const UpdateItem = props => (
 
 class Home extends Component {
     constructor(props) {
+      super(props);
+
+      this.state = {
+        users: []
+      };
         super(props);
         this.state = {
             modalVisible: false
         };
     }
 
+    componentDidMount() {
+      console.log(serverUrl)
+      axios.get(serverUrl + "/person/allpeople")
+            .then(response =>
+              this.setState({
+                users: response.data
+              }
+            ))
+            .catch(error => {
+                console.log("The server is not running!");
+                console.log(error)
+            })
+    }
+
+    userlist() {
+      return this.state.users.map((item, key) =>
+
+          <Route render={({ history }) => (
+            <button
+              type='button'
+              onClick={() => { history.push(`/profile/${item.guid}/`) }}
+            >
+              {item.firstName} {item.lastName}
+            </button>
+          )} />
+        )
+    }
     showModal = () => {
         this.setState({
             modalVisible: true
@@ -93,6 +130,10 @@ class Home extends Component {
                         ))}
                     </Item.Group>
                 </Container>
+                <h2>Home</h2>
+                <h3>All Users:</h3>
+                {this.userlist()}
+
                 <Footer/>
             </div>
         );

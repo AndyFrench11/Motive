@@ -1,5 +1,7 @@
 import fetch from 'cross-fetch'
 
+const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
+
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 function requestProjects() {
     return {
@@ -9,10 +11,9 @@ function requestProjects() {
 
 export const RECEIVE_PROJECTS = 'RECEIVE_PROJECTS';
 function receiveProjects(json) {
-    console.log(json);
     return {
         type: RECEIVE_PROJECTS,
-        //projects: json.data.children.map(child => child.data),
+        projects: json,
         receivedAt: Date.now()
     }
 }
@@ -26,7 +27,6 @@ function requestProfile() {
 
 export const RECEIVE_PROFILE = 'RECEIVE_PROFILE';
 function receiveProfile(json) {
-    console.log(json);
     return {
         type: RECEIVE_PROFILE,
         profile: json,
@@ -34,10 +34,10 @@ function receiveProfile(json) {
     }
 }
 
-export function fetchProjects() {
+export function fetchProjects(guid) {
     return function(dispatch) {
         dispatch(requestProjects());
-        return fetch('http://localhost:8080/api/profile')
+        return fetch(serverUrl + `/person/${guid}/project`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred", error)
@@ -51,7 +51,7 @@ export function fetchProjects() {
 export function fetchProfile (guid) {
     return function (dispatch) {
         dispatch(requestProfile());
-        return fetch(`http://localhost:8080/api/person/${guid}`)
+        return fetch(serverUrl + `/person/${guid}`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred!!", error)

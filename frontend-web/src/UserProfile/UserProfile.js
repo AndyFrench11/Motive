@@ -17,6 +17,7 @@ import {fetchProfile, fetchProjects} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
 import NewProjectForm from "../Project/ModalForm";
 import {postProject} from "../actions";
+import { Route } from 'react-router-dom';
 
 
 class UserProfile extends React.Component {
@@ -53,16 +54,10 @@ class UserProfile extends React.Component {
     componentDidUpdate(oldProps) {
         const newProps = this.props;
         if(oldProps.values !== newProps.values) {
-
-            if(typeof this.props.result !== 'undefined') {
-                const { userguid } = this.props.match.params;
-                this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
-            }
-
             const values = newProps.values;
-            console.log(values);
             if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
-                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')))) {
+                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList') && ((values.hasOwnProperty('startDateInput')) &&
+                    (/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/.test(values.startDateInput)))))) {
                 this.setState({
                     submitButtonDisabled: false
                 })
@@ -73,14 +68,17 @@ class UserProfile extends React.Component {
 
     componentDidMount() {
         const { userguid } = this.props.match.params;
-        console.log(userguid);
-        //this.props.fetchProjects();
         this.props.fetchProfile(userguid);
+        this.props.fetchProjects(userguid);
     }
 
 
     ProfileHeader() {
-        if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
+        if(typeof this.props.result !== 'undefined') {
+            const { userguid } = this.props.match.params;
+            this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
+        }
+        else if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>
@@ -130,29 +128,33 @@ class UserProfile extends React.Component {
         }
     }
 
-    ProjectList(projectList) {
-        if (projectList.size() > 0) {
+
+    ProjectList() {
+        if (this.props.projects.items === undefined || this.props.projects.items === null ) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else {
+            const { userguid } = this.props.match.params;
             return (
                 <div>
                     <Item.Group link>
-                        {projectList.map((item, index) => (
-                            <Item key={index} item={item} >
-                                <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
-                                <Item.Content>
-                                    <Item.Header>item.name</Item.Header>
-                                    <Item.Description>item.description</Item.Description>
-                                </Item.Content>
-                            </Item>
+                        {this.props.projects.items.map((item, index) => (
+                            <Route render={({ history }) => (
+                                <Item key={index} item={item} onClick={() => { history.push(`/profile/${userguid}/project/${item.guid}/`) }}>
+                                    <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
+                                    <Item.Content>
+                                        <Item.Header>{item.name}</Item.Header>
+                                        <Item.Description>{item.description}</Item.Description>
+                                    </Item.Content>
+                                </Item>
+                            )} />
                         ))}
                     </Item.Group>
                 </div>
             );
-        } else {
-            return (
-                <div>
-
-                </div>
-            )
         }
     }
 
@@ -162,27 +164,13 @@ class UserProfile extends React.Component {
                 <TopNavBar/>
                 {this.ProfileHeader()}
                 <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
-                    <Grid.Row columns={3} divided >
+                    <Grid.Row columns={2} divided >
                         <Grid.Column centered >
                             <Header as='h2' style={{ 'text-align': 'center' }}>Highlights</Header>
-                            <List animated divided verticalAlign='middle'>
-
-                            </List>
                         </Grid.Column>
                         <Grid.Column centered>
-                            <Header as='h2' style={{ 'text-align': 'center' }}>Current Projects</Header>
-                            <p>This is a basic fixed menu template using fixed size containers.</p>
-                            <p>
-                                A text container is used for the main container, which is useful for single column layouts.
-                            </p>
-                        </Grid.Column>
-
-                        <Grid.Column>
-                            <Header as='h2' style={{ 'text-align': 'center' }}>Complete Projects</Header>
-                            <p>This is a basic fixed menu template using fixed size containers.</p>
-                            <p>
-                                A text container is used for the main container, which is useful for single column layouts.
-                            </p>
+                            <Header as='h2' style={{ 'text-align': 'center' }}>Projects</Header>
+                            {this.ProjectList()}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -190,13 +178,14 @@ class UserProfile extends React.Component {
             </div>
         )
     }
+
 }
 
 
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchProjects: () => dispatch(fetchProjects()),
+        fetchProjects: (guid) => dispatch(fetchProjects(guid)),
         fetchProfile: (guid) => dispatch(fetchProfile(guid)),
         postProject: (guid, values) => dispatch(postProject(guid, values))
     };

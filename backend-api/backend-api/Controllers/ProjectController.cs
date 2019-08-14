@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Neo4j.Driver.V1;
 using Neo4jClient;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace backend_api.Controllers
 {
@@ -26,8 +26,10 @@ namespace backend_api.Controllers
             base.OnActionExecuting(context);
         }
 
-        public string localDatabaseUrl = "bolt://localhost:7687";
-        public string serverDatabaseUrl = "bolt://csse-s402g2.canterbury.ac.nz:7687";
+        private readonly string _databaseUrl = ConfigurationManager.AppSettings["databaseURL"];
+        private readonly string _databaseHttpUrl = ConfigurationManager.AppSettings["databaseHttpURL"];
+        private readonly string _dbUser = ConfigurationManager.AppSettings["databaseUsername"];
+        private readonly string _dbPw = ConfigurationManager.AppSettings["databasePassword"];
 
 
         // GET: api/values
@@ -36,7 +38,7 @@ namespace backend_api.Controllers
         {
             try
             {
-                var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
+                var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
                 client.Connect();
 
                 var projectResult = client.Cypher
@@ -100,12 +102,12 @@ namespace backend_api.Controllers
             try
             {
 
-                var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
+                var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
                 client.Connect();
 
                 var projectResult = client.Cypher
                     .Match("(project:Project)")
-                    .Where((Project project) => project.name == "Hello My Good Friends")
+                    .Where((Project project) => project.guid == projectId)
                     .Return(project => project.As<Project>())
                     .Results;
 
@@ -119,7 +121,7 @@ namespace backend_api.Controllers
                     //Get all the tags
                     var tagResult = client.Cypher
                         .Match("(project:Project) -- (tag:Tag)")
-                        .Where((Project project) => project.name == "Hello My Good Friends")
+                        .Where((Project project) => project.guid == projectId)
                         .Return(tag => tag.As<Tag>())
                         .Results;
 
@@ -127,7 +129,7 @@ namespace backend_api.Controllers
 
                     var taskResult = client.Cypher
                        .Match("(project:Project) -- (projectTask:ProjectTask)")
-                       .Where((Project project) => project.name == "Hello My Good Friends")
+                       .Where((Project project) => project.guid == projectId)
                        .Return(projectTask => projectTask.As<ProjectTask>())
                        .Results;
 
@@ -154,7 +156,7 @@ namespace backend_api.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]Project project)
         {
-            var driver = GraphDatabase.Driver(localDatabaseUrl, AuthTokens.Basic("neo4j", "motive"));
+            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
             Guid guid = Guid.NewGuid();
             project.guid = guid.ToString();
             try

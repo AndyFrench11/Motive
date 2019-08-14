@@ -6,8 +6,7 @@ export const RECEIVE_SINGLE_PROJECT = 'RECEIVE_PROJECT';
 export const RECEIVE_NEW_PROJECT_RESPONSE = 'RECEIVE_NEW_PROJECT_RESPONSE';
 export const REQUEST_NEW_PROJECT = 'REQUEST_NEW_PROJECT';
 
-const localUrl = `http://localhost:8080/api`;
-const serverUrl = `http://csse-s402g2.canterbury.ac.nz:8080/api/project`;
+const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
 function requestSingleProject() {
     return {
@@ -26,7 +25,7 @@ function receiveSingleProject(json) {
 export function fetchProject(projectId, personGuid) {
     return dispatch => {
         dispatch(requestSingleProject());
-        return axios.get(localUrl + "/person/" + personGuid + "/project/" + projectId)
+        return axios.get(serverUrl + "/person/" + personGuid + "/project/" + projectId)
             .then(response => dispatch(receiveSingleProject(response)))
             .catch(error =>  {
                 console.log("The server is not running!");
@@ -39,7 +38,6 @@ export function fetchProject(projectId, personGuid) {
 export function postProject(guid, valuesJson) {
     return dispatch => {
         dispatch(requestNewProject());
-        console.log(valuesJson);
         //Take only the values needed for the request
         let newProject = {
             name: valuesJson.projectNameInput,
@@ -48,9 +46,7 @@ export function postProject(guid, valuesJson) {
             tagList: valuesJson.tags
         };
 
-        console.log(newProject);
-        console.log(guid);
-        return axios.post(localUrl + "/person/" + guid + "/project", newProject, {headers: {
+        return axios.post(serverUrl + "/person/" + guid + "/project", newProject, {headers: {
                 'Content-Type': 'application/json'
             }
         })

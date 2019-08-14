@@ -5,10 +5,7 @@ import {
 } from './actions'
 
 const projectsInitialState = {
-    projects: {
-        isFetching: false,
-        items: []
-    }
+
 };
 
 const profileInitialState = {
@@ -19,18 +16,14 @@ function projects(state = projectsInitialState, action) {
     switch (action.type) {
         case REQUEST_PROJECTS:
             return {...state,
-                projects: {
-                    isFetching: true,
-                    items: []
-                }
+                isFetching: true
+
             };
         case RECEIVE_PROJECTS:
             return {...state,
-                projects: {
-                    isFetching: false,
-                    items: state.projects.items.add(action.projects),
-                    lastUpdated: action.receivedAt
-                }
+                isFetching: false,
+                items: action.projects
+                
             };
         default:
             return state

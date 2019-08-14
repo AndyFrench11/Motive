@@ -1,12 +1,27 @@
 stages:
-  - deploy
-
-deploy:
-  stage: deploy
-  script: 
-  - sudo docker container stop motive-backend
-  - sudo docker container prune -f
+  - build
+  - deploy-frontend
+  - deploy-backend
+  
+build:
+  stage: build
+  script:
+  - sudo docker system prune -f
   - sudo docker-compose build
-  - sudo docker run -d -p 8080:80 --name motive-backend backend-api
+
+deploy-frontend:
+  stage: deploy-frontend
+  script: 
+  - sudo docker container stop motive-frontend-container || true && sudo docker rm motive-frontend-container || true
+  - sudo docker run -p 80:8082 -d --name motive-frontend-container motive_frontend-web
+  only:
+  - dev@afr66/Motive
+
+
+deploy-backend:
+  stage: deploy-backend
+  script: 
+  - sudo docker container stop motive-backend-container || true && sudo docker rm motive-backend-container || true
+  - sudo docker run -d -p 8080:80 --name motive-backend-container motive_backend-api
   only:
   - dev@afr66/Motive
