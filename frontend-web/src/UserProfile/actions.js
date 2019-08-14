@@ -37,7 +37,7 @@ function receiveProfile(json) {
 export function fetchProjects(guid) {
     return function(dispatch) {
         dispatch(requestProjects());
-        return fetch(localUrl + `/person/${guid}/project`)
+        return fetch(serverUrl + `/person/${guid}/project`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred", error)
@@ -51,7 +51,7 @@ export function fetchProjects(guid) {
 export function fetchProfile (guid) {
     return function (dispatch) {
         dispatch(requestProfile());
-        return fetch(localUrl + `/person/${guid}`)
+        return fetch(serverUrl + `/person/${guid}`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred!!", error)
