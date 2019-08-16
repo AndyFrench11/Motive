@@ -1,5 +1,5 @@
 import React from 'react';
-import Landing from './Landing';
+import Landing from './Signup';
 import renderer from 'react-test-renderer';
 
 test('Link changes the class when hovered', () => {
@@ -12,7 +12,7 @@ test('Link changes the class when hovered', () => {
 
 // test('Test that the state of the header changes', () => {
 //     const homeComponent = renderer.create(
-//         <Landing/>,
+//         <OLD.Landing/>,
 //     );
 //     expect('Welcome to Motive').toBe('Welcome to Motive.');
 // })

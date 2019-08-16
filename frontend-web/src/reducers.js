@@ -7,7 +7,7 @@ import {
 } from './actions'
 import {reducer as formReducer} from "redux-form";
 import profilePage from "./UserProfile/reducers";
-import landingReducers from "./Landing/reducers";
+import landingReducers from "./OLD.Landing/reducers";
 
 
 function newProject(

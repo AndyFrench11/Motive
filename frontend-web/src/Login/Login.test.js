@@ -1,5 +1,5 @@
 import React from 'react';
-import Landing from './Home';
+import Landing from './Login';
 import renderer from 'react-test-renderer';
 
 test('Link changes the class when hovered', () => {

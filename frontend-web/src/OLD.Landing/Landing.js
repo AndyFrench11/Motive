@@ -48,24 +48,8 @@ class Landing extends Component {
         })
     };
 
-    handleSignUpSubmit = () => {
-        console.log("sign up");
-        console.log(this.state);
-        const signUpDetails = {
-            name: this.state.signUpName,
-            email: this.state.signUpEmail,
-            password: this.state.signUpPassword,
-            birthday: this.state.signUpBirthday
-        };
-        const {dispatch} = this.props;
-        dispatch(postSignUp(signUpDetails));
-
-        this.setState({
-            signUpName: '',
-            signUpEmail: '',
-            signUpPassword: '',
-            signUpBirthday: new Date()
-        })
+    handleSignUpSelected = () => {
+        this.props.history.push('/signup')
     };
 
     render() {
@@ -105,7 +89,7 @@ class Landing extends Component {
                 <br/>
                 <Container>
                     <Grid textAlign='center'>
-                        <Grid.Column width={10} style={{maxWidth: 450}} floated='left'>
+                        <Grid.Column width={10} style={{maxWidth: 450}}>
                             <Grid.Row>
                                 <Header as='h2' color='black' textAlign='center'>
                                     Login
@@ -132,11 +116,13 @@ class Landing extends Component {
                                             value={loginPassword}
                                             onChange={this.handleChange}
                                         />
-                                        <Button color='black' fluid size='large'>
-                                            Login!
-                                        </Button>
+                                        <button className="ui primary button">Login</button>
                                     </Segment>
                                 </Form>
+                                <br/>
+                                <button className="ui secondary button" onClick={this.handleSignUpSelected}>Sign Up</button>
+                                <br/>
+                                <br/>
                                 <br/>
                                 <br/>
                                 <Button color='facebook'>
@@ -146,57 +132,6 @@ class Landing extends Component {
                                     <Icon name='google plus' /> Google Plus
                                 </Button>
                             </Grid.Row>
-                        </Grid.Column>
-                        <Grid.Column width={10} style={{maxWidth: 450}} floated='right'>
-                            <Header as='h2' color='black' textAlign='center'>
-                                Sign Up
-                            </Header>
-                            <Form size='large' onSubmit={this.handleSignUpSubmit}>
-                                <Segment>
-                                    <Form.Input
-                                        fluid icon='user'
-                                        iconPosition='left'
-                                        placeholder='Name'
-                                        required
-                                        name='signUpName'
-                                        value={signUpName}
-                                        onChange={this.handleChange}
-                                    />
-                                    <Form.Input
-                                        fluid icon='envelope outline'
-                                        iconPosition='left'
-                                        placeholder='E-mail'
-                                        required
-                                        name='signUpEmail'
-                                        value={signUpEmail}
-                                        onChange={this.handleChange}
-                                    />
-                                    <Form.Input
-                                        fluid
-                                        icon='lock'
-                                        iconPosition='left'
-                                        placeholder='Password'
-                                        type='password'
-                                        required
-                                        name='signUpPassword'
-                                        value={signUpPassword}
-                                        onChange={this.handleChange}
-                                    />
-                                    <DateInput
-                                        value={this.state.signUpBirthday}
-                                        dateFormat="dd/MM/yyyy"
-                                        disabled={false}
-                                        locale="en"
-                                        onChange={this.handleDateChange}
-                                        showToTop={true}
-                                    />
-                                    <br/>
-
-                                    <Button color='black' fluid size='large'>
-                                        Sign up!
-                                    </Button>
-                                </Segment>
-                            </Form>
                         </Grid.Column>
                     </Grid>
                 </Container>
