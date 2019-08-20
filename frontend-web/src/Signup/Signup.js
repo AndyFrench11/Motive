@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form, Grid, Header, Container, Segment, Icon} from 'semantic-ui-react'
+import {Button, Form, Grid, Header, Container, Segment, Icon, List, Menu, Dropdown} from 'semantic-ui-react'
 import {DateInput} from '@opuscapita/react-dates'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
@@ -8,6 +8,7 @@ import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
 import validate from "../Common/FormValidation";
 import TextInput from "../Common/Forms/TextInput";
+import DateOfBirthPicker from "./dateOfBirthPicker";
 
 class Signup extends Component {
     constructor(props) {
@@ -19,9 +20,6 @@ class Signup extends Component {
             usernameInput: '',
             passwordInput: '',
             confirmPasswordInput: '',
-
-
-
         };
     }
 
@@ -31,12 +29,11 @@ class Signup extends Component {
         })
     };
 
+    handleDateChange = (momentDate) => {
+        console.log(`Is DOB valid: ${momentDate.isValid()}`);
+        this.setState({dateOfBirth: momentDate});
+    };
 
-    // handleDateChange = (date) => {
-    //     this.setState({
-    //         signUpBirthday: date
-    //     });
-    // };
 
     handleSignUpSubmit = () => {
         console.log("sign up");
@@ -75,21 +72,20 @@ class Signup extends Component {
                                     {/*Name Input*/}
                                     <Form.Group widths='equal'>
                                         <Form.Input
-                                            error={{ content: 'Please enter your first name', pointing: 'below' }}
                                             placeholder='First Name'
                                             required
                                             name='firstNameInput'
                                             onChange={this.handleChange}
-                                            // validation={}
                                         />
                                         <Form.Input
                                             placeholder='Last Name'
                                             required
                                             name='lastNameInput'
                                             onChange={this.handleChange}
-                                            // validation={}
                                         />
                                     </Form.Group>
+
+                                    <DateOfBirthPicker callbackFromParent={this.handleDateChange}/>
 
                                     {/*Username Input*/}
                                     <Form.Input
@@ -118,7 +114,13 @@ class Signup extends Component {
                                         // validation={}
                                     />
 
+                                    {/*Password Policy Notice*/}
+                                    <List bulleted>
+                                        <List.Item>Passwords should be at least 8 characters long.</List.Item>
+                                        <List.Item>Passwords shouldn't use your name(s).</List.Item>
+                                    </List>
 
+                                    <br/>
                                     <br/>
                                     <Form.Button
                                         color='blue'
