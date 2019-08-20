@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios/index'
 
 export const REQUEST_SINGLE_PROJECT = 'REQUEST_PROJECT';
 export const RECEIVE_SINGLE_PROJECT = 'RECEIVE_PROJECT';

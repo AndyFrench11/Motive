@@ -6,8 +6,8 @@ import {
     REQUEST_NEW_PROJECT,
 } from './actions'
 import {reducer as formReducer} from "redux-form";
-import profilePage from "./UserProfile/reducers";
-import landingReducers from "./Landing/reducers";
+import profilePage from "../UserProfile/reducers";
+import landingReducers from "../Landing/reducers";
 
 
 function newProject(

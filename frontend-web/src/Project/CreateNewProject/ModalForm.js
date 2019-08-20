@@ -10,7 +10,7 @@ function importAll(r) {
     return images;
 }
 
-const images = importAll(require.context('./ProjectImages', false, /\.(png|jpe?g|svg)$/));
+const images = importAll(require.context('.././ProjectImages', false, /\.(png|jpe?g|svg)$/));
 
 const renderTextArea = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
     <Form.Field>

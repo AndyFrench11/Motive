@@ -15,8 +15,8 @@ import reducer from "./reducers"
 import {connect} from "react-redux";
 import {fetchProfile, fetchProjects} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
-import NewProjectForm from "../Project/ModalForm";
-import {postProject} from "../actions";
+import NewProjectForm from "../Project/CreateNewProject/ModalForm";
+import {postProject} from "../Project/actions";
 import { Route } from 'react-router-dom';
 
 
