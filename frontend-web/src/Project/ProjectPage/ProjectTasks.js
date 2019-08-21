@@ -10,6 +10,8 @@ class ProjectTasks extends Component {
     constructor(props) {
         super(props);
 
+        this.taskInput = React.createRef();
+
         this.state = {
             activeCreateTaskButton: false,
             taskList: this.props.taskList,
@@ -22,8 +24,9 @@ class ProjectTasks extends Component {
     addNewTask = () => {
 
         if(this.state.taskInputVisible === true){
+            console.log("Hello");
             const { currentInput } = this.state;
-            if(currentInput != "") {
+            if(currentInput !== "") {
                 this.state.taskList.push({name: this.state.currentInput});
             }
             this.setState({
@@ -31,9 +34,7 @@ class ProjectTasks extends Component {
                     taskInputVisible: false,
                     currentInput: ""
                 }
-
-            )
-
+            );
         } else {
             this.setState(
                 {
@@ -47,20 +48,33 @@ class ProjectTasks extends Component {
 
     updateCurrentInput = (event, {value}) => {
         //Update the UI
+        console.log("Yarp");
         this.setState({ currentInput: value });
 
     };
 
     deleteTask = (event, {index}) => {
         var { taskList } = this.state;
-        taskList = taskList.splice(index, 1);
+        taskList.splice(index, 1);
         this.setState({taskList: taskList});
+    };
+
+    markTaskAsDone = (event, {listIndex}) => {
+        const {taskList} = this.state;
+        taskList.map((task, index) => {
+            if(index === listIndex){
+                task.completed = !task.completed;
+            }
+        });
+        this.setState({taskList: taskList});
+        //Update the backend!
+
     };
 
 
     render() {
 
-        const { taskList, activeCreateTaskButton, taskInputVisible } = this.state;
+        const { taskList, activeCreateTaskButton, taskInputVisible, selectedTaskIndex } = this.state;
 
         return (
             <div>
@@ -70,7 +84,7 @@ class ProjectTasks extends Component {
                         {taskList.map((task, index) =>
                             <List.Item key={index}>
                                 <List.Content floated='left'>
-                                    <Button basic circular toggle
+                                    <Button listIndex={index} basic circular toggle active={task.completed} onClick={this.markTaskAsDone}
                                             icon='check'>
                                     </Button>
                                 </List.Content>
@@ -86,16 +100,16 @@ class ProjectTasks extends Component {
                         )}
                     </Transition.Group>
 
-                    <Grid divided='vertically'  left>
-                        <Grid.Row columns={2}>
-                            <Grid.Column width={1}>
+                    <Grid divided='vertically' left>
+                        <Grid.Row >
+                            <Grid.Column width={1} left>
                                 <Button basic circular toggle active={activeCreateTaskButton} onClick={this.addNewTask}
                                         icon='plus'>
                                 </Button>
                             </Grid.Column>
-                            <Grid.Column width={4}>
-                                <Transition visible={taskInputVisible} animation='fade up' duration={500}>
-                                    <Input  placeholder="Enter task name..." onChange={this.updateCurrentInput}/>
+                            <Grid.Column width={4} left>
+                                <Transition visible={taskInputVisible} animation='fade up' duration={400}>
+                                    <Input value={this.state.currentInput} placeholder="Enter task name..." onChange={this.updateCurrentInput}/>
                                 </Transition>
 
                             </Grid.Column>

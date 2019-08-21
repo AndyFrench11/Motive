@@ -235,7 +235,8 @@ namespace backend_api.Controllers
                 guid = Guid.NewGuid();
                 task.guid = guid.ToString();
                 string taskGuid = task.guid;
-                tx.Run("CREATE(pt:ProjectTask {name: $taskName, guid: $taskGuid})", new { taskName, taskGuid });
+                bool taskCompleted = false;
+                tx.Run("CREATE(pt:ProjectTask {name: $taskName, guid: $taskGuid, completed: $taskCompleted})", new { taskName, taskGuid, taskCompleted });
             }
         }
 
