@@ -3,8 +3,6 @@ import {
     Image, Segment, List, Button, Icon, Input, Transition, Label, Form, Grid, Header
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
-import BookImage from "../ProjectImages/image15.png";
-
 class ProjectTasks extends Component {
 
     constructor(props) {
@@ -28,6 +26,8 @@ class ProjectTasks extends Component {
             const { currentInput } = this.state;
             if(currentInput !== "") {
                 this.state.taskList.push({name: this.state.currentInput});
+                //TODO Update the backend!
+
             }
             this.setState({
                     activeCreateTaskButton: false,
@@ -57,6 +57,7 @@ class ProjectTasks extends Component {
         var { taskList } = this.state;
         taskList.splice(index, 1);
         this.setState({taskList: taskList});
+        //TODO Update the backend!
     };
 
     markTaskAsDone = (event, {listIndex}) => {
@@ -67,7 +68,7 @@ class ProjectTasks extends Component {
             }
         });
         this.setState({taskList: taskList});
-        //Update the backend!
+        //TODO Update the backend!
 
     };
 
@@ -79,6 +80,7 @@ class ProjectTasks extends Component {
         return (
             <div>
                 <Segment style={{ marginLeft: '5em', marginRight: '5em', marginBottom: '5em'}}>
+
 
                     <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
                         {taskList.map((task, index) =>
@@ -99,6 +101,7 @@ class ProjectTasks extends Component {
                             </List.Item>
                         )}
                     </Transition.Group>
+
 
                     <Grid divided='vertically' left>
                         <Grid.Row >
