@@ -7,10 +7,11 @@ import {postLogin, postSignUp} from "./actions";
 import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
 import validate from "../Common/FormValidation";
-import TextInput from "../Common/Forms/TextInput";
 import DateOfBirthPicker from "./dateOfBirthPicker";
+import {fetchProfile, fetchProjects} from "../UserProfile/actions";
+import {postProject} from "../actions";
 
-class Signup extends Component {
+class SignUp extends Component {
     constructor(props) {
         super(props);
 
@@ -18,6 +19,7 @@ class Signup extends Component {
             firstNameInput: '',
             lastNameInput: '',
             usernameInput: '',
+            emailInput: '',
             passwordInput: '',
             confirmPasswordInput: '',
         };
@@ -30,7 +32,7 @@ class Signup extends Component {
     };
 
     handleDateChange = (momentDate) => {
-        console.log(`Is DOB valid: ${momentDate.isValid()}`);
+        //console.log(`Is DOB valid: ${momentDate.isValid()}`);
         this.setState({dateOfBirth: momentDate});
     };
 
@@ -38,15 +40,16 @@ class Signup extends Component {
     handleSignUpSubmit = () => {
         console.log("sign up");
         console.log(this.state);
-        // const signUpDetails = {
-        //     name: this.state.signUpName,
-        //     email: this.state.signUpEmail,
-        //     password: this.state.signUpPassword,
-        //     birthday: this.state.signUpBirthday
-        // };
-        // const {dispatch} = this.props;
-        // dispatch(postSignUp(signUpDetails));
-        //
+
+        const signUpDetails = {
+            firstName: this.state.firstNameInput,
+            lastName: this.state.lastNameInput,
+            email: this.state.signUpEmail,
+            password: this.state.signUpPassword,
+            birthday: this.state.signUpBirthday
+        };
+        this.props.postSignUp(signUpDetails);
+
         // this.setState({
         //     signUpName: '',
         //     signUpEmail: '',
@@ -73,13 +76,13 @@ class Signup extends Component {
                                     <Form.Group widths='equal'>
                                         <Form.Input
                                             placeholder='First Name'
-                                            required
+                                            // required
                                             name='firstNameInput'
                                             onChange={this.handleChange}
                                         />
                                         <Form.Input
                                             placeholder='Last Name'
-                                            required
+                                            // required
                                             name='lastNameInput'
                                             onChange={this.handleChange}
                                         />
@@ -96,6 +99,16 @@ class Signup extends Component {
                                         // validation={}
                                     />
 
+                                    {/*Email Input*/}
+                                    <Form.Input
+                                        placeholder='Email'
+                                        required
+                                        type="email"
+                                        name='emailInput'
+                                        onChange={this.handleChange}
+                                        // validation={}
+                                    />
+                                    <br/><br/>
                                     {/*Password Input */}
                                     <Form.Input
                                         placeholder='Password'
@@ -151,10 +164,16 @@ class Signup extends Component {
     };
 }
 
+function mapDispatchToProps(dispatch) {
+    return {
+        postSignUp: (valuesJson) => dispatch(postSignUp(valuesJson)),
+    };
+}
+
 const mapStateToProps = state => {
-    const { landingReducers } = state;
-    const { loginController } = landingReducers;
-    const { isPosting, lastUpdated, result } = loginController;
+    console.log(state);
+    const { signUpReducer } = state;
+    const { isPosting, lastUpdated, result } = signUpReducer;
     return {
         isPosting: isPosting,
         result: result,
@@ -162,4 +181,5 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps) (Signup);
+const SignUpPage = connect(mapStateToProps, mapDispatchToProps) (SignUp);
+export default SignUpPage
