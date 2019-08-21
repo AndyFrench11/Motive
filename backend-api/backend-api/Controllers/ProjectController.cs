@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Threading.Tasks;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,11 +14,11 @@ namespace backend_api.Controllers
     [Route("api/person/{userId}/[controller]")]
     public class ProjectController : Controller
     {
-        public string userId { get; set; }
+        private string userId { get; set; }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            this.userId = context.RouteData.Values["userId"].ToString();
+            userId = context.RouteData.Values["userId"].ToString();
             base.OnActionExecuting(context);
         }
 
@@ -165,7 +161,7 @@ namespace backend_api.Controllers
                 using (var session = driver.Session())
                 {
                     session.WriteTransaction(tx => CreateProjectNode(tx, project));
-                    session.WriteTransaction(tx => CreateProjectRelationship(tx, project));
+                    session.WriteTransaction(tx => CreateProjectRelationship(tx, project.guid, userId));
 
                     session.WriteTransaction(tx => CreateTagNodes(tx, project));
                     session.WriteTransaction(tx => CreateTagRelationships(tx, project));
@@ -194,15 +190,40 @@ namespace backend_api.Controllers
             tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, guid: $projectGuid})", new { projectName, projectDescription, projectGuid });
         }
 
-        private void CreateProjectRelationship(ITransaction tx, Project project)
+        private void CreateProjectRelationship(ITransaction tx, string projectGuid, string ownerGuid)
         {
             //Create the relationship to the project
-            string projectGuid = project.guid;
             string typeString = "owner";
-            tx.Run("MATCH (p:Project),(pe:Person) WHERE p.guid = $projectGuid AND pe.guid = $userId CREATE (pe)-[:CONTRIBUTES_TO {type:[$typeString]}]->(p)", new { projectGuid, userId, typeString });
-
-
+            tx.Run(
+                "MATCH (p:Project),(pe:Person) WHERE p.guid = $projectGuid AND pe.guid = $ownerGuid CREATE (pe)-[:CONTRIBUTES_TO {type:[$typeString]}]->(p)",
+                new {projectGuid, ownerGuid, typeString});
         }
+        
+        
+        //PATCH api/person/:userId/project/:projectId/add/:newMemberId
+        [HttpPatch("{projectGuid}/add/{newMemberGuid}")]
+        public ActionResult AddNewMember(string projectGuid, string newMemberGuid)
+        {
+            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
+            try
+            {
+                using (var session = driver.Session())
+                {
+                    session.WriteTransaction(tx => CreateProjectRelationship(tx, projectGuid, newMemberGuid));
+                    return StatusCode(200);
+                }
+            }
+            catch (ServiceUnavailableException)
+            {
+                return StatusCode(503);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+        }
+        
 
         private void CreateTagNodes(ITransaction tx, Project project) {
             foreach(Tag tag in project.tagList)
