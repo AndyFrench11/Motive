@@ -189,7 +189,7 @@ namespace backend_api.Controllers
             string projectGuid = project.guid;
             tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, guid: $projectGuid})", new { projectName, projectDescription, projectGuid });
         }
-
+        
         private void CreateProjectRelationship(ITransaction tx, string projectGuid, string ownerGuid)
         {
             //Create the relationship to the project
@@ -199,19 +199,49 @@ namespace backend_api.Controllers
                 new {projectGuid, ownerGuid, typeString});
         }
         
+        /**
+         * Add a relationship between a project and a given owner.
+         */
+        private void AddProjectRelationship(GraphClient client, string projectGuid, string ownerGuid)
+        {
+            client.Connect();
+            client.Cypher
+                .Match("(project:Project), (newOwner:Person)")
+                .Where((Person newOwner) => newOwner.guid == ownerGuid)
+                .AndWhere((Project project) => project.guid == projectGuid)
+                .CreateUnique("(newOwner)-[:CONTRIBUTES_TO {type:ownerType}]->(project)")
+                .WithParam("ownerType", "type")
+                .ExecuteWithoutResults();
+        }
+
+        /**
+         * Remove a relationship between a project and a given owner.
+         */
+        private void RemoveProjectRelationship(GraphClient client, string projectGuid, string ownerGuid)
+        {
+            client.Connect();
+            
+            client.Cypher
+                .Match("(contributor:Person)-[contributes:CONTRIBUTES_TO]-(project:Project)")
+                .Where((Person contributor) => contributor.guid == ownerGuid)
+                .AndWhere((Project project) => project.guid == projectGuid)
+                .Delete("contributes")
+                .ExecuteWithoutResults();
+        }
         
-        //PATCH api/person/:userId/project/:projectId/add/:newMemberId
+        /**
+         * Completes action to add a new member to a given project.
+         *
+         * PATCH api/person/:userId/project/:projectId/add/:newMemberId
+         */
         [HttpPatch("{projectGuid}/add/{newMemberGuid}")]
         public ActionResult AddNewMember(string projectGuid, string newMemberGuid)
         {
-            var driver = GraphDatabase.Driver(_databaseUrl, AuthTokens.Basic(_dbUser, _dbPw));
+            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
             try
             {
-                using (var session = driver.Session())
-                {
-                    session.WriteTransaction(tx => CreateProjectRelationship(tx, projectGuid, newMemberGuid));
-                    return StatusCode(200);
-                }
+                AddProjectRelationship(client, projectGuid, newMemberGuid);
+                return StatusCode(200, "Successfully added user.");
             }
             catch (ServiceUnavailableException)
             {
@@ -221,6 +251,31 @@ namespace backend_api.Controllers
             {
                 Console.WriteLine(e);
                 return StatusCode(500);
+            }
+        }
+
+        /**
+         * Completes action to remove a specified member from a given project.
+         *
+         * PATCH api/person/:userId/project/:projectId/remove/:newMemberId
+         */
+        [HttpPatch("{projectGuid}/remove/{newMemberGuid}")]
+        public ActionResult RemoveMember(string projectGuid, string newMemberGuid)
+        {
+            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
+            try
+            {
+                RemoveProjectRelationship(client, projectGuid, newMemberGuid);
+                return StatusCode(200, "Successfully removed user.");
+            }
+            catch (ServiceUnavailableException)
+            {
+                return StatusCode(503, "Uh oh...");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, "Oops...");
             }
         }
         
