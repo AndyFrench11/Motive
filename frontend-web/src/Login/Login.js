@@ -1,22 +1,19 @@
 import React, {Component} from 'react';
-import {Button, Form, Grid, Header, Container, Segment, Icon} from 'semantic-ui-react'
-import {DateInput} from '@opuscapita/react-dates'
+import {Button, Form, Grid, Header, Container, Segment, Icon, Message} from 'semantic-ui-react'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
-import {postLogin, postSignUp} from "./actions";
 import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
+import {postLogin} from "./actions";
+import {login} from "../Common/Auth/actions";
 
 class Login extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             loginEmail: '',
-            loginPassword: '',
-            signUpName: '',
-            signUpEmail: '',
-            signUpPassword: '',
-            signUpBirthday: new Date()
+            loginPassword: ''
         };
     }
 
@@ -26,21 +23,13 @@ class Login extends Component {
         })
     };
 
-    handleDateChange = (date) => {
-        this.setState({
-            signUpBirthday: date
-        });
-    };
-
     handleLoginSubmit = () => {
-        console.log("login");
-        console.log(this.state);
         const loginDetails = {
             email: this.state.loginEmail,
             password: this.state.loginPassword
         };
-        const {dispatch} = this.props;
-        dispatch(postLogin(loginDetails));
+
+        this.props.login(loginDetails);
 
         this.setState({
             loginEmail: '',
@@ -52,8 +41,28 @@ class Login extends Component {
         this.props.history.push('/signup')
     };
 
+    getCompleteMessage = (statusCode) => {
+        switch (statusCode) {
+            case 200: return "Logging you in...";
+            case 401: return "Invalid email/password combination.";
+            case 500: return "The server is down, please try again.";
+            default: return "This shouldn't appear...";
+        }
+    };
+
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.loginAttemptCompleted && !nextProps.loginError) {
+            this.props.history.push('/home')
+        }
+    }
+
     render() {
-        const { loginEmail, loginPassword, signUpName, signUpEmail, signUpPassword} = this.state;
+        const { loginEmail, loginPassword} = this.state;
+
+        let responseMessage;
+        if (this.props.loginAttemptCompleted) {
+            responseMessage = this.getCompleteMessage(this.props.statusCode)
+        }
 
         return (
             <div className='home'>
@@ -69,7 +78,11 @@ class Login extends Component {
                                 <Header as='h2' color='black' textAlign='center'>
                                     Login
                                 </Header>
-                                <Form id="loginForm" size='large' onSubmit={this.handleLoginSubmit}>
+                                <Form id="loginForm"
+                                      loading={this.props.isLoggingIn}
+                                      error={this.props.loginAttemptCompleted && this.props.loginError}
+                                      success={this.props.loginAttemptCompleted && !this.props.loginError}
+                                      size='large' onSubmit={this.handleLoginSubmit}>
                                     <Segment>
                                         <Form.Input
                                             fluid icon='envelope outline'
@@ -92,7 +105,18 @@ class Login extends Component {
                                             onChange={this.handleChange}
                                         />
                                         <button className="ui large primary button">Login</button>
+                                        <Message
+                                            error
+                                            header="Oops!"
+                                            content={responseMessage}
+                                        />
+                                        <Message
+                                            success
+                                            header='Welcome!'
+                                            content={responseMessage}
+                                        />
                                     </Segment>
+
                                 </Form>
                                 <br/>
                                 <button className="ui secondary button" onClick={this.handleSignUpSelected}>Sign Up</button>
@@ -116,15 +140,19 @@ class Login extends Component {
     };
 }
 
-const mapStateToProps = state => {
-    const { landingReducers } = state;
-    const { loginController } = landingReducers;
-    const { isPosting, lastUpdated, result } = loginController;
+function mapDispatchToProps(dispatch) {
     return {
-        isSigningIn: isPosting,
-        result: result,
-        lastUpdated: lastUpdated,
+        login: (valuesJson) => dispatch(login(valuesJson))
+    };
+}
+
+const mapStateToProps = state => {
+    return {
+        isLoggingIn: state.authReducer.authController.isAuthenticating,
+        statusCode: state.authReducer.authController.statusCode,
+        loginAttemptCompleted: state.authReducer.authController.complete,
+        loginError: state.authReducer.authController.error,
     };
 };
 
-export default connect(mapStateToProps) (Login);
+export default connect(mapStateToProps, mapDispatchToProps) (Login);

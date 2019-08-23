@@ -1,54 +1,47 @@
 import {combineReducers} from 'redux'
 import {
     REQUEST_LOGIN,
-    RECEIVE_LOGIN_RESPONSE,
-    REQUEST_SIGN_UP,
-    RECEIVE_SIGN_UP_RESPONSE
+    RECEIVE_LOGIN_RESPONSE, RECEIVE_LOGIN_ERROR
 } from './actions'
 
-function loginController(state = {
-    isSigningIn: false,
-    result: ""
-}, action) {
+const loginInitialState = {
+    isPosting: false,
+    result: "",
+    lastUpdated: -1,
+    complete: false,
+    error: false
+};
+
+function loginController(state = loginInitialState, action) {
     switch (action.type) {
         case REQUEST_LOGIN:
-            return Object.assign({}, state, {
-                isSigningIn: true,
-            });
+            return {...state,
+                isPosting: true,
+                complete: false,
+                error: false
+            };
         case RECEIVE_LOGIN_RESPONSE:
-            return Object.assign({}, state, {
-                isSigningIn: false,
+            return {...state,
+                isPosting: false,
                 result: action.result,
-                lastUpdated: action.receivedAt
-            });
+                lastUpdated: action.receivedAt,
+                complete: true
+            };
+        case RECEIVE_LOGIN_ERROR:
+            return {...state,
+                isPosting: false,
+                result: action.result.response,
+                lastUpdated: action.receivedAt,
+                complete: true,
+                error: true
+            };
         default:
             return state
     }
 }
 
-function signUpController(state = {
-    isSigningIn: false,
-    result: ""
-}, action) {
-    switch (action.type) {
-        case REQUEST_SIGN_UP:
-            return Object.assign({}, state, {
-                isSigningIn: true,
-            });
-        case RECEIVE_SIGN_UP_RESPONSE:
-            return Object.assign({}, state, {
-                isSigningIn: false,
-                result: action.result,
-                lastUpdated: action.receivedAt
-            });
-        default:
-            return state
-    }
-}
-
-const landingReducers = combineReducers({
-    loginController,
-    signUpController
+const loginReducer = combineReducers({
+    loginController
 });
 
-export default landingReducers
+export default loginReducer

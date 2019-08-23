@@ -36,11 +36,12 @@ namespace backend_api.Models
         {
         }
 
-        public Person(string firstName, string lastName, string email, string dateOfBirth, string profileBio, string guid, string dateJoined)
+        public Person(string firstName, string lastName, string email, string dateOfBirth, string password, string profileBio, string guid, string dateJoined)
         {
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
+            this.password = password;
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
             this.dateJoined = dateJoined;
@@ -52,6 +53,7 @@ namespace backend_api.Models
             this.firstName = props["firstName"].ToString();
             this.lastName = props["lastName"].ToString();
             this.email = props["email"].ToString();
+            this.password = props["password"].ToString();
             this.dateOfBirth = props["dateOfBirth"].ToString();
             this.profileBio = props["profileBio"].ToString();
             this.dateJoined = props["dateJoined"].ToString();

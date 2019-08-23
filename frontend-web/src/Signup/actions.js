@@ -35,7 +35,7 @@ export function postSignUp(valuesJson) {
                     // Something happened in setting up the request that triggered an Error
                     console.log('Error', error.message);
                 }
-        });
+            });
     }
 }
 
@@ -46,7 +46,6 @@ function requestSignUp() {
 }
 
 function receiveSignUpResponse(response) {
-    console.log("HERRRREEEE");
     return {
         type: RECEIVE_SIGN_UP_RESPONSE,
         result: response,
@@ -55,7 +54,6 @@ function receiveSignUpResponse(response) {
 }
 
 function receiveSignUpError(error) {
-    console.log("HERRRREEEE?!");
     return {
         type: RECEIVE_SIGN_UP_ERROR,
         result: error,

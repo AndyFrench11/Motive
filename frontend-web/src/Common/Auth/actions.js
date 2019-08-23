@@ -1,27 +1,31 @@
 import axios from "axios";
+import jwtDecode from 'jwt-decode'
 
-export const REQUEST_LOGIN = 'REQUEST_LOGIN';
-export const RECEIVE_LOGIN_RESPONSE = 'RECEIVE_LOGIN_RESPONSE';
-export const RECEIVE_LOGIN_ERROR = 'RECEIVE_LOGIN_ERROR';
+export const LOGIN_REQUEST = 'LOGIN_REQUEST';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAILURE = 'LOGIN_FAILURE';
+export const LOGOUT = 'LOGOUT';
 
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
 
-export function postLogin(valuesJson) {
+export function login(valuesJson) {
     return dispatch => {
         dispatch(requestLogin());
-        console.log(valuesJson);
+
         let login = {
             email: valuesJson.email,
             password: valuesJson.password
         };
 
-        console.log(login);
-
         return axios.post(serverURL + "/login", login, {headers: {
                 'Content-Type': 'application/json'
             }
         })
-            .then(response => dispatch(receiveLoginResponse(response)))
+            .then(response => {
+                localStorage.authToken = response.data;
+                console.log(jwtDecode(response.data));
+                dispatch(receiveLoginSuccess(response))
+            })
             .catch(error => {
                 if (error.response) {
                     // The request was made and the server responded with a status code
@@ -38,23 +42,31 @@ export function postLogin(valuesJson) {
     }
 }
 
-function requestLogin() {
+export function logout() {
+    delete localStorage.authToken;
     return {
-        type: REQUEST_LOGIN,
+        type: LOGOUT
     }
 }
-function receiveLoginResponse(response) {
+
+function requestLogin() {
     return {
-        type: RECEIVE_LOGIN_RESPONSE,
-        result: response,
+        type: LOGIN_REQUEST,
+    }
+}
+function receiveLoginSuccess(response) {
+    return {
+        type: LOGIN_SUCCESS,
+        user: jwtDecode(response.data),
+        statusCode: response.status,
         receivedAt: Date.now()
     }
 }
 
 function receiveLoginError(error) {
     return {
-        type: RECEIVE_LOGIN_ERROR,
-        result: error,
+        type: LOGIN_FAILURE,
+        statusCode: error.status,
         receivedAt: Date.now()
     }
 }

@@ -10,7 +10,6 @@ import UserProfile from "./UserProfile/UserProfile";
 import { Provider } from "react-redux";
 import configureStore from "./configureStore";
 import { connect } from "react-redux";
-import Landing from "./OLD.Landing/Landing";
 import Home from "./Home/Home";
 import history from "./history"
 import "react-datepicker/dist/react-datepicker.css";

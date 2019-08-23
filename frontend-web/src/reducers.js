@@ -8,6 +8,8 @@ import {
 import {reducer as formReducer} from "redux-form";
 import profilePage from "./UserProfile/reducers";
 import signUpReducer from "./Signup/reducers";
+import loginReducer from "./Login/reducers";
+import authReducer from "./Common/Auth/reducer";
 
 
 function newProject(
@@ -79,7 +81,8 @@ function projectController(state = {}, action) {
 const rootReducer = combineReducers({
     form: formReducer,
     createProjectController,
-    projectController,
+    authReducer,
+    loginReducer,
     signUpReducer,
     profilePage
 });

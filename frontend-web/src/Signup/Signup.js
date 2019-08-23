@@ -45,6 +45,8 @@ class SignUp extends Component {
             birthday: this.state.dateOfBirthInput
         };
 
+        // TODO clear inputs
+
         this.props.postSignUp(signUpDetails);
     };
 
