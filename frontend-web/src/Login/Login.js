@@ -50,6 +50,7 @@ class Login extends Component {
         }
     };
 
+    // HANDY!!!
     componentWillReceiveProps (nextProps) {
         if (nextProps.loginAttemptCompleted && !nextProps.loginError) {
             this.props.history.push('/home')
@@ -60,7 +61,7 @@ class Login extends Component {
         const { loginEmail, loginPassword} = this.state;
 
         let responseMessage;
-        if (this.props.loginAttemptCompleted) {
+        if (this.props.loginAttemptCompleted && this.props.statusCode) {
             responseMessage = this.getCompleteMessage(this.props.statusCode)
         }
 
