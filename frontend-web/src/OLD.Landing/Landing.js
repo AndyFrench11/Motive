@@ -146,7 +146,7 @@ const mapStateToProps = state => {
     const { loginController } = landingReducers;
     const { isPosting, lastUpdated, result } = loginController;
     return {
-            isPosting: isPosting,
+            isSigningIn: isPosting,
             result: result,
             lastUpdated: lastUpdated,
         };

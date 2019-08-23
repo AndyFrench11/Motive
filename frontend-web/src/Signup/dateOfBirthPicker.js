@@ -45,7 +45,7 @@ export default class DateOfBirthPicker extends React.Component {
 
     render() {
         return (
-            <Form error={!this.state.isDateValid && this.state.monthInput && this.state.dayInput && this.state.yearInput}>
+            <Form>
                 <Form.Group >
                     <Dropdown
                         onChange={this.handleChange}
@@ -53,7 +53,7 @@ export default class DateOfBirthPicker extends React.Component {
                         placeholder='Choose an option'
                         fluid
                         selection
-
+                        error={!this.state.isDateValid && this.state.monthInput && this.state.dayInput && this.state.yearInput}
                         name='monthInput'
                     />
                     <Form.Input
@@ -62,6 +62,8 @@ export default class DateOfBirthPicker extends React.Component {
                         name='dayInput'
                         onChange={this.handleChange}
                         type="number"
+
+                        error={!this.state.isDateValid && this.state.monthInput && this.state.dayInput && this.state.yearInput}
                         min={1}
                         max={31}
                     />
@@ -71,20 +73,17 @@ export default class DateOfBirthPicker extends React.Component {
                         name='yearInput'
                         onChange={this.handleChange}
                         type="number"
-
+                        error={!this.state.isDateValid && this.state.monthInput && this.state.dayInput && this.state.yearInput}
                         min={1900}
                         max={2020}
                     />
                 </Form.Group>
-                <Message
-                    error
-                    header='Invalid Date Of Birth'
-                    content='Please enter a valid DOB.'
-                />
+                {/*<Message*/}
+                {/*    error*/}
+                {/*    header='Invalid Date Of Birth'*/}
+                {/*    content='Please enter a valid DOB.'*/}
+                {/*/>*/}
             </Form>
-
-
-
         )
     }
 }

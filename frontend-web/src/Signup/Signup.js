@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form, Grid, Header, Container, Segment, Icon, List, Menu, Dropdown} from 'semantic-ui-react'
+import {Button, Form, Grid, Header, Container, Segment, Icon, List, Menu, Dropdown, Message} from 'semantic-ui-react'
 import {DateInput} from '@opuscapita/react-dates'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
@@ -8,8 +8,6 @@ import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
 import validate from "../Common/FormValidation";
 import DateOfBirthPicker from "./dateOfBirthPicker";
-import {fetchProfile, fetchProjects} from "../UserProfile/actions";
-import {postProject} from "../actions";
 
 class SignUp extends Component {
     constructor(props) {
@@ -22,6 +20,7 @@ class SignUp extends Component {
             emailInput: '',
             passwordInput: '',
             confirmPasswordInput: '',
+            dateOfBirthInput: ''
         };
     }
 
@@ -32,33 +31,37 @@ class SignUp extends Component {
     };
 
     handleDateChange = (momentDate) => {
-        //console.log(`Is DOB valid: ${momentDate.isValid()}`);
-        this.setState({dateOfBirth: momentDate});
+        this.setState({dateOfBirthInput: momentDate.format("D-M-YYYY")});
     };
 
 
     handleSignUpSubmit = () => {
-        console.log("sign up");
-        console.log(this.state);
-
         const signUpDetails = {
             firstName: this.state.firstNameInput,
             lastName: this.state.lastNameInput,
-            email: this.state.signUpEmail,
-            password: this.state.signUpPassword,
-            birthday: this.state.signUpBirthday
+            email: this.state.emailInput,
+            password: this.state.passwordInput,
+            birthday: this.state.dateOfBirthInput
         };
-        this.props.postSignUp(signUpDetails);
 
-        // this.setState({
-        //     signUpName: '',
-        //     signUpEmail: '',
-        //     signUpPassword: '',
-        //     signUpBirthday: new Date()
-        // })
+        this.props.postSignUp(signUpDetails);
+    };
+
+    getErrorMessage = (errorCode) => {
+        switch (errorCode) {
+            case 409: return "Your account already exists.";
+            case 500: return "The server is down, please try again.";
+            default: return "This shouldn't appear...";
+        }
     };
 
     render() {
+
+        let signInErrorMessage;
+        if (this.props.signInError) {
+            signInErrorMessage = this.getErrorMessage(this.props.result.response.status)
+        }
+
         return (
             <div className='home'>
                 <TopNavBar/>
@@ -70,7 +73,10 @@ class SignUp extends Component {
                             <Header as='h2' color='black' textAlign='center'>
                                 Sign Up
                             </Header>
-                            <Form size='large' onSubmit={this.handleSignUpSubmit}>
+                            <Form
+                                loading={this.props.isSigningIn}
+                                error={this.props.signInError}
+                                  size='large' onSubmit={this.handleSignUpSubmit}>
                                 <Segment>
                                     {/*Name Input*/}
                                     <Form.Group widths='equal'>
@@ -143,6 +149,11 @@ class SignUp extends Component {
                                     >
                                         Sign up
                                 </Form.Button>
+                                <Message
+                                    error
+                                    header="Oops!"
+                                    content={signInErrorMessage}
+                                />
                                 </Segment>
                             </Form>
                             <br/>
@@ -171,13 +182,11 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    console.log(state);
-    const { signUpReducer } = state;
-    const { isPosting, lastUpdated, result } = signUpReducer;
     return {
-        isPosting: isPosting,
-        result: result,
-        lastUpdated: lastUpdated,
+        isSigningIn: state.signUpReducer.signUpController.isPosting,
+        result: state.signUpReducer.signUpController.result,
+        lastUpdated: state.signUpReducer.signUpController.lastUpdated,
+        signInError: state.signUpReducer.signUpController.error
     };
 };
 

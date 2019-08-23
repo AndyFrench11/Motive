@@ -2,9 +2,11 @@ import axios from "axios";
 
 export const REQUEST_SIGN_UP = 'REQUEST_SIGN_UP';
 export const RECEIVE_SIGN_UP_RESPONSE = 'RECEIVE_SIGN_UP_RESPONSE';
+export const RECEIVE_SIGN_UP_ERROR = 'RECEIVE_SIGN_UP_ERROR';
 
 
-const localUrl = `http://localhost:8080/api`;
+
+const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
 
 export function postSignUp(valuesJson) {
     return dispatch => {
@@ -15,21 +17,27 @@ export function postSignUp(valuesJson) {
             lastName: valuesJson.lastName,
             email: valuesJson.email,
             password: valuesJson.password,
-            birthday: valuesJson.birthday
+            dateOfBirth: valuesJson.birthday
         };
 
-        console.log(signUp);
-
-        return axios.post(localUrl + "/signUp", signUp, {headers: {
+        return axios.post(serverURL + "/signup", signUp, {headers: {
                 'Content-Type': 'application/json'
             }
         })
             .then(response => dispatch(receiveSignUpResponse(response)))
-            .catch(error =>  {
-                console.log("The server is not running!");
-                console.log("Need to update UI with error!");
-                console.log(error.response)
-            })
+            .catch(error => {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    dispatch(receiveSignUpError(error))
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+        });
     }
 }
 
@@ -40,17 +48,18 @@ function requestSignUp() {
 }
 
 function receiveSignUpResponse(response) {
-    if (response.status === 200) {
-        return {
-            type: RECEIVE_SIGN_UP_RESPONSE,
-            result: "OK",
-            receivedAt: Date.now()
-        }
-    } else if (response.status === 500) {
-        return {
-            type: RECEIVE_SIGN_UP_RESPONSE,
-            result: "Internal Server Error",
-            receivedAt: Date.now()
-        }
+    return {
+        type: RECEIVE_SIGN_UP_RESPONSE,
+        result: response,
+        receivedAt: Date.now()
+    }
+}
+
+function receiveSignUpError(error) {
+    console.log(error);
+    return {
+        type: RECEIVE_SIGN_UP_ERROR,
+        result: error,
+        receivedAt: Date.now()
     }
 }

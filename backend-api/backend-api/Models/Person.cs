@@ -4,10 +4,8 @@ using Neo4j.Driver.V1;
 
 namespace backend_api.Models
 {
-    public class Person
+    public class Person : BaseEntity
     {
-        public string guid { get; set; }
-        
         public string firstName { get; set; }
         
         public string lastName { get; set; }
@@ -31,7 +29,6 @@ namespace backend_api.Models
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
             
-            this.guid = Guid.NewGuid().ToString();
             this.dateJoined = DateTime.Today.ToString("dd/MM/yy");
         }
 
@@ -46,8 +43,6 @@ namespace backend_api.Models
             this.email = email;
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
-
-            this.guid = guid;
             this.dateJoined = dateJoined;
         }
 
@@ -59,7 +54,6 @@ namespace backend_api.Models
             this.email = props["email"].ToString();
             this.dateOfBirth = props["dateOfBirth"].ToString();
             this.profileBio = props["profileBio"].ToString();
-            this.guid = props["guid"].ToString();
             this.dateJoined = props["dateJoined"].ToString();
         }
 

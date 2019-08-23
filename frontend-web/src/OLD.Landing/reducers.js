@@ -7,17 +7,17 @@ import {
 } from './actions'
 
 function loginController(state = {
-    isPosting: false,
+    isSigningIn: false,
     result: ""
 }, action) {
     switch (action.type) {
         case REQUEST_LOGIN:
             return Object.assign({}, state, {
-                isPosting: true,
+                isSigningIn: true,
             });
         case RECEIVE_LOGIN_RESPONSE:
             return Object.assign({}, state, {
-                isPosting: false,
+                isSigningIn: false,
                 result: action.result,
                 lastUpdated: action.receivedAt
             });
@@ -27,17 +27,17 @@ function loginController(state = {
 }
 
 function signUpController(state = {
-    isPosting: false,
+    isSigningIn: false,
     result: ""
 }, action) {
     switch (action.type) {
         case REQUEST_SIGN_UP:
             return Object.assign({}, state, {
-                isPosting: true,
+                isSigningIn: true,
             });
         case RECEIVE_SIGN_UP_RESPONSE:
             return Object.assign({}, state, {
-                isPosting: false,
+                isSigningIn: false,
                 result: action.result,
                 lastUpdated: action.receivedAt
             });

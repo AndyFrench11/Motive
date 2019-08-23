@@ -12,7 +12,7 @@ import signUpReducer from "./Signup/reducers";
 
 function newProject(
     state = {
-        isPosting: false,
+        isSigningIn: false,
         result: ""
     },
     action
@@ -20,11 +20,11 @@ function newProject(
     switch (action.type) {
         case REQUEST_NEW_PROJECT:
             return Object.assign({}, state, {
-                isPosting: true,
+                isSigningIn: true,
             });
         case RECEIVE_NEW_PROJECT_RESPONSE:
             return Object.assign({}, state, {
-                isPosting: false,
+                isSigningIn: false,
                 result: action.result,
                 lastUpdated: action.receivedAt
             });
