@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
+using backend_api.Models;
 
 namespace backend_api.Database.PersonRepository
 {
     public interface IPersonRepository
     {
-        RepositoryReturn<IEnumerable<Models.Person>> GetAll();
+        RepositoryReturn<IEnumerable<Person>> GetAll();
 
-        RepositoryReturn<Models.Person> GetByGuid(Guid personGuid);
+        RepositoryReturn<Person> GetByGuid(Guid personGuid);
         
-        RepositoryReturn<Models.Person> GetByEmail(string personEmail);
+        RepositoryReturn<Person> GetByEmail(string personEmail);
 
-        RepositoryReturn<bool> Add(Models.Person personToAdd);
+        RepositoryReturn<bool> Add(Person personToAdd);
 
-        RepositoryReturn<bool> Edit(Models.Person personToOverwrite);
+        RepositoryReturn<bool> Edit(Person personToOverwrite);
 
-        RepositoryReturn<bool> Delete(Models.Person personToDelete);
+        RepositoryReturn<bool> Delete(Guid personGuid);
     }
 }

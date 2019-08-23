@@ -4,15 +4,13 @@ export const REQUEST_SIGN_UP = 'REQUEST_SIGN_UP';
 export const RECEIVE_SIGN_UP_RESPONSE = 'RECEIVE_SIGN_UP_RESPONSE';
 export const RECEIVE_SIGN_UP_ERROR = 'RECEIVE_SIGN_UP_ERROR';
 
-
-
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
 
 export function postSignUp(valuesJson) {
     return dispatch => {
         dispatch(requestSignUp());
 
-        let signUp = {
+        let signUpJson = {
             firstName: valuesJson.firstName,
             lastName: valuesJson.lastName,
             email: valuesJson.email,
@@ -20,9 +18,9 @@ export function postSignUp(valuesJson) {
             dateOfBirth: valuesJson.birthday
         };
 
-        return axios.post(serverURL + "/signup", signUp, {headers: {
+        return axios.post(serverURL + "/signup", signUpJson, {headers: {
                 'Content-Type': 'application/json'
-            }
+            },
         })
             .then(response => dispatch(receiveSignUpResponse(response)))
             .catch(error => {
@@ -48,6 +46,7 @@ function requestSignUp() {
 }
 
 function receiveSignUpResponse(response) {
+    console.log("HERRRREEEE");
     return {
         type: RECEIVE_SIGN_UP_RESPONSE,
         result: response,
@@ -56,7 +55,7 @@ function receiveSignUpResponse(response) {
 }
 
 function receiveSignUpError(error) {
-    console.log(error);
+    console.log("HERRRREEEE?!");
     return {
         type: RECEIVE_SIGN_UP_ERROR,
         result: error,

@@ -8,6 +8,7 @@ const signUpInitialState = {
     isPosting: false,
     result: "",
     lastUpdated: -1,
+    complete: false,
     error: false
 };
 
@@ -15,19 +16,22 @@ function signUpController(state = signUpInitialState, action) {
     switch (action.type) {
         case REQUEST_SIGN_UP:
             return {...state,
-                isSigningIn: true,
+                isPosting: true,
+                complete: false
             };
         case RECEIVE_SIGN_UP_RESPONSE:
             return {...state,
-                isSigningIn: false,
+                isPosting: false,
                 result: action.result,
-                lastUpdated: action.receivedAt
+                lastUpdated: action.receivedAt,
+                complete: true
             };
         case RECEIVE_SIGN_UP_ERROR:
             return {...state,
-                isSigningIn: false,
+                isPosting: false,
                 result: action.result,
                 lastUpdated: action.receivedAt,
+                complete: true,
                 error: true
             };
         default:

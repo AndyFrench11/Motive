@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using backend_api.Models;
 using Neo4j.Driver.V1;
 
 namespace backend_api.Database.PersonRepository
@@ -14,7 +15,7 @@ namespace backend_api.Database.PersonRepository
             _neo4jConnection = new neo4jConnection();
         }
         
-        public RepositoryReturn<IEnumerable<Models.Person>> GetAll()
+        public RepositoryReturn<IEnumerable<Person>> GetAll()
         {
             try
             {
@@ -27,23 +28,23 @@ namespace backend_api.Database.PersonRepository
 
                         //Do a check for no people
 
-                        var records = result.Select(record => new Models.Person(record[0].As<INode>().Properties)).ToList();
+                        var records = result.Select(record => new Person(record[0].As<INode>().Properties)).ToList();
 
                         return records;
 
                     });
 
-                    return new RepositoryReturn<IEnumerable<Models.Person>>(returnedPeople);
+                    return new RepositoryReturn<IEnumerable<Person>>(returnedPeople);
                 }
             }
             
             catch (Neo4jException e)
             {
-                return new RepositoryReturn<IEnumerable<Models.Person>>(true, e);
+                return new RepositoryReturn<IEnumerable<Person>>(true, e);
             }
         }
 
-        public RepositoryReturn<Models.Person> GetByGuid(Guid personGuid)
+        public RepositoryReturn<Person> GetByGuid(Guid personGuid)
         {
             try
             {
@@ -62,26 +63,54 @@ namespace backend_api.Database.PersonRepository
                         }
                         else
                         {
-                            return new Models.Person(record[0].As<INode>().Properties);
+                            return new Person(record[0].As<INode>().Properties);
                         }
                     });
 
-                    return new RepositoryReturn<Models.Person>(returnedPerson);
+                    return new RepositoryReturn<Person>(returnedPerson);
                 }
             }
 
             catch (Neo4jException e)
             {
-                return new RepositoryReturn<Models.Person>(true, e);
+                return new RepositoryReturn<Person>(true, e);
             }
         }
 
-        public RepositoryReturn<Models.Person> GetByEmail(string personEmail)
+        public RepositoryReturn<Person> GetByEmail(string personEmail)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+
+                    var returnedPerson = session.ReadTransaction(tx =>
+                    {
+                        var result = tx.Run($"MATCH (a:Person) WHERE a.email = '{personEmail}' RETURN a");
+
+                        //Do a check to see if result.single() is empty
+                        var record = result.SingleOrDefault();
+                        if (record == null)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return new Person(record[0].As<INode>().Properties);
+                        }
+                    });
+
+                    return new RepositoryReturn<Person>(returnedPerson);
+                }
+            }
+
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<Person>(true, e);
+            }
         }
 
-        public RepositoryReturn<bool> Add(Models.Person personToAdd)
+        public RepositoryReturn<bool> Add(Person personToAdd)
         {
             try
             {
@@ -97,7 +126,7 @@ namespace backend_api.Database.PersonRepository
             }
         }        
         
-        private void CreatePersonNode(ITransaction tx, Models.Person personToCreate)
+        private void CreatePersonNode(ITransaction tx, Person personToCreate)
         {
             tx.Run("CREATE(person:Person {" +
                    $"firstName: '{personToCreate.firstName}', " +
@@ -111,14 +140,42 @@ namespace backend_api.Database.PersonRepository
                    "})");
         }
 
-        public RepositoryReturn<bool> Edit(Models.Person personToOverwrite)
+        public RepositoryReturn<bool> Edit(Person personToOverwrite)
         {
             throw new NotImplementedException();
         }
 
-        public RepositoryReturn<bool> Delete(Models.Person personToDelete)
+        public RepositoryReturn<bool> Delete(Guid personToDelete)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+
+                    var returnedPerson = session.ReadTransaction(tx =>
+                    {
+                        var result = tx.Run($"MATCH (a:Person) WHERE a.guid = '{personToDelete}' DELETE a");
+
+                        //Do a check to see if result.single() is empty
+                        var record = result.SingleOrDefault();
+                        if (record == null)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return new Person(record[0].As<INode>().Properties);
+                        }
+                    });
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
         }
     }
 }

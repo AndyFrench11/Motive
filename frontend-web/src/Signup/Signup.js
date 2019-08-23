@@ -16,12 +16,13 @@ class SignUp extends Component {
         this.state = {
             firstNameInput: '',
             lastNameInput: '',
-            usernameInput: '',
             emailInput: '',
             passwordInput: '',
             confirmPasswordInput: '',
             dateOfBirthInput: ''
         };
+
+        console.log(this.props.signUpAttemptCompleted)
     }
 
     handleChange = (event, {name, value}) => {
@@ -47,8 +48,9 @@ class SignUp extends Component {
         this.props.postSignUp(signUpDetails);
     };
 
-    getErrorMessage = (errorCode) => {
-        switch (errorCode) {
+    getCompleteMessage = (statusCode) => {
+        switch (statusCode) {
+            case 201: return "You're all signed up!";
             case 409: return "Your account already exists.";
             case 500: return "The server is down, please try again.";
             default: return "This shouldn't appear...";
@@ -57,9 +59,9 @@ class SignUp extends Component {
 
     render() {
 
-        let signInErrorMessage;
-        if (this.props.signInError) {
-            signInErrorMessage = this.getErrorMessage(this.props.result.response.status)
+        let responseMessage;
+        if (this.props.signUpAttemptCompleted) {
+            responseMessage = this.getCompleteMessage(this.props.result.status)
         }
 
         return (
@@ -75,7 +77,8 @@ class SignUp extends Component {
                             </Header>
                             <Form
                                 loading={this.props.isSigningIn}
-                                error={this.props.signInError}
+                                error={this.props.signUpAttemptCompleted && this.props.signInError}
+                                success={this.props.signUpAttemptCompleted && !this.props.signInError}
                                   size='large' onSubmit={this.handleSignUpSubmit}>
                                 <Segment>
                                     {/*Name Input*/}
@@ -95,15 +98,6 @@ class SignUp extends Component {
                                     </Form.Group>
 
                                     <DateOfBirthPicker callbackFromParent={this.handleDateChange}/>
-
-                                    {/*Username Input*/}
-                                    <Form.Input
-                                        placeholder='Username'
-                                        required
-                                        name='usernameInput'
-                                        onChange={this.handleChange}
-                                        // validation={}
-                                    />
 
                                     {/*Email Input*/}
                                     <Form.Input
@@ -152,7 +146,12 @@ class SignUp extends Component {
                                 <Message
                                     error
                                     header="Oops!"
-                                    content={signInErrorMessage}
+                                    content={responseMessage}
+                                />
+                                <Message
+                                    success
+                                    header='Welcome!'
+                                    content={responseMessage}
                                 />
                                 </Segment>
                             </Form>
@@ -186,7 +185,8 @@ const mapStateToProps = state => {
         isSigningIn: state.signUpReducer.signUpController.isPosting,
         result: state.signUpReducer.signUpController.result,
         lastUpdated: state.signUpReducer.signUpController.lastUpdated,
-        signInError: state.signUpReducer.signUpController.error
+        signInError: state.signUpReducer.signUpController.error,
+        signUpAttemptCompleted: state.signUpReducer.signUpController.complete
     };
 };
 

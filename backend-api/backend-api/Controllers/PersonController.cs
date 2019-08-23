@@ -70,15 +70,41 @@ namespace backend_api.Controllers
 
             return StatusCode(201);
         }
-
-
         
-        // Get api/person
+        
+        // GET api/person
         [HttpGet]
         public ActionResult<List<Person>> GetAllPeople()
         {
             RepositoryReturn<IEnumerable<Person>> result = _personRepository.GetAll();
             
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200, result.ReturnValue);
+        }
+        
+        // DELETE api/person/{guid}
+        [HttpDelete("{guid}")]
+        public ActionResult<Person> Delete(string guid)
+        {
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(guid);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<bool> result = _personRepository.Delete(guidToGet);
             if (result.IsError)
             {
                 return StatusCode(500, result.ErrorException.Message);
