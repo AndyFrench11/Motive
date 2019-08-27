@@ -66,7 +66,7 @@ function receiveLoginSuccess(response) {
 function receiveLoginError(error) {
     return {
         type: LOGIN_FAILURE,
-        statusCode: error.status,
+        statusCode: error.response.status,
         receivedAt: Date.now()
     }
 }

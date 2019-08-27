@@ -20,6 +20,7 @@ function authController(state = initialState, action) {
                 error: false
             };
         case LOGIN_FAILURE:
+            console.log(action);
             return {...state,
                 isAuthenticating: false,
                 statusCode: action.statusCode,
