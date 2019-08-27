@@ -7,12 +7,14 @@ import {
 } from './actions'
 import {reducer as formReducer} from "redux-form";
 import profilePage from "./UserProfile/reducers";
-import landingReducers from "./Landing/reducers";
+import signUpReducer from "./Signup/reducers";
+import loginReducer from "./Login/reducers";
+import authReducer from "./Common/Auth/reducer";
 
 
 function newProject(
     state = {
-        isPosting: false,
+        isSigningIn: false,
         result: ""
     },
     action
@@ -20,11 +22,11 @@ function newProject(
     switch (action.type) {
         case REQUEST_NEW_PROJECT:
             return Object.assign({}, state, {
-                isPosting: true,
+                isSigningIn: true,
             });
         case RECEIVE_NEW_PROJECT_RESPONSE:
             return Object.assign({}, state, {
-                isPosting: false,
+                isSigningIn: false,
                 result: action.result,
                 lastUpdated: action.receivedAt
             });
@@ -76,13 +78,12 @@ function projectController(state = {}, action) {
     }
 }
 
-
-
 const rootReducer = combineReducers({
     form: formReducer,
     createProjectController,
-    projectController,
-    landingReducers,
+    authReducer,
+    loginReducer,
+    signUpReducer,
     profilePage
 });
 
