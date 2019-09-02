@@ -3,6 +3,53 @@ import {
     Image, Segment, List, Button, Icon, Input, Transition, Label, Form, Grid, Header
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+//Drag and Drop Properties
+// fake data generator
+const getItems = count =>
+    Array.from({ length: count }, (v, k) => k).map(k => ({
+        id: `item-${k}`,
+        content: `item ${k}`
+    }));
+
+// a little function to help us with reordering the result
+const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+};
+
+const grid = 8;
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: "none",
+    padding: grid * 2,
+    margin: `0 0 ${grid}px 0`,
+
+    // change background colour if dragging
+    background: isDragging ? "lightgrey" : "white",
+    borderColor: isDragging ? "grey" : "#dddddd",
+    borderRadius: "8px",
+    borderStyle: "solid",
+    borderWidth: "1px",
+
+
+    // styles we need to apply on draggables
+    ...draggableStyle
+});
+
+const getListStyle = isDraggingOver => ({
+    // background: isDraggingOver ? "#adacac" : "lightgrey",
+    background: "white",
+    padding: grid,
+    width: "50%",
+    borderRadius: "4px",
+});
+
 class ProjectTasks extends Component {
 
     constructor(props) {
@@ -14,18 +61,44 @@ class ProjectTasks extends Component {
             activeCreateTaskButton: false,
             taskList: this.props.taskList,
             taskInputVisible: false,
-            currentInput: ""
+            currentInput: "",
+            items: getItems(10)
+
         };
 
+        this.onDragEnd = this.onDragEnd.bind(this);
+
+    }
+
+    onDragEnd(result) {
+        // dropped outside the list
+        if (!result.destination) {
+            return;
+        }
+
+        const taskList = reorder(
+            this.state.taskList,
+            result.source.index,
+            result.destination.index
+        );
+
+        this.setState({
+            taskList
+        });
     }
 
     addNewTask = () => {
 
         if(this.state.taskInputVisible === true){
-            console.log("Hello");
-            const { currentInput } = this.state;
+            const { currentInput, taskList } = this.state;
             if(currentInput !== "") {
-                this.state.taskList.push({name: this.state.currentInput});
+                const newIndex = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                taskList.push({name: currentInput, guid: newIndex});
+                this.setState({
+                        taskList: taskList
+                    }
+                );
+
                 //TODO Update the backend!
 
             }
@@ -48,7 +121,6 @@ class ProjectTasks extends Component {
 
     updateCurrentInput = (event, {value}) => {
         //Update the UI
-        console.log("Yarp");
         this.setState({ currentInput: value });
 
     };
@@ -72,7 +144,6 @@ class ProjectTasks extends Component {
 
     };
 
-
     render() {
 
         const { taskList, activeCreateTaskButton, taskInputVisible, selectedTaskIndex } = this.state;
@@ -82,35 +153,67 @@ class ProjectTasks extends Component {
                 <Segment style={{ marginLeft: '5em', marginRight: '5em', marginBottom: '5em'}}>
 
 
-                    <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
-                        {taskList.map((task, index) =>
-                            <List.Item key={index}>
-                                <List.Content floated='left'>
-                                    <Button listIndex={index} basic circular toggle active={task.completed} onClick={this.markTaskAsDone}
-                                            icon='check'>
-                                    </Button>
-                                </List.Content>
-                                <List.Content floated='right'>
-                                    <Button index={index} icon onClick={this.deleteTask} basic circular negative
-                                            icon='delete'>
-                                    </Button>
-                                </List.Content>
-                                <List.Content>
-                                    {taskList[index].name}
-                                </List.Content>
-                            </List.Item>
-                        )}
-                    </Transition.Group>
+
+                    <DragDropContext onDragEnd={this.onDragEnd}>
+                        <Droppable droppableId="droppable">
+                            {(provided, snapshot) => (
+                                <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                    style={getListStyle(snapshot.isDraggingOver)}
+                                >
+                                    {this.state.taskList.map((task, index) => (
+                                        <Draggable key={task.guid} draggableId={task.guid} index={index}>
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    style={getItemStyle(
+                                                        snapshot.isDragging,
+                                                        provided.draggableProps.style
+                                                    )}
+                                                >
+
+                                                    <Grid divided='vertically' >
+                                                        <Grid.Row >
+                                                            <Grid.Column width={1} >
+                                                                <Button listIndex={index} basic circular toggle active={task.completed} onClick={this.markTaskAsDone}
+                                                                        icon='check'>
+                                                                </Button>
+                                                            </Grid.Column>
+                                                            <Grid.Column width={10} style={{marginLeft: '2em'}}>
+                                                                {taskList[index].name}
+
+                                                            </Grid.Column>
+                                                            <Grid.Column width={1} floated='right' style={{marginRight:'2em'}}>
+                                                                <Button index={index} icon onClick={this.deleteTask} basic circular negative
+                                                                        icon='delete'>
+                                                                </Button>
+                                                            </Grid.Column>
+                                                        </Grid.Row>
+                                                    </Grid>
 
 
-                    <Grid divided='vertically' left>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+
+
+                    <Grid divided='vertically' left style={{marginTop:'1em'}}>
                         <Grid.Row >
-                            <Grid.Column width={1} left>
+                            <Grid.Column width={1}>
                                 <Button basic circular toggle active={activeCreateTaskButton} onClick={this.addNewTask}
                                         icon='plus'>
                                 </Button>
                             </Grid.Column>
-                            <Grid.Column width={4} left>
+                            <Grid.Column width={4}>
                                 <Transition visible={taskInputVisible} animation='fade up' duration={400}>
                                     <Input value={this.state.currentInput} placeholder="Enter task name..." onChange={this.updateCurrentInput}/>
                                 </Transition>
