@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend_api.Database;
+using backend_api.Database.PersonRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver.V1;
@@ -12,45 +14,43 @@ namespace backend_api.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        public string localDatabaseUrl = "bolt://localhost:7687";
-        public string serverDatabaseUrl = "bolt://csse-s402g2.canterbury.ac.nz:7687";
-
-        // POST api/values
+        private IPersonRepository _personRepository;
+        
+        public LoginController()
+        {
+            _personRepository = new PersonRepository();
+        }
+        
+        // POST api/login
         [HttpPost]
         public ActionResult Post([FromBody]LoginPerson loginPerson)
         {
-            //var driver = GraphDatabase.Driver(localDatabaseUrl, AuthTokens.Basic("neo4j", "motive"));
-            try
+            // TODO sanitise input
+            
+            // Grab 'alleged' account
+            RepositoryReturn<Person> allegedAccount = _personRepository.GetByEmail(loginPerson.email);
+            
+            if (allegedAccount.IsError)
             {
-                var client = new GraphClient(new Uri("http://localhost:7474/db/data"), "neo4j", "motive");
-                client.Connect();
-
-                var validationResult = client.Cypher
-                    .Match("(person:Person)")
-                    .Where((Person person) => person.email == loginPerson.email)
-                    .AndWhere((Person person) => person.password == loginPerson.password)
-                    .Return(person => person.As<Person>())
-                    .Results;
-                    
-                if (!validationResult.Any())
-                {
-                    return StatusCode(404);
-                }
-                else
-                {
-                    return StatusCode(200);
-                }
+                // Server-side/DB error
+                return StatusCode(500, allegedAccount.ErrorException.Message);
             }
-            catch (ServiceUnavailableException)
+            
+            if (allegedAccount.ReturnValue == null)
             {
-                return StatusCode(503);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return StatusCode(500);
+                // No email exists, unauthorized
+                return StatusCode(401);
             }
 
+            if (loginPerson.password != allegedAccount.ReturnValue.password)
+            {
+                // Wrong password, unauthorized
+                return StatusCode(401);
+            }
+
+            string token =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkJ1enogVGVzdCBUb2tlbiIsImlhdCI6MTUxNjIzOTAyMn0.vUOPQDwOUup64tXOj5BXxAS9lEqmd4rLy01eCbwPDAA";
+            return StatusCode(200, token);
         }
     }
 }

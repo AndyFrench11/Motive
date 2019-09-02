@@ -17,7 +17,6 @@ function projects(state = projectsInitialState, action) {
         case REQUEST_PROJECTS:
             return {...state,
                 isFetching: true
-
             };
         case RECEIVE_PROJECTS:
             return {...state,

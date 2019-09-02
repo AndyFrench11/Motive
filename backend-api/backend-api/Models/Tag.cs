@@ -1,7 +1,7 @@
 ﻿using System;
 namespace backend_api.Models
 {
-    public class Tag
+    public class Tag : BaseEntity
     {
         public string name { get; set; }
         public Tag()

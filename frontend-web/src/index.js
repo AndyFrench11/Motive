@@ -10,10 +10,11 @@ import UserProfile from "./UserProfile/UserProfile";
 import { Provider } from "react-redux";
 import configureStore from "./configureStore";
 import { connect } from "react-redux";
-import Landing from "./Landing/Landing";
 import Home from "./Home/Home";
 import history from "./history"
 import "react-datepicker/dist/react-datepicker.css";
+import Signup from "./Signup/Signup";
+import Login from "./Login/Login";
 
 const store = configureStore();
 
@@ -30,7 +31,11 @@ function AppRouter() {
   return (
         <Router history={history}>
           <div>
-            <Route exact path="/" component={Landing} />
+            <Route exact path="/" component={Login} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/signup" component={Signup} />
+
+
             <Route exact path ="/home" component={Home}/>
             <Route path="/about" component={About} />
             <Route path="/users" component={Users} />

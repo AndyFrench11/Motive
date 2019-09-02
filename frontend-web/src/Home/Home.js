@@ -69,7 +69,7 @@ class Home extends Component {
 
     componentDidMount() {
       console.log(serverUrl)
-      axios.get(serverUrl + "/person/allpeople")
+      axios.get(serverUrl + "/person")
             .then(response =>
               this.setState({
                 users: response.data
