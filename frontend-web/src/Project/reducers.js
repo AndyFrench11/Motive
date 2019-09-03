@@ -83,7 +83,8 @@ const rootReducer = combineReducers({
     authReducer,
     loginReducer,
     signUpReducer,
-    profilePage
+    profilePage,
+    projectController
 });
 
 export default rootReducer

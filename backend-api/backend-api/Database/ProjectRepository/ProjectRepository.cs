@@ -21,12 +21,14 @@ namespace backend_api.Database.ProjectRepository
         public RepositoryReturn<IEnumerable<Project>> GetAllForUser(Guid personGuid)
         {
             try
-            {
-                   
+            {   
                 using (var session = _neo4jConnection.driver.Session())
                 {
-
                     var returnedProjects = session.ReadTransaction(tx => RetrieveUserProjects(tx, personGuid));
+                    if (returnedProjects.Count == 0)
+                    {
+                        return new RepositoryReturn<IEnumerable<Project>>(true, new ArgumentNullException());
+                    } 
                     foreach (Project currentProject in returnedProjects)
                     {
                         var returnedTags = session.ReadTransaction(tx => RetrieveProjectTags(tx, currentProject.Guid));
@@ -34,8 +36,7 @@ namespace backend_api.Database.ProjectRepository
                         var returnedTasks = session.ReadTransaction(tx => RetrieveProjectTasks(tx, currentProject.Guid));
                         currentProject.taskList = returnedTasks.ToList();
                     }
-                    //TODO Do a check for projects returned
-
+                    
                     return new RepositoryReturn<IEnumerable<Project>>(returnedProjects);
                 }
 
@@ -58,6 +59,20 @@ namespace backend_api.Database.ProjectRepository
             return records;
         }
 
+        private Project RetrieveSingleUserProject(ITransaction tx, Guid projectGuid)
+        {
+            var projectId = projectGuid.ToString();
+            var result = tx.Run("MATCH (project:Project) WHERE project.guid = $projectId RETURN project", new { projectId });
+
+            var record = result.SingleOrDefault();
+            if (record == null)
+            {
+                return null;
+            }
+            return new Project(record[0].As<INode>().Properties);
+            
+        }
+
         private List<Tag> RetrieveProjectTags(ITransaction tx, Guid projectGuid)
         {
             var projectId = projectGuid.ToString();
@@ -77,45 +92,25 @@ namespace backend_api.Database.ProjectRepository
 
             return records;
         }
-       
+
 
         public RepositoryReturn<Project> GetByGuid(Guid projectGuid)
         {
             try
             {
-                var client = _neo4jClient.client;  
-                client.Connect();
-
-                var projectResult = client.Cypher
-                    .Match("(project:Project)")
-                    .Where((Project project) => project.Guid == projectGuid)
-                    .Return(project => project.As<Project>())
-                    .Results;
-
-                if (projectResult.Count() == 0)
+                using (var session = _neo4jConnection.driver.Session())
                 {
-                    return new RepositoryReturn<Project>(true, new ArgumentNullException());
-                }
-                else
-                {
-                    Project returnedProject = projectResult.ElementAt(0);
-                    //Get all the tags
-                    var tagResult = client.Cypher
-                        .Match("(project:Project) -- (tag:Tag)")
-                        .Where((Project project) => project.Guid == projectGuid)
-                        .Return(tag => tag.As<Tag>())
-                        .Results;
+                    var returnedProject = session.ReadTransaction(tx => RetrieveSingleUserProject(tx, projectGuid));
+                    
+                    if (returnedProject == null)
+                    {
+                        return new RepositoryReturn<Project>(true, new ArgumentNullException());
+                    }
 
-                    returnedProject.tagList = tagResult.ToList();
-
-                    var taskResult = client.Cypher
-                       .Match("(project:Project) -- (projectTask:ProjectTask)")
-                       .Where((Project project) => project.Guid == projectGuid)
-                       .Return(projectTask => projectTask.As<ProjectTask>())
-                       .Results;
-
-                    returnedProject.taskList = taskResult.ToList();
-
+                    var returnedTags = session.ReadTransaction(tx => RetrieveProjectTags(tx, projectGuid));
+                    returnedProject.tagList = returnedTags.ToList();
+                    var returnedTasks = session.ReadTransaction(tx => RetrieveProjectTasks(tx, projectGuid));
+                    returnedProject.taskList = returnedTasks.ToList();
 
                     return new RepositoryReturn<Project>(returnedProject);
                 }
