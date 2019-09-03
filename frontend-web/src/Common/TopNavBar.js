@@ -9,8 +9,8 @@ import {
 } from 'semantic-ui-react'
 
 import {Link, withRouter} from "react-router-dom";
-import UserProfile from "../UserProfile/UserProfile";
 import {logout} from "./Auth/actions";
+import {connect} from "react-redux";
 
 class TopNavBar extends React.Component {
     constructor(props) {
@@ -28,6 +28,7 @@ class TopNavBar extends React.Component {
 
     render() {
         const isLoggedIn = this.props.currentUser;
+        console.log(isLoggedIn);
         return (
             <div>
                 <Menu fixed='top' inverted>

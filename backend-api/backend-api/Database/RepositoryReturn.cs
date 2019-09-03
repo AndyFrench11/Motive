@@ -15,7 +15,6 @@ namespace backend_api.Database
             IsError = isError;
             ReturnValue = returnValue;
         }
-
         
         public RepositoryReturn(bool isError, Exception errorException)
         {

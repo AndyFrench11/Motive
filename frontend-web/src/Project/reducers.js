@@ -6,13 +6,10 @@ import {
     REQUEST_NEW_PROJECT,
 } from './actions'
 import {reducer as formReducer} from "redux-form";
-import profilePage from "./UserProfile/reducers";
-import signUpReducer from "./Signup/reducers";
-import loginReducer from "./Login/reducers";
-import authReducer from "./Common/Auth/reducer";
 import profilePage from "../UserProfile/reducers";
-import landingReducers from "../Landing/reducers";
-
+import signUpReducer from "../Signup/reducers";
+import loginReducer from "../Login/reducers";
+import authReducer from "../Common/Auth/reducer";
 
 function newProject(
     state = {

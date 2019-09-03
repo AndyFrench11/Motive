@@ -1,50 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3b73335d-e96a-4155-ac37-22dc3929547b" name="Default Changelist" comment="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js">
-      <change afterPath="$PROJECT_DIR$/backend-api/backend-api/Controllers/SignUpController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend-api/backend-api/Database/PersonRepository/IPersonRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend-api/backend-api/Database/PersonRepository/PersonRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend-api/backend-api/Database/RepositoryReturn.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend-api/backend-api/Database/neo4jConnection.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/BaseEntity.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/HttpPostModels/SignUpPerson.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Common/Auth/actions.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Common/Auth/reducer.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Common/FormValidation.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Common/Forms/TextInput.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Common/WelcomeBanner.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Login/Login.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Login/actions.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Login/reducers.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Signup/Signup.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Signup/actions.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Signup/dateOfBirthPicker.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend-web/src/Signup/reducers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Controllers/LoginController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Controllers/LoginController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Controllers/PersonController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Controllers/PersonController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Controllers/ProjectController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Controllers/ProjectController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Models/LoginPerson.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/HttpPostModels/LoginPerson.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Models/Person.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/Person.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Models/Project.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/Project.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Models/Tag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/Tag.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Models/Task.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/Task.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/.env" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Common/TopNavBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Common/TopNavBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Home/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Home/Home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Home/Home.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Home/Home.test.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Landing/Landing.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Landing/Landing.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Landing/Landing.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Login/Login.test.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Landing/actions.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Landing/reducers.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/Project/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Project/reducers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/UserProfile/UserProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/UserProfile/UserProfile.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/UserProfile/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/UserProfile/reducers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend-web/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/yarn.lock" afterDir="false" />
-    </list>
+    <list default="true" id="3b73335d-e96a-4155-ac37-22dc3929547b" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +12,7 @@
     <session id="1426648351">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
           <entry key="project.open.time.7" value="2" />
           <entry key="project.opened" value="2" />
         </counts>
@@ -159,7 +116,7 @@
       <option name="presentableId" value="Default" />
       <updated>1565761134507</updated>
       <workItem from="1565761138053" duration="1000000" />
-      <workItem from="1567429275259" duration="312000" />
+      <workItem from="1567429275259" duration="344000" />
     </task>
     <task id="LOCAL-00001" summary="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js">
       <created>1565761900406</created>
@@ -175,11 +132,18 @@
       <option name="project" value="LOCAL" />
       <updated>1565761908987</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js">
+      <created>1567429611678</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1567429611679</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1312000" />
+    <option name="totallyTimeSpent" value="1344000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="955" extended-state="6" />

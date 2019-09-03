@@ -51,6 +51,7 @@ export function fetchProjects(guid) {
 export function fetchProfile (guid) {
     return function (dispatch) {
         dispatch(requestProfile());
+        console.log("Here i am!")
         return fetch(serverUrl + `/person/${guid}`)
             .then(
                 response => response.json(),

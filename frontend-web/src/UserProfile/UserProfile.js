@@ -3,7 +3,7 @@ import {
     Grid,
     Header,
     Image, List,
-    Button, Item, Modal, TransitionablePortal
+    Button, Item, Modal, TransitionablePortal, Segment
 } from 'semantic-ui-react'
 
 import TopNavBar from '../Common/TopNavBar'
@@ -138,23 +138,36 @@ class UserProfile extends React.Component {
             )
         } else {
             const { userguid } = this.props.match.params;
-            return (
-                <div>
-                    <Item.Group link>
-                        {this.props.projects.items.map((item, index) => (
-                            <Route render={({ history }) => (
-                                <Item key={index} item={item} onClick={() => { history.push(`/profile/${userguid}/project/${item.guid}/`) }}>
-                                    <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
-                                    <Item.Content>
-                                        <Item.Header>{item.name}</Item.Header>
-                                        <Item.Description>{item.description}</Item.Description>
-                                    </Item.Content>
-                                </Item>
-                            )} />
-                        ))}
-                    </Item.Group>
-                </div>
-            );
+            if(this.props.projects.items.length == 0){
+                return(
+                    <div>
+                          <Segment placeholder>
+                            <Header icon>
+                                No projects have been created.
+                            </Header>
+                        </Segment>
+                    </div>
+                );
+            } else {
+
+                return (
+                    <div>
+                        <Item.Group link>
+                            {this.props.projects.items.map((item, index) => (
+                                <Route render={({ history }) => (
+                                    <Item key={index} item={item} onClick={() => { history.push(`/profile/${userguid}/project/${item.guid}/`) }}>
+                                        <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
+                                        <Item.Content>
+                                            <Item.Header>{item.name}</Item.Header>
+                                            <Item.Description>{item.description}</Item.Description>
+                                        </Item.Content>
+                                    </Item>
+                                )} />
+                            ))}
+                        </Item.Group>
+                    </div>
+                );
+            }
         }
     }
 
