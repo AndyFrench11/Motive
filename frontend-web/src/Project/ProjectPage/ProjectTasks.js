@@ -129,6 +129,7 @@ class ProjectTasks extends Component {
         var { taskList } = this.state;
         taskList.splice(index, 1);
         this.setState({taskList: taskList});
+        
         //TODO Update the backend!
     };
 

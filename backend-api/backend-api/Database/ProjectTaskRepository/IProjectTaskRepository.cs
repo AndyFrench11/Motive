@@ -13,7 +13,7 @@ namespace backend_api.Database.ProjectTaskRepository
         
         RepositoryReturn<bool> Add(ProjectTask projectTaskToAdd, Guid projectGuid);
 
-        RepositoryReturn<bool> Edit(ProjectTask projectTaskToOverwrite);
+        RepositoryReturn<bool> EditCompletionStatus(bool completed, Guid projectTaskGuid);
 
         RepositoryReturn<bool> Delete(Guid projectTaskGuid);
     }

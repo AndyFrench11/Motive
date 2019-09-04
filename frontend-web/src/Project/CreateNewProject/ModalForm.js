@@ -105,7 +105,7 @@ let NewProjectForm = props => {
 
     const renderTaskList = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({name: taskInputValue})}>Add Task</Button>
+            <Button type="button" onClick={() => fields.push({name: taskInputValue, completed: false})}>Add Task</Button>
 
             <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
                 {fields.map((task, index) =>

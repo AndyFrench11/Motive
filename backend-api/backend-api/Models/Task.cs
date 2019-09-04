@@ -14,6 +14,7 @@ namespace backend_api.Models
         public ProjectTask(IReadOnlyDictionary<string, object> props)
         {
             this.name = props["name"].ToString();
+            this.completed = (bool)(props["completed"]);
         }
     }
 }

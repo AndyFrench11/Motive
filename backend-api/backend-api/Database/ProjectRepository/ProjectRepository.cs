@@ -10,12 +10,10 @@ namespace backend_api.Database.ProjectRepository
     {
         
         private readonly neo4jConnection _neo4jConnection;
-        private readonly neo4jClient _neo4jClient;
 
         public ProjectRepository()
         {
             _neo4jConnection = new neo4jConnection();
-            _neo4jClient = new neo4jClient();
         }
         
         public RepositoryReturn<IEnumerable<Project>> GetAllForUser(Guid personGuid)
@@ -188,13 +186,13 @@ namespace backend_api.Database.ProjectRepository
         }
 
         private void CreateTaskNodes(ITransaction tx, Project project) {
-            Guid guid;
             foreach (ProjectTask task in project.taskList)
             {
                 //Add the tag node to the database
                 string taskName = task.name;
                 string taskGuid = task.Guid.ToString();
-                tx.Run("CREATE(pt:ProjectTask {name: $taskName, guid: $taskGuid})", new { taskName, taskGuid });
+                bool completed = task.completed;
+                tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, guid: $taskGuid})", new { taskName, completed, taskGuid });
             }
         }
 
