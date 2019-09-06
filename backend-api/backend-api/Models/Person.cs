@@ -20,6 +20,8 @@ namespace backend_api.Models
         public string dateJoined { get; set; }
         
         public string profileBio { get; set; }
+        
+        public string sessionID { get; set; }
 
         // Creating a new person, generates a GUID
         public Person(string firstName, string lastName, string email, string password, string dateOfBirth, string profileBio)
