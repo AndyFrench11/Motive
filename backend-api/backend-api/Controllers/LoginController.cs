@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using backend_api.Database;
 using backend_api.Database.PersonRepository;
@@ -45,7 +46,7 @@ namespace backend_api.Controllers
                 return StatusCode(401);
             }
 
-            if (loginPerson.password != allegedAccount.ReturnValue.password)
+            if (!IsValidPassword(loginPerson.password, allegedAccount.ReturnValue.password))
             {
                 // Wrong password, unauthorized
                 return StatusCode(401);
@@ -62,6 +63,27 @@ namespace backend_api.Controllers
             return StatusCode(200, newSession.sessionId);
         }
         
+        
+        private bool IsValidPassword(string plaintextPassword, string hashPassword)
+        {
+            byte[] hashBytes = Convert.FromBase64String(hashPassword);
+
+            byte[] salt = new byte[16];
+            Array.Copy(hashBytes, 0, salt, 0, 16);
+
+            var pbkdf2 = new Rfc2898DeriveBytes(plaintextPassword, salt, 10000);
+
+            byte[] hash = pbkdf2.GetBytes(20);
+
+            bool hashMatch = true;
+            for (int i = 0; i < 20; i++)
+            {
+                if (hashBytes[i + 16] != hash[i])
+                    hashMatch = false;
+            }
+
+            return hashMatch;
+        }
                 
         // DELETE api/login
         [HttpDelete]
