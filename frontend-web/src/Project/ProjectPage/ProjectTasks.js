@@ -4,6 +4,8 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {postTask, deleteTask, updateTask} from "../actions";
+import uuidv4 from 'uuid/v4';
 
 //Drag and Drop Properties
 // fake data generator
@@ -24,7 +26,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 const grid = 8;
 
-const getItemStyle = (isDragging, draggableStyle) => ({
+const getItemStyle = (isDragging, draggableStyle, taskCompleted) => ({
     // some basic styles to make the items look a bit nicer
     userSelect: "none",
     padding: grid * 2,
@@ -32,10 +34,10 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
     // change background colour if dragging
     background: isDragging ? "lightgrey" : "white",
-    borderColor: isDragging ? "grey" : "#dddddd",
+    borderColor: taskCompleted ? "#23b036" : isDragging ? "grey" : "#dddddd",
     borderRadius: "8px",
     borderStyle: "solid",
-    borderWidth: "1px",
+    borderWidth: taskCompleted ? "2px" : "1px",
 
 
     // styles we need to apply on draggables
@@ -85,6 +87,7 @@ class ProjectTasks extends Component {
         this.setState({
             taskList
         });
+
     }
 
     addNewTask = () => {
@@ -92,14 +95,18 @@ class ProjectTasks extends Component {
         if(this.state.taskInputVisible === true){
             const { currentInput, taskList } = this.state;
             if(currentInput !== "") {
-                const newIndex = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                taskList.push({name: currentInput, guid: newIndex});
+                //Just used to create a unique id on the front end
+                
+                const newIndex = uuidv4();
+
+                taskList.push({name: currentInput, completed: false, guid: newIndex});
                 this.setState({
                         taskList: taskList
                     }
                 );
 
                 //TODO Update the backend!
+                this.props.postTask(this.props.projectGuid, {name: currentInput, completed: false, guid: newIndex});
 
             }
             this.setState({
@@ -120,28 +127,31 @@ class ProjectTasks extends Component {
     };
 
     updateCurrentInput = (event, {value}) => {
-        //Update the UI
+
         this.setState({ currentInput: value });
 
     };
 
     deleteTask = (event, {index}) => {
         var { taskList } = this.state;
+
+        this.props.deleteTask(taskList[index].guid)
+
         taskList.splice(index, 1);
         this.setState({taskList: taskList});
         
-        //TODO Update the backend!
+
     };
 
     markTaskAsDone = (event, {listIndex}) => {
         const {taskList} = this.state;
-        taskList.map((task, index) => {
-            if(index === listIndex){
-                task.completed = !task.completed;
-            }
-        });
+        const completionStatus = taskList[listIndex].completed
+        
+        taskList[listIndex].completed = !completionStatus;
         this.setState({taskList: taskList});
-        //TODO Update the backend!
+
+        this.props.updateTask(taskList[listIndex].guid, {completed: !completionStatus})
+
 
     };
 
@@ -172,7 +182,8 @@ class ProjectTasks extends Component {
                                                     {...provided.dragHandleProps}
                                                     style={getItemStyle(
                                                         snapshot.isDragging,
-                                                        provided.draggableProps.style
+                                                        provided.draggableProps.style,
+                                                        task.completed
                                                     )}
                                                 >
 
@@ -232,8 +243,22 @@ class ProjectTasks extends Component {
     }
 }
 
+function mapDispatchToProps(dispatch) {
+    return {
+        postTask: (projectGuid, values) => dispatch(postTask(projectGuid, values)),
+        deleteTask: (taskGuid) => dispatch(deleteTask(taskGuid)),
+        updateTask: (taskGuid, values) => dispatch(updateTask(taskGuid, values))
+    };
+}
+
 const mapStateToProps = state => {
-    return {};
+    const { projectTaskController } = state;
+    const { isUpdating, lastUpdated, result } = projectTaskController;
+    return {
+        isUpdating: isUpdating,
+        result: result,
+        lastUpdated: lastUpdated,
+    };
 };
 
-export default connect(mapStateToProps)(ProjectTasks);
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectTasks);

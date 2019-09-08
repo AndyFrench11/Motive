@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend_api.Controllers
 {
-    [Route("api//[controller]")]
+    [Route("api/[controller]")]
     public class ProjectTaskController : Controller
     {
 
@@ -22,11 +22,9 @@ namespace backend_api.Controllers
 
         // POST api/values
         [HttpPost]
-        public ActionResult Post([FromBody]ProjectTask projectTaskToCreate)
+        public ActionResult Post([FromBody]ProjectTask projectTaskToCreate, [FromHeader]string projectId)
         {
-            //Retrieve the projectId from the header
-            string projectId = Request.Headers["projectId"];
-            
+         
             //Check user is valid first
             Guid projectGuidToGet;
             try
@@ -84,16 +82,15 @@ namespace backend_api.Controllers
         
         // PATCH api/values
         [HttpPatch]
-        public ActionResult Update([FromBody]bool completed)
+        public ActionResult Update([FromBody]UpdateTaskObject updateTaskObject, [FromHeader]string projectTaskId)
         {
-            //Retrieve the projectId from the header
-            string projectId = Request.Headers["projectId"];
-            
+        
             //Check user is valid first
+            
             Guid projectTaskGuidToGet;
             try
             {
-                projectTaskGuidToGet = Guid.Parse(projectId);
+                projectTaskGuidToGet = Guid.Parse(projectTaskId);
             }
             catch (ArgumentNullException)
             {
@@ -106,7 +103,7 @@ namespace backend_api.Controllers
             
             // TODO sanitise incoming project body
             RepositoryReturn<bool> result =
-                _projectTaskRepository.EditCompletionStatus(completed, projectTaskGuidToGet);
+                _projectTaskRepository.EditCompletionStatus(updateTaskObject.completed, projectTaskGuidToGet);
             
             if (result.IsError)
             {
@@ -114,6 +111,13 @@ namespace backend_api.Controllers
             }
 
             return StatusCode(200);
+        }
+
+        public class UpdateTaskObject
+        {
+            public bool completed { get; set; }
+
+           
         }
         
         

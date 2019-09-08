@@ -97,7 +97,7 @@ class ProjectPageLayout extends React.Component {
                     {activeMenuItem === "Tasks" &&
 
                         /*Tasks*/
-                        <ProjectTasks taskList={result.taskList}/>
+                        <ProjectTasks taskList={result.taskList} projectGuid={result.guid}/>
 
                     }
 

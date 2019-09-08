@@ -19,6 +19,7 @@ namespace backend_api.Models
         {
             this.name = props["name"].ToString();
             this.description = props["description"].ToString();
+            this.Guid = Guid.Parse(props["guid"].ToString());
         }
     }
 }

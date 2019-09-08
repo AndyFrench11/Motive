@@ -36,15 +36,16 @@ namespace backend_api.Database.ProjectTaskRepository
             //Add the tag node to the database
             string taskName = task.name;
             string taskGuid = task.Guid.ToString();
-            tx.Run("CREATE(pt:ProjectTask {name: $taskName, guid: $taskGuid})", new { taskName, taskGuid });
+            bool completed = task.completed;
+            tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, guid: $taskGuid})", new { taskName, completed, taskGuid });
         }
 
         private void CreateTaskRelationship(ITransaction tx, ProjectTask task, Guid projectGuid)
         {
             //Create the relationship to the project
-            string taskName = task.name;
+            string taskId = task.Guid.ToString();
             string projectId = projectGuid.ToString();
-            tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectId AND t.name = $taskName CREATE (p)-[:HAS]->(t)", new { projectId, taskName});
+            tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectId AND t.guid = $taskId CREATE (p)-[:HAS]->(t)", new { projectId, taskId});
         }
         
         public RepositoryReturn<bool> EditCompletionStatus(bool completed, Guid projectTaskGuid)

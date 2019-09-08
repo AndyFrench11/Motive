@@ -43,7 +43,7 @@ namespace backend_api
 
             app.UseCors(builder =>
             {
-                builder.AllowAnyOrigin().AllowAnyHeader();
+                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
             });
             app.UseHttpsRedirection();
             app.UseMvc();

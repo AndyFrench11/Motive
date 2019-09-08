@@ -45,6 +45,7 @@ namespace backend_api.Models
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
             this.dateJoined = dateJoined;
+            this.Guid = Guid.Parse(guid);
         }
 
         //NEEDS TO BE A DYNAMIC FOR LATER VALUES
@@ -57,6 +58,7 @@ namespace backend_api.Models
             this.dateOfBirth = props["dateOfBirth"].ToString();
             this.profileBio = props["profileBio"].ToString();
             this.dateJoined = props["dateJoined"].ToString();
+            this.Guid = Guid.Parse(props["guid"].ToString());
         }
 
         //        public Person(Person parsedPerson)

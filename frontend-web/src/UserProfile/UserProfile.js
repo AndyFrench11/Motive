@@ -141,7 +141,7 @@ class UserProfile extends React.Component {
             if(this.props.projects.items.length == 0){
                 return(
                     <div>
-                          <Segment placeholder>
+                          <Segment placeholder style={{marginRight: '1em'}}>
                             <Header icon>
                                 No projects have been created.
                             </Header>

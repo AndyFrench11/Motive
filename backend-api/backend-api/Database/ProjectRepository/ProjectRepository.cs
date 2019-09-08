@@ -23,10 +23,7 @@ namespace backend_api.Database.ProjectRepository
                 using (var session = _neo4jConnection.driver.Session())
                 {
                     var returnedProjects = session.ReadTransaction(tx => RetrieveUserProjects(tx, personGuid));
-                    if (returnedProjects.Count == 0)
-                    {
-                        return new RepositoryReturn<IEnumerable<Project>>(true, new ArgumentNullException());
-                    } 
+                    
                     foreach (Project currentProject in returnedProjects)
                     {
                         var returnedTags = session.ReadTransaction(tx => RetrieveProjectTags(tx, currentProject.Guid));
@@ -201,9 +198,9 @@ namespace backend_api.Database.ProjectRepository
             foreach (ProjectTask task in project.taskList)
             {
                 //Create the relationship to the project
-                string taskName = task.name;
+                string taskGuid = task.Guid.ToString();
                 string projectGuid = project.Guid.ToString();
-                tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectGuid AND t.name = $taskName CREATE (p)-[:HAS]->(t)", new { projectGuid, taskName});
+                tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectGuid AND t.guid = $taskGuid CREATE (p)-[:HAS]->(t)", new { projectGuid, taskGuid});
             }
         }
 

@@ -17,7 +17,7 @@ using Neo4jClient;
 
 namespace backend_api.Controllers
 {
-    [Route("api/person/{userId}/[controller]")]
+    [Route("api/[controller]")]
     public class ProjectController : Controller
     {
         private IProjectRepository _projectRepository;
@@ -27,19 +27,11 @@ namespace backend_api.Controllers
             _projectRepository = new ProjectRepository();
         }
         
-        //TODO Get userId from header
-        public string userId { get; set; }
-
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            this.userId = context.RouteData.Values["userId"].ToString();
-            base.OnActionExecuting(context);
-        }
 
 
         // GET: api/values
         [HttpGet]
-        public ActionResult<List<Project>> GetAllProjectsForUser()
+        public ActionResult<List<Project>> GetAllProjectsForUser([FromHeader]string userId)
         {
             Guid guidToGet;
             try
@@ -60,10 +52,6 @@ namespace backend_api.Controllers
 
             if (result.IsError)
             {
-                if (result.ErrorException is ArgumentNullException)
-                {
-                    return StatusCode(404, result.ErrorException.Message);
-                }
 
                 return StatusCode(500, result.ErrorException.Message);
 
@@ -109,11 +97,10 @@ namespace backend_api.Controllers
 
         // POST api/values
         [HttpPost]
-        public ActionResult Post([FromBody]Project projectToCreate)
+        public ActionResult Post([FromBody]Project projectToCreate, [FromHeader]string userId)
         {
             
             //Check user is valid first
-            
             Guid userGuidToGet;
             try
             {
@@ -128,7 +115,6 @@ namespace backend_api.Controllers
                 return BadRequest();
             }
             
-            Console.WriteLine(projectToCreate);
             // TODO sanitise incoming project body
             RepositoryReturn<bool> result = _projectRepository.Add(projectToCreate, userGuidToGet);
             
