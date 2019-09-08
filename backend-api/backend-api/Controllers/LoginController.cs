@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using backend_api.Database;
 using backend_api.Database.PersonRepository;
+using backend_api.Database.SessionRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver.V1;
@@ -15,10 +16,12 @@ namespace backend_api.Controllers
     public class LoginController : Controller
     {
         private IPersonRepository _personRepository;
-        
+        private ISessionRepository _sessionRepository;
+
         public LoginController()
         {
             _personRepository = new PersonRepository();
+            _sessionRepository = new SessionRepository();
         }
         
         // POST api/login
@@ -47,10 +50,42 @@ namespace backend_api.Controllers
                 // Wrong password, unauthorized
                 return StatusCode(401);
             }
-
-            string token =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkJ1enogVGVzdCBUb2tlbiIsImlhdCI6MTUxNjIzOTAyMn0.vUOPQDwOUup64tXOj5BXxAS9lEqmd4rLy01eCbwPDAA";
-            return StatusCode(200, token);
+            
+            Session newSession = new Session();
+            RepositoryReturn<bool> requestSessionAdd = _sessionRepository.Add(newSession, allegedAccount.ReturnValue.Guid);
+            if (requestSessionAdd.IsError)
+            {
+                // Server-side/DB error
+                return StatusCode(500, requestSessionAdd.ErrorException.Message);
+            }
+            
+            return StatusCode(200, newSession.sessionId);
+        }
+        
+                
+        // DELETE api/login
+        [HttpDelete]
+        public ActionResult Delete([FromHeader] string sessionId)
+        {
+            RepositoryReturn<Person> requestGetPersonOnSession = _sessionRepository.GetUserOnSession(sessionId);
+            if (requestGetPersonOnSession.IsError)
+            {
+                return StatusCode(500, requestGetPersonOnSession.ErrorException.Message);
+            }
+            if (requestGetPersonOnSession.ReturnValue == null)
+            {
+                // Session ID does not exist, return Unauthorized
+                return StatusCode(401);
+            }
+            
+            
+            RepositoryReturn<bool> requestSessionDelete = _sessionRepository.Delete(sessionId);
+            if (requestSessionDelete.IsError)
+            {
+                // Server-side/DB error
+                return StatusCode(500, requestSessionDelete.ErrorException.Message);
+            }
+            return StatusCode(200);
         }
     }
 }
