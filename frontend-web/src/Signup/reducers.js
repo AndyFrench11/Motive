@@ -29,7 +29,7 @@ function signUpController(state = signUpInitialState, action) {
         case RECEIVE_SIGN_UP_ERROR:
             return {...state,
                 isPosting: false,
-                result: action.result,
+                result: action.result.response,
                 lastUpdated: action.receivedAt,
                 complete: true,
                 error: true
