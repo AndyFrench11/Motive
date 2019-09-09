@@ -15,7 +15,8 @@ namespace backend_api.Database
             IsError = isError;
             ReturnValue = returnValue;
         }
-        
+
+        // TODO change to isError containing default true, not really necessary but nice to have
         public RepositoryReturn(bool isError, Exception errorException)
         {
             IsError = isError;
