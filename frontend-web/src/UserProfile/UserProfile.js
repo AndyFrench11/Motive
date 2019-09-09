@@ -154,7 +154,7 @@ class UserProfile extends React.Component {
                         <Item.Group link>
                             {this.props.projects.items.map((item, index) => (
                                 <Route render={({ history }) => (
-                                    <Item key={index} item={item} onClick={() => { history.push(`/profile/${userguid}/project/${item.guid}/`) }}>
+                                    <Item key={index} item={item} onClick={() => { history.push(`/project/${item.guid}/`) }}>
                                         <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
                                         <Item.Content>
                                             <Item.Header>{item.name}</Item.Header>
