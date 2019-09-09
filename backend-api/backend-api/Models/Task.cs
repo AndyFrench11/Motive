@@ -7,7 +7,7 @@ namespace backend_api.Models
     {
         public string name { get; set; }
         public bool completed { get; set; }
-        
+
 
         public ProjectTask()
         {

@@ -15,6 +15,9 @@ export const RECEIVE_NEW_TASK_RESPONSE = 'RECEIVE_NEW_TASK_RESPONSE';
 export const REQUEST_DELETE_TASK = 'REQUEST_DELETE_TASK';
 export const RECEIVE_DELETE_TASK_RESPONSE = 'RECEIVE_DELETE_TASK_RESPONSE';
 
+export const REQUEST_UPDATE_TASK_ORDER = 'REQUEST_UPDATE_TASK_ORDER';
+export const RECEIVE_UPDATE_TASK_ORDER_RESPONSE = 'RECEIVE_UPDATE_TASK_ORDER_RESPONSE';
+
 const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
 function requestSingleProject() {
@@ -90,7 +93,6 @@ function receiveNewProjectResponse(response) {
             receivedAt: Date.now()
         }
     }
-
 }
 
 function requestNewTask() {
@@ -218,6 +220,49 @@ function receiveUpdateTaskResponse(response) {
     } else if(response.status === 500) {
         return {
             type: RECEIVE_UPDATE_TASK_RESPONSE,
+            result: "Internal Server Error",
+            receivedAt: Date.now()
+        }
+    }
+}
+
+function requestUpdateTaskOrder() {
+    return {
+        type: REQUEST_UPDATE_TASK_ORDER,
+    }
+}
+
+export function updateTaskOrder(projectGuid, taskList) {
+    return dispatch => {
+        dispatch(requestUpdateTaskOrder());
+        //Take only the values needed for the request
+    
+        console.log(taskList)
+
+        return axios.patch(serverUrl + "/project/" + projectGuid, taskList, {headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => dispatch(receiveUpdateTaskOrderResponse(response)))
+            .catch(error =>  {
+                console.log("The server is not running!");
+                console.log("Need to update UI with error!");
+                console.log(error.response)
+            })
+
+    }
+}
+
+function receiveUpdateTaskOrderResponse(response) {
+    if(response.status === 200) {
+        return {
+            type: RECEIVE_UPDATE_TASK_ORDER_RESPONSE,
+            result: response.data,
+            receivedAt: Date.now()
+        }
+    } else if(response.status === 500) {
+        return {
+            type: RECEIVE_UPDATE_TASK_ORDER_RESPONSE,
             result: "Internal Server Error",
             receivedAt: Date.now()
         }

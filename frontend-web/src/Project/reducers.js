@@ -9,7 +9,9 @@ import {
     REQUEST_DELETE_TASK,
     RECEIVE_DELETE_TASK_RESPONSE,
     REQUEST_UPDATE_TASK,
-    RECEIVE_UPDATE_TASK_RESPONSE
+    RECEIVE_UPDATE_TASK_RESPONSE,
+    REQUEST_UPDATE_TASK_ORDER,
+    RECEIVE_UPDATE_TASK_ORDER_RESPONSE
 } from './actions'
 import {reducer as formReducer} from "redux-form";
 import profilePage from "../UserProfile/reducers";
@@ -129,6 +131,29 @@ function updateTask(
     }
 }
 
+function updateTaskOrder(
+    state = {
+        isUpdating: false,
+        result: ""
+    },
+    action
+) {
+    switch (action.type) {
+        case REQUEST_UPDATE_TASK_ORDER:
+            return Object.assign({}, state, {
+                isUpdating: true,
+            });
+        case RECEIVE_UPDATE_TASK_ORDER_RESPONSE:
+            return Object.assign({}, state, {
+                isUpdating: false,
+                result: action.result,
+                lastUpdated: action.receivedAt
+            });
+        default:
+            return state
+    }
+}
+
 function deleteTask(
     state = {
         isUpdating: false,
@@ -163,6 +188,9 @@ function projectTaskController(state = {}, action) {
         case REQUEST_UPDATE_TASK:
         case RECEIVE_UPDATE_TASK_RESPONSE:
             return updateTask(state, action);
+        case REQUEST_UPDATE_TASK_ORDER:
+        case RECEIVE_UPDATE_TASK_ORDER_RESPONSE:
+            return updateTaskOrder(state, action);
         default:
             return state;
 

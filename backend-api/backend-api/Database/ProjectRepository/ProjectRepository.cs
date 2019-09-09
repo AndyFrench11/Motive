@@ -130,8 +130,8 @@ namespace backend_api.Database.ProjectRepository
                     session.WriteTransaction(tx => CreateTagNodes(tx, projectToAdd));
                     session.WriteTransaction(tx => CreateTagRelationships(tx, projectToAdd));
 
-                    session.WriteTransaction(tx => CreateTaskNodes(tx, projectToAdd));
-                    session.WriteTransaction(tx => CreateTaskRelationships(tx, projectToAdd));
+                    session.WriteTransaction(tx => CreateTaskNodes(tx, projectToAdd.taskList));
+                    session.WriteTransaction(tx => CreateTaskRelationships(tx, projectToAdd.taskList, projectToAdd.Guid));
                     return new RepositoryReturn<bool>(true);
                 }
             }
@@ -182,8 +182,8 @@ namespace backend_api.Database.ProjectRepository
 
         }
 
-        private void CreateTaskNodes(ITransaction tx, Project project) {
-            foreach (ProjectTask task in project.taskList)
+        private void CreateTaskNodes(ITransaction tx, List<ProjectTask> taskList) {
+            foreach (ProjectTask task in taskList)
             {
                 //Add the tag node to the database
                 string taskName = task.name;
@@ -193,20 +193,42 @@ namespace backend_api.Database.ProjectRepository
             }
         }
 
-        private void CreateTaskRelationships(ITransaction tx, Project project)
+        private void CreateTaskRelationships(ITransaction tx, List<ProjectTask> taskList, Guid projectGuid)
         {
-            foreach (ProjectTask task in project.taskList)
+            foreach (ProjectTask task in taskList)
             {
                 //Create the relationship to the project
                 string taskGuid = task.Guid.ToString();
-                string projectGuid = project.Guid.ToString();
-                tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectGuid AND t.guid = $taskGuid CREATE (p)-[:HAS]->(t)", new { projectGuid, taskGuid});
+                string projectId = projectGuid.ToString();
+                tx.Run("MATCH (p:Project),(t:ProjectTask) WHERE p.guid = $projectId AND t.guid = $taskGuid CREATE (p)-[:HAS]->(t)", new { projectId, taskGuid});
             }
         }
 
-        public RepositoryReturn<bool> Edit(Project projectToOverwrite)
+        public RepositoryReturn<bool> EditTaskOrder(List<ProjectTask> projectTaskList, Guid projectGuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => RemoveExistingTaskNodes(tx, projectGuid));
+                    session.WriteTransaction(tx => CreateTaskNodes(tx, projectTaskList));
+                    session.WriteTransaction(tx => CreateTaskRelationships(tx, projectTaskList, projectGuid));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveExistingTaskNodes(ITransaction tx, Guid projectGuid)
+        {
+            //Create the relationship to the project
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project) -- (pt:ProjectTask) WHERE p.guid = $projectId DETACH DELETE pt", new { projectId });
+            
         }
 
         public RepositoryReturn<bool> Delete(Guid projectGuid)

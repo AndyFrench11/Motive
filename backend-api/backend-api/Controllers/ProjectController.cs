@@ -123,7 +123,40 @@ namespace backend_api.Controllers
                 return StatusCode(500, result.ErrorException.Message);
             }
 
-            return StatusCode(201);
+            return StatusCode(201, projectToCreate.Guid);
+        }
+        
+        // PATCH api/values
+        [HttpPatch("{projectId}")]
+        public ActionResult Update(string projectId, [FromBody]List<ProjectTask> projectTaskList)
+        {
+        
+            //Check user is valid first
+            
+            Guid projectTaskGuidToGet;
+            try
+            {
+                projectTaskGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result =
+                _projectRepository.EditTaskOrder(projectTaskList, projectTaskGuidToGet);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
         }
 
        

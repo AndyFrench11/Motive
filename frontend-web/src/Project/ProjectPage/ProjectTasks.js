@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import {postTask, deleteTask, updateTask} from "../actions";
+import {postTask, deleteTask, updateTask, updateTaskOrder} from "../actions";
 import uuidv4 from 'uuid/v4';
 
 //Drag and Drop Properties
@@ -87,6 +87,9 @@ class ProjectTasks extends Component {
         this.setState({
             taskList
         });
+
+        //Patch the task list on the project to now be in that order
+        //this.props.updateTaskOrder(this.props.projectGuid, taskList);
 
     }
 
@@ -247,7 +250,8 @@ function mapDispatchToProps(dispatch) {
     return {
         postTask: (projectGuid, values) => dispatch(postTask(projectGuid, values)),
         deleteTask: (taskGuid) => dispatch(deleteTask(taskGuid)),
-        updateTask: (taskGuid, values) => dispatch(updateTask(taskGuid, values))
+        updateTask: (taskGuid, values) => dispatch(updateTask(taskGuid, values)),
+        updateTaskOrder: (projectGuid, taskList) => dispatch(updateTaskOrder(projectGuid, taskList))
     };
 }
 

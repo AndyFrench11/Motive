@@ -13,7 +13,7 @@ namespace backend_api.Database.ProjectRepository
         
         RepositoryReturn<bool> Add(Project projectToAdd, Guid userGuid);
 
-        RepositoryReturn<bool> Edit(Project projectToOverwrite);
+        RepositoryReturn<bool> EditTaskOrder(List<ProjectTask> projectTaskList, Guid projectGuid);
 
         RepositoryReturn<bool> Delete(Guid projectGuid);
 
