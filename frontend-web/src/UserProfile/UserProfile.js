@@ -198,7 +198,7 @@ const mapStateToProps = state => {
         ? {
             values: state.form.newProject.values,
             submitSucceeded: state.form.newProject.submitSucceeded,
-            isPosting: isPosting,
+            isSigningIn: isPosting,
             result: result,
             lastUpdated: lastUpdated,
             profile: state.profilePage.profile,
