@@ -82,6 +82,7 @@ class Home extends Component {
     }
 
     userlist() {
+        console.log(this.state.users)
       return this.state.users.map((item, key) =>
 
           <Route render={({ history }) => (

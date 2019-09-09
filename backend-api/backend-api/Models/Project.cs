@@ -14,5 +14,12 @@ namespace backend_api.Models
         public Project()
         {
         }
+        
+        public Project(IReadOnlyDictionary<string, object> props)
+        {
+            this.name = props["name"].ToString();
+            this.description = props["description"].ToString();
+            this.Guid = Guid.Parse(props["guid"].ToString());
+        }
     }
 }

@@ -3,7 +3,7 @@ import {
     Grid,
     Header,
     Image, List,
-    Button, Item, Modal, TransitionablePortal
+    Button, Item, Modal, TransitionablePortal, Segment
 } from 'semantic-ui-react'
 
 import TopNavBar from '../Common/TopNavBar'
@@ -15,8 +15,8 @@ import reducer from "./reducers"
 import {connect} from "react-redux";
 import {fetchProfile, fetchProjects} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
-import NewProjectForm from "../Project/ModalForm";
-import {postProject} from "../actions";
+import NewProjectForm from "../Project/CreateNewProject/ModalForm";
+import {postProject} from "../Project/actions";
 import { Route } from 'react-router-dom';
 
 
@@ -75,8 +75,7 @@ class UserProfile extends React.Component {
 
     ProfileHeader() {
         if(typeof this.props.result !== 'undefined') {
-            const { userguid } = this.props.match.params;
-            this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
+            this.props.history.push(`/project/${this.props.result}`)
         }
         else if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
             return (
@@ -138,23 +137,36 @@ class UserProfile extends React.Component {
             )
         } else {
             const { userguid } = this.props.match.params;
-            return (
-                <div>
-                    <Item.Group link>
-                        {this.props.projects.items.map((item, index) => (
-                            <Route render={({ history }) => (
-                                <Item key={index} item={item} onClick={() => { history.push(`/profile/${userguid}/project/${item.guid}/`) }}>
-                                    <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
-                                    <Item.Content>
-                                        <Item.Header>{item.name}</Item.Header>
-                                        <Item.Description>{item.description}</Item.Description>
-                                    </Item.Content>
-                                </Item>
-                            )} />
-                        ))}
-                    </Item.Group>
-                </div>
-            );
+            if(this.props.projects.items.length == 0){
+                return(
+                    <div>
+                          <Segment placeholder style={{marginRight: '1em'}}>
+                            <Header icon>
+                                No projects have been created.
+                            </Header>
+                        </Segment>
+                    </div>
+                );
+            } else {
+
+                return (
+                    <div>
+                        <Item.Group link>
+                            {this.props.projects.items.map((item, index) => (
+                                <Route render={({ history }) => (
+                                    <Item key={index} item={item} onClick={() => { history.push(`/profile/${userguid}/project/${item.guid}/`) }}>
+                                        <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
+                                        <Item.Content>
+                                            <Item.Header>{item.name}</Item.Header>
+                                            <Item.Description>{item.description}</Item.Description>
+                                        </Item.Content>
+                                    </Item>
+                                )} />
+                            ))}
+                        </Item.Group>
+                    </div>
+                );
+            }
         }
     }
 

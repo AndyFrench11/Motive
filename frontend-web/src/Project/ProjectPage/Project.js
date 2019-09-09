@@ -3,12 +3,13 @@ import {
     Divider, Grid, Header, Image, Segment, Label, Menu, Transition, List, Button, Icon, Card,
 } from 'semantic-ui-react'
 
-import TopNavBar from '../Common/TopNavBar'
-import Footer from '../Common/Footer'
-import BookImage from './ProjectImages/image15.png'
+import TopNavBar from '../../Common/TopNavBar'
+import Footer from '../../Common/Footer'
+import BookImage from '../ProjectImages/image15.png'
 import {connect} from "react-redux";
 import {fetchProject} from "../actions";
-import LoaderInlineCentered from "../Common/Loader";
+import LoaderInlineCentered from "../../Common/Loader";
+import ProjectTasks from "./ProjectTasks";
 
 
 class ProjectPageLayout extends React.Component {
@@ -33,7 +34,11 @@ class ProjectPageLayout extends React.Component {
             const { result } = this.props;
             const { activeMenuItem, activeTaskButton } = this.state;
 
-            return (<div>
+            return (
+                <div>
+
+                /*Project Details*/
+
                 <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
                     <Grid.Row columns={3}>
                         <Grid.Column width={2}>
@@ -69,6 +74,8 @@ class ProjectPageLayout extends React.Component {
                     <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 
 
+
+
                     <Menu pointing secondary style={{ marginLeft: '5em', marginRight: '5em'}}>
                         <Menu.Item
                             name='Updates'
@@ -88,28 +95,16 @@ class ProjectPageLayout extends React.Component {
                     </Menu>
 
                     {activeMenuItem === "Tasks" &&
-                        <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
-                            <List selection divided size='large' verticalAlign='middle'>
-                                {result.taskList.map((task, index) =>
-                                    <List.Item key={index}>
-                                        <List.Content floated='right'>
 
-                                            <Button basic circular toggle active={activeTaskButton} onClick={this.handleTaskButtonClick}
-                                                    icon='check'>
-                                            </Button>
+                        /*Tasks*/
+                        <ProjectTasks taskList={result.taskList} projectGuid={result.guid}/>
 
-                                        </List.Content>
-                                        <Image avatar src='https://react.semantic-ui.com/images/avatar/small/helen.jpg' />
-                                        <List.Content>
-                                            {result.taskList[index].name}
-                                        </List.Content>
-                                    </List.Item>
-                                )}
-                            </List>
-                        </Segment>
                     }
 
                     {activeMenuItem === "Updates" &&
+
+                        /*Tasks*/
+
                         <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
                             <Card>
                                 <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' />
@@ -131,6 +126,9 @@ class ProjectPageLayout extends React.Component {
                     }
 
                     {activeMenuItem === "Highlights" &&
+
+                        /*Tasks*/
+
                         <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
                             Highlights
                         </Segment>
@@ -149,7 +147,6 @@ class ProjectPageLayout extends React.Component {
           <div>
             <TopNavBar/>
               {this.checkRender()}
-
           <Footer/>
         </div>
         );

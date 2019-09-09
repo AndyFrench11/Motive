@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, Component } from "react";
 import { Field, reduxForm, FieldArray, formValues, formValueSelector } from "redux-form";
 import {Form, Message, Modal, Input, Label, Icon, Transition, List, Image, Divider, Segment, Button, TextArea} from "semantic-ui-react";
 import { connect } from "react-redux"
@@ -10,7 +10,7 @@ function importAll(r) {
     return images;
 }
 
-const images = importAll(require.context('./ProjectImages', false, /\.(png|jpe?g|svg)$/));
+const images = importAll(require.context('.././ProjectImages', false, /\.(png|jpe?g|svg)$/));
 
 const renderTextArea = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
     <Form.Field>
@@ -97,15 +97,26 @@ const requiredStartDate = value => value ? undefined :
 
 
 
-let NewProjectForm = props => {
-    const {
-        tagInputValue,
-        taskInputValue
-    } = props;
+class NewProjectForm extends Component {
 
-    const renderTaskList = ({ fields }) => (
+    constructor(props) {
+        super(props);
+
+        const {
+            tagInputValue,
+            taskInputValue
+        } = props;
+
+        this.state = {
+            selectedImageIndex: -1,
+
+        }
+
+    }
+
+    renderTaskList = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({name: taskInputValue})}>Add Task</Button>
+            <Button type="button" onClick={() => fields.push({name: this.props.taskInputValue, completed: false})}>Add Task</Button>
 
             <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
                 {fields.map((task, index) =>
@@ -126,9 +137,9 @@ let NewProjectForm = props => {
         </Form.Field>
     );
 
-    const renderTags = ({ fields }) => (
+    renderTags = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({name: tagInputValue})}>Add Tag</Button>
+            <Button type="button" onClick={() => fields.push({name: this.props.tagInputValue})}>Add Tag</Button>
 
             <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle' horizontal>
             {fields.map((task, index) =>
@@ -144,7 +155,7 @@ let NewProjectForm = props => {
         </Form.Field>
     );
 
-    const renderStartDateInput = ({ input, placeholder, label, meta: { touched, error, warning } }) => {
+    renderStartDateInput = ({ input, placeholder, label, meta: { touched, error, warning } }) => {
         let today = new Date();
         let dd = today.getDate();
         let mm = today.getMonth()+1; //As January is 0.
@@ -169,7 +180,14 @@ let NewProjectForm = props => {
     };
 
 
-    const renderPhotos = () => {
+    setSelectedImage = (event, {index}) => {
+        this.setState({
+            selectedImageIndex: index
+        });
+
+    };
+
+    renderPhotos = () => {
         var photoList = Object.keys(images);
 
         return (
@@ -177,7 +195,7 @@ let NewProjectForm = props => {
                 <Label attached='top' size="medium">Project Photo</Label>
                 <Image.Group size='tiny'>
                     {photoList.map((photo, index) =>
-                        <Button basic toggle active={false} index={index}>
+                        <Button basic toggle active={index == this.state.selectedImageIndex} index={index} onClick={this.setSelectedImage}>
                             <Image src={images[photoList[index]]} fluid
                                    />
                         </Button>
@@ -188,79 +206,82 @@ let NewProjectForm = props => {
             </Segment>
         )
     };
+    
+    render() {
 
-    return (
-        <Fragment>
-            <Form>
-                <Segment>
-                    <Label attached='top' size="medium">Project Details</Label>
-                    <br/>
-                    <br/>
-                    <Field
-                        component={renderNameInput}
-                        label="Project name"
-                        name="projectNameInput"
-                        placeholder="e.g. Rewiring the Mainframe!"
-                        validate={requiredName}
-                    />
-                    <Field
-                        component={renderTextArea}
-                        name="descriptionInput"
-                        placeholder="Tell us more about the project..."
-                        validate={requiredDescription}
-                    />
+        return (
+            <Fragment>
+                <Form>
+                    <Segment>
+                        <Label attached='top' size="medium">Project Details</Label>
+                        <br/>
+                        <br/>
+                        <Field
+                            component={renderNameInput}
+                            label="Project name"
+                            name="projectNameInput"
+                            placeholder="e.g. Rewiring the Mainframe!"
+                            validate={requiredName}
+                        />
+                        <Field
+                            component={renderTextArea}
+                            name="descriptionInput"
+                            placeholder="Tell us more about the project..."
+                            validate={requiredDescription}
+                        />
 
-                    <Field
-                        component={renderStartDateInput}
-                        name="startDateInput"
-                        id="startDateInput"
-                        label="Start Date"
-                        validate={requiredStartDate}
-                    />
+                        <Field
+                            component={this.renderStartDateInput}
+                            name="startDateInput"
+                            id="startDateInput"
+                            label="Start Date"
+                            validate={requiredStartDate}
+                        />
 
-                    {/*<Field*/}
-                    {/*    component={renderEndDateInput}*/}
-                    {/*    name="endDateInput"*/}
-                    {/*    id="endDateInput"*/}
-                    {/*    label="End Date and Time"*/}
-                    {/*/>*/}
+                        {/*<Field*/}
+                        {/*    component={renderEndDateInput}*/}
+                        {/*    name="endDateInput"*/}
+                        {/*    id="endDateInput"*/}
+                        {/*    label="End Date and Time"*/}
+                        {/*/>*/}
 
 
-                    <Field
-                        component={renderTagInput}
-                        name="tagInput"
-                        id="tagInput"
-                        validate={requiredTags}
+                        <Field
+                            component={renderTagInput}
+                            name="tagInput"
+                            id="tagInput"
+                            validate={requiredTags}
 
-                    />
+                        />
 
-                    <FieldArray name="tags" component={renderTags}/>
+                        <FieldArray name="tags" component={this.renderTags}/>
 
-                    {renderPhotos()}
+                        {this.renderPhotos()}
 
-                </Segment>
+                    </Segment>
 
-                <Divider/>
+                    <Divider/>
 
-                <Segment>
-                    <Label attached='top' size="medium">Tasks</Label>
+                    <Segment>
+                        <Label attached='top' size="medium">Tasks</Label>
 
-                    <Message floating>If you wish, you may add predefined tasks that outline the journey your project will take!</Message>
+                        <Message floating>If you wish, you may add predefined tasks that outline the journey your project will take!</Message>
 
-                    <Field
-                        component={renderTaskInput}
-                        name="taskInput"
-                        id="taskInput"
-                        type="text"
-                        validate={requiredTasks}
-                    />
+                        <Field
+                            component={renderTaskInput}
+                            name="taskInput"
+                            id="taskInput"
+                            type="text"
+                            validate={requiredTasks}
+                        />
 
-                    <FieldArray name="taskList" component={renderTaskList}/>
+                        <FieldArray name="taskList" component={this.renderTaskList}/>
 
-                </Segment>
-            </Form>
-        </Fragment>
-    );
+                    </Segment>
+                </Form>
+            </Fragment>
+        );
+    }
 };
 
 NewProjectForm = reduxForm({
@@ -275,7 +296,7 @@ NewProjectForm = connect(state => {
     const taskInputValue = selector(state, 'taskInput');
     return {
         tagInputValue,
-        taskInputValue,
+        taskInputValue
     }
 })(NewProjectForm);
 

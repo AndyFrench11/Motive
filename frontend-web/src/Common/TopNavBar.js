@@ -7,13 +7,10 @@ import {
     Modal,
     TransitionablePortal,
 } from 'semantic-ui-react'
-import NewProjectForm from "../Project/ModalForm";
-import {postProject} from "../actions";
-import {connect} from "react-redux";
 
 import {Link, withRouter} from "react-router-dom";
-import UserProfile from "../UserProfile/UserProfile";
 import {logout} from "./Auth/actions";
+import {connect} from "react-redux";
 
 class TopNavBar extends React.Component {
     constructor(props) {
@@ -31,6 +28,7 @@ class TopNavBar extends React.Component {
 
     render() {
         const isLoggedIn = this.props.currentUser;
+        console.log(isLoggedIn);
         return (
             <div>
                 <Menu fixed='top' inverted>
@@ -45,20 +43,7 @@ class TopNavBar extends React.Component {
                             Home
                         </Menu.Item>
 
-                        <Menu.Item item simple text='Profile'
-                                   as={Link} to='/profile'>
-                            Profile
-                        </Menu.Item>
 
-                        <Dropdown item simple text='Profile'>
-                            <Dropdown.Menu>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Header>Header Item</Dropdown.Header>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
                     </Container>
                     {isLoggedIn ? (
                         <Menu.Menu position='right'>
