@@ -11,6 +11,14 @@ import {fetchProject} from "../actions";
 import LoaderInlineCentered from "../../Common/Loader";
 import ProjectTasks from "./ProjectTasks";
 
+function importAll(r) {
+    let images = {};
+    r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+    return images;
+}
+
+const images = importAll(require.context('.././ProjectImages', false, /\.(png|jpe?g|svg)$/));
+
 
 class ProjectPageLayout extends React.Component {
     state = { activeMenuItem: "Updates" };
@@ -25,6 +33,13 @@ class ProjectPageLayout extends React.Component {
         dispatch(fetchProject(projectguid, userguid));
     }
 
+    renderProjectImage(imageIndex) {
+        var photoList = Object.keys(images);
+        return (
+            <Image style={{'border-radius':8}} src={images[photoList[imageIndex]]} size='small' />
+        );
+    }
+
     checkRender() {
         if(typeof this.props.result === 'undefined') {
             return(<Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -37,12 +52,10 @@ class ProjectPageLayout extends React.Component {
             return (
                 <div>
 
-                /*Project Details*/
-
                 <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
                     <Grid.Row columns={3}>
                         <Grid.Column width={2}>
-                            <Image style={{'border-radius':8}} src={BookImage} size='small' />
+                            {this.renderProjectImage(result.imageIndex)}
                         </Grid.Column>
                         <Grid.Column centered>
                             <Grid.Row>

@@ -47,7 +47,7 @@ function receiveSingleProject(json) {
     }
 }
 
-export function postProject(guid, valuesJson) {
+export function postProject(guid, valuesJson, imageIndex) {
     return dispatch => {
         dispatch(requestNewProject());
         //Take only the values needed for the request
@@ -55,7 +55,8 @@ export function postProject(guid, valuesJson) {
             name: valuesJson.projectNameInput,
             description: valuesJson.descriptionInput,
             taskList: valuesJson.taskList,
-            tagList: valuesJson.tags
+            tagList: valuesJson.tags,
+            imageIndex
         };
 
         return axios.post(serverUrl + "/project", newProject, {headers: {

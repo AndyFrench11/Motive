@@ -145,8 +145,9 @@ namespace backend_api.Database.ProjectRepository
         {
             string projectName = project.name;
             string projectDescription = project.description;
+            string projectImageIndex = project.imageIndex.ToString();
             string projectGuid = project.Guid.ToString();
-            tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, guid: $projectGuid})", new { projectName, projectDescription, projectGuid });
+            tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, imageIndex: $projectImageIndex, guid: $projectGuid})", new { projectName, projectDescription, projectImageIndex, projectGuid });
         }
 
         private void CreateProjectRelationship(ITransaction tx, Project project, Guid userGuid)

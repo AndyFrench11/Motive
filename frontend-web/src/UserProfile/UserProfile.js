@@ -26,7 +26,8 @@ class UserProfile extends React.Component {
         super(props);
         this.state = {
             modalVisible: false,
-            submitButtonDisabled: true
+            submitButtonDisabled: true,
+            selectedImageIndex: -1
         };
     }
 
@@ -42,9 +43,13 @@ class UserProfile extends React.Component {
         });
     };
 
+    updateSelectedImageIndex = (selectedImageIndex) => {
+        this.setState({selectedImageIndex: selectedImageIndex})
+    }
+
     handleModalSubmit = () => {
         const { userguid } = this.props.match.params;
-        this.props.postProject(userguid, this.props.values);
+        this.props.postProject(userguid, this.props.values, this.state.selectedImageIndex);
         this.setState({
             modalVisible: false
         });
@@ -56,8 +61,7 @@ class UserProfile extends React.Component {
         if(oldProps.values !== newProps.values) {
             const values = newProps.values;
             if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
-                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList') && ((values.hasOwnProperty('startDateInput')) &&
-                    (/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/.test(values.startDateInput)))))) {
+                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')) )) {
                 this.setState({
                     submitButtonDisabled: false
                 })
@@ -65,6 +69,10 @@ class UserProfile extends React.Component {
 
         }
     }
+
+    //Start Date validation
+    // && ((values.hasOwnProperty('startDateInput')) &&
+    //                 (/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/.test(values.startDateInput))))
 
     componentDidMount() {
         const { userguid } = this.props.match.params;
@@ -108,7 +116,7 @@ class UserProfile extends React.Component {
                         <Modal open={true} onClose={this.closeModal} closeIcon>
                             <Modal.Header>Create a New Project</Modal.Header>
                             <Modal.Content>
-                                <NewProjectForm/>
+                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex}/>
                             </Modal.Content>
                             <Modal.Actions>
                                 <Button
@@ -199,7 +207,7 @@ function mapDispatchToProps(dispatch) {
     return {
         fetchProjects: (guid) => dispatch(fetchProjects(guid)),
         fetchProfile: (guid) => dispatch(fetchProfile(guid)),
-        postProject: (guid, values) => dispatch(postProject(guid, values))
+        postProject: (guid, values, imageIndex) => dispatch(postProject(guid, values, imageIndex))
     };
 }
 
