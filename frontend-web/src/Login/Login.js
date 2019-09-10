@@ -5,11 +5,12 @@ import Footer from '../Common/Footer'
 import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
 import {login} from "../Common/Auth/actions";
+import {Redirect} from "react-router-dom";
 
 class Login extends Component {
     constructor(props) {
         super(props);
-
+        console.log(this.props.location);
         this.state = {
             loginEmail: '',
             loginPassword: ''
@@ -49,13 +50,6 @@ class Login extends Component {
         }
     };
 
-    // HANDY!!!
-    componentWillReceiveProps (nextProps) {
-        if (nextProps.loginAttemptCompleted && !nextProps.loginError) {
-            this.props.history.push('/home')
-        }
-    }
-
     render() {
         const { loginEmail, loginPassword} = this.state;
 
@@ -63,80 +57,85 @@ class Login extends Component {
         if (this.props.loginAttemptCompleted && this.props.statusCode) {
             responseMessage = this.getCompleteMessage(this.props.statusCode)
         }
+        if (this.props.isLoggedIn) {
+            return (
+                <Redirect to='/home' />
+            )
+        } else {
+            return (
+                <div className='home'>
+                    <TopNavBar/>
+                    <WelcomeBanner/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <Container>
+                        <Grid textAlign='center'>
+                            <Grid.Column width={10} style={{maxWidth: 450}}>
+                                <Grid.Row>
+                                    <Header as='h2' color='black' textAlign='center'>
+                                        Login
+                                    </Header>
+                                    <Form id="loginForm"
+                                          loading={this.props.isLoggingIn}
+                                          error={this.props.loginAttemptCompleted && this.props.loginError}
+                                          success={this.props.loginAttemptCompleted && !this.props.loginError}
+                                          size='large' onSubmit={this.handleLoginSubmit}>
+                                        <Segment>
+                                            <Form.Input
+                                                fluid icon='envelope outline'
+                                                iconPosition='left'
+                                                placeholder='E-mail'
+                                                required
+                                                name='loginEmail'
+                                                value={loginEmail}
+                                                onChange={this.handleChange}
+                                            />
+                                            <Form.Input
+                                                fluid
+                                                icon='lock'
+                                                iconPosition='left'
+                                                placeholder='Password'
+                                                type='password'
+                                                required
+                                                name='loginPassword'
+                                                value={loginPassword}
+                                                onChange={this.handleChange}
+                                            />
+                                            <button className="ui large primary button">Login</button>
+                                            <Message
+                                                error
+                                                header="Oops!"
+                                                content={responseMessage}
+                                            />
+                                            <Message
+                                                success
+                                                header='Welcome!'
+                                                content={responseMessage}
+                                            />
+                                        </Segment>
 
-        return (
-            <div className='home'>
-                <TopNavBar/>
-                <WelcomeBanner/>
-                <br/>
-                <br/>
-                <br/>
-                <Container>
-                    <Grid textAlign='center'>
-                        <Grid.Column width={10} style={{maxWidth: 450}}>
-                            <Grid.Row>
-                                <Header as='h2' color='black' textAlign='center'>
-                                    Login
-                                </Header>
-                                <Form id="loginForm"
-                                      loading={this.props.isLoggingIn}
-                                      error={this.props.loginAttemptCompleted && this.props.loginError}
-                                      success={this.props.loginAttemptCompleted && !this.props.loginError}
-                                      size='large' onSubmit={this.handleLoginSubmit}>
-                                    <Segment>
-                                        <Form.Input
-                                            fluid icon='envelope outline'
-                                            iconPosition='left'
-                                            placeholder='E-mail'
-                                            required
-                                            name='loginEmail'
-                                            value={loginEmail}
-                                            onChange={this.handleChange}
-                                        />
-                                        <Form.Input
-                                            fluid
-                                            icon='lock'
-                                            iconPosition='left'
-                                            placeholder='Password'
-                                            type='password'
-                                            required
-                                            name='loginPassword'
-                                            value={loginPassword}
-                                            onChange={this.handleChange}
-                                        />
-                                        <button className="ui large primary button">Login</button>
-                                        <Message
-                                            error
-                                            header="Oops!"
-                                            content={responseMessage}
-                                        />
-                                        <Message
-                                            success
-                                            header='Welcome!'
-                                            content={responseMessage}
-                                        />
-                                    </Segment>
-
-                                </Form>
-                                <br/>
-                                <button className="ui secondary button" onClick={this.handleSignUpSelected}>Sign Up</button>
-                                <br/>
-                                <br/>
-                                <br/>
-                                <br/>
-                                <Button color='facebook'>
-                                    <Icon name='facebook' /> Facebook
-                                </Button>
-                                <Button color='google plus'>
-                                    <Icon name='google plus' /> Google Plus
-                                </Button>
-                            </Grid.Row>
-                        </Grid.Column>
-                    </Grid>
-                </Container>
-                <Footer/>
-            </div>
-        );
+                                    </Form>
+                                    <br/>
+                                    <button className="ui secondary button" onClick={this.handleSignUpSelected}>Sign Up</button>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <Button color='facebook'>
+                                        <Icon name='facebook' /> Facebook
+                                    </Button>
+                                    <Button color='google plus'>
+                                        <Icon name='google plus' /> Google Plus
+                                    </Button>
+                                </Grid.Row>
+                            </Grid.Column>
+                        </Grid>
+                    </Container>
+                    <Footer/>
+                </div>
+            );
+        }
     };
 }
 
@@ -152,6 +151,7 @@ const mapStateToProps = state => {
         statusCode: state.authReducer.authController.statusCode,
         loginAttemptCompleted: state.authReducer.authController.complete,
         loginError: state.authReducer.authController.error,
+        isLoggedIn: state.authReducer.authController.isLoggedIn,
     };
 };
 

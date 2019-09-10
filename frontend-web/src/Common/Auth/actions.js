@@ -3,6 +3,8 @@ import axios from "axios";
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
+
+export const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
 export const LOGOUT = 'LOGOUT';
 
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
@@ -29,6 +31,31 @@ export function login(valuesJson) {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+            });
+    }
+}
+
+
+export function logout() {
+    return dispatch => {
+
+        return axios.delete(serverURL + "/login", {
+            withCredentials: true
+        })
+            .then(response => {
+                dispatch(completeLogout);
+            })
+            .catch(error => {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
                     dispatch(receiveLoginError(error))
                 } else if (error.request) {
                     // The request was made but no response was received
@@ -41,7 +68,7 @@ export function login(valuesJson) {
     }
 }
 
-export function logout() {
+export function completeLogout() {
     return {
         type: LOGOUT
     }
@@ -68,3 +95,4 @@ function receiveLoginError(error) {
         receivedAt: Date.now()
     }
 }
+

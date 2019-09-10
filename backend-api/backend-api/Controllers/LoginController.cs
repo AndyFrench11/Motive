@@ -67,7 +67,7 @@ namespace backend_api.Controllers
             // TODO switch to secure with HTTPS
             Response.Cookies.Append("sessionId", newSession.sessionId, new CookieOptions
             {
-                //HttpOnly = true,
+                HttpOnly = true,
                 Domain = null,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.Now.AddHours(1)
@@ -117,8 +117,9 @@ namespace backend_api.Controllers
                 
         // DELETE api/login
         [HttpDelete]
-        public ActionResult Delete([FromHeader] string sessionId)
+        public ActionResult Delete()
         {
+            string sessionId = Request.Cookies["sessionId"];
             RepositoryReturn<Person> requestGetPersonOnSession = _sessionRepository.GetUserOnSession(sessionId);
             if (requestGetPersonOnSession.IsError)
             {
@@ -137,6 +138,14 @@ namespace backend_api.Controllers
                 // Server-side/DB error
                 return StatusCode(500, requestSessionDelete.ErrorException.Message);
             }
+            
+            Response.Cookies.Append("sessionId", sessionId, new CookieOptions
+            {
+                HttpOnly = true,
+                Domain = null,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.Now.AddHours(-1),
+            });  
             return StatusCode(200);
         }
     }
