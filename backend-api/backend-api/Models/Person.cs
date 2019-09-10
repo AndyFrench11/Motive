@@ -21,8 +21,6 @@ namespace backend_api.Models
         
         public string profileBio { get; set; }
         
-        public string sessionID { get; set; }
-
         // Creating a new person, generates a GUID
         public Person(string firstName, string lastName, string email, string password, string dateOfBirth, string profileBio)
         {
@@ -64,6 +62,14 @@ namespace backend_api.Models
             this.dateJoined = props["dateJoined"].ToString();
             this.Guid = Guid.Parse(props["guid"].ToString());
         }
+
+        private Person(string firstName, string lastName, string email)
+        {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+        }
+        
 
         //        public Person(Person parsedPerson)
         //        {

@@ -15,8 +15,16 @@ import history from "./history"
 import "react-datepicker/dist/react-datepicker.css";
 import Signup from "./Signup/Signup";
 import Login from "./Login/Login";
+import {createStore} from "redux";
+import rootReducer from "./reducers";
+import StateLoader from "./stateLoader";
 
-const store = configureStore();
+const stateLoader = new StateLoader();
+const store = configureStore(stateLoader.loadState());
+
+store.subscribe(() => {
+    stateLoader.saveState(store.getState());
+});
 
 
 function About() {
