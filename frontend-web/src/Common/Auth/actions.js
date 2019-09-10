@@ -1,5 +1,4 @@
 import axios from "axios";
-import jwtDecode from 'jwt-decode'
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -17,13 +16,13 @@ export function login(valuesJson) {
             password: valuesJson.password
         };
 
-        return axios.post(serverURL + "/login", login, {headers: {
-                'Content-Type': 'application/json'
-            }
+        return axios.post(serverURL + "/login", login, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            withCredentials: true
         })
             .then(response => {
-                localStorage.authToken = response.data;
-                console.log(jwtDecode(response.data));
                 dispatch(receiveLoginSuccess(response))
             })
             .catch(error => {
@@ -43,7 +42,6 @@ export function login(valuesJson) {
 }
 
 export function logout() {
-    delete localStorage.authToken;
     return {
         type: LOGOUT
     }
@@ -57,7 +55,7 @@ function requestLogin() {
 function receiveLoginSuccess(response) {
     return {
         type: LOGIN_SUCCESS,
-        user: jwtDecode(response.data),
+        user: response.data,
         statusCode: response.status,
         receivedAt: Date.now()
     }

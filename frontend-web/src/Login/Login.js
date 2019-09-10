@@ -4,7 +4,6 @@ import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
-import {postLogin} from "./actions";
 import {login} from "../Common/Auth/actions";
 
 class Login extends Component {

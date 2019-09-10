@@ -1,15 +1,15 @@
 import {combineReducers} from 'redux'
-import jwtDecode from 'jwt-decode'
 import {LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT} from "./actions";
 
-const initialState = (token => ({
+const initialState = {
     isAuthenticating: false,
-    currentUser: token ? jwtDecode(token) : null,
+    currentUser: null,
     statusCode: -1,
     lastUpdated: -1,
+    isLoggedIn: false,
     complete: false,
     error: false
-}))(localStorage.authToken);
+};
 
 function authController(state = initialState, action) {
     switch (action.type) {
@@ -26,6 +26,7 @@ function authController(state = initialState, action) {
                 statusCode: action.statusCode,
                 lastUpdated: action.receivedAt,
                 complete: true,
+                isLoggedIn: false,
                 error: true
             };
         case LOGIN_SUCCESS:
@@ -35,6 +36,7 @@ function authController(state = initialState, action) {
                 statusCode: action.statusCode,
                 lastUpdated: action.receivedAt,
                 complete: true,
+                isLoggedIn: true,
                 error: false
             };
         case LOGOUT:
@@ -43,6 +45,7 @@ function authController(state = initialState, action) {
                 currentUser: null,
                 lastUpdated: action.receivedAt,
                 complete: true,
+                isLoggedIn: false,
                 error: false
             };
         default:

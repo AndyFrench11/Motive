@@ -30,7 +30,8 @@ class TopNavBar extends React.Component {
     };
 
     render() {
-        const isLoggedIn = this.props.currentUser;
+        const isLoggedIn = this.props.isLoggedIn;
+        const currentUser = this.props.currentUser;
         return (
             <div>
                 <Menu fixed='top' inverted>
@@ -63,7 +64,7 @@ class TopNavBar extends React.Component {
                     {isLoggedIn ? (
                         <Menu.Menu position='right'>
                             <Menu.Item>
-                                Welcome, {isLoggedIn.name}
+                                Welcome, {currentUser.firstName} {currentUser.lastName}
                             </Menu.Item>
 
                             <Menu.Item>
@@ -75,11 +76,8 @@ class TopNavBar extends React.Component {
                             <Button primary onClick={this.handleLoginClick}>Log In</Button>
                         </Menu.Item>
                     )}
-
                 </Menu>
-
             </div>
-
         );
     }
 }
@@ -93,6 +91,7 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
     return {
         currentUser: state.authReducer.authController.currentUser,
+        isLoggedIn: state.authReducer.authController.isLoggedIn,
     };
 };
 
