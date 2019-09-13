@@ -7,6 +7,7 @@ namespace backend_api.Models
     {
         public string name { get; set; }
         public bool completed { get; set; }
+        public int orderIndex { get; set; }
 
 
         public ProjectTask()
@@ -18,6 +19,7 @@ namespace backend_api.Models
         {
             this.name = props["name"].ToString();
             this.completed = (bool)(props["completed"]);
+            this.orderIndex = Int32.Parse(props["orderIndex"].ToString());
             this.Guid = Guid.Parse(props["guid"].ToString());
         }
     }

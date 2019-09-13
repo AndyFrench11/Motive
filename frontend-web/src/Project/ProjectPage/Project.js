@@ -7,7 +7,7 @@ import TopNavBar from '../../Common/TopNavBar'
 import Footer from '../../Common/Footer'
 import BookImage from '../ProjectImages/image15.png'
 import {connect} from "react-redux";
-import {fetchProject} from "../actions";
+import {fetchProject, fetchProjectProfiles} from "../actions";
 import LoaderInlineCentered from "../../Common/Loader";
 import ProjectTasks from "./ProjectTasks";
 
@@ -26,68 +26,90 @@ class ProjectPageLayout extends React.Component {
     handleItemClick = (e, { name }) => this.setState({ activeMenuItem: name });
     handleTaskButtonClick = () => this.setState({ activeTaskButton: !this.state.activeTaskButton });
 
-
     componentDidMount() {
         const { dispatch } = this.props;
         const { userguid, projectguid } = this.props.match.params;
         dispatch(fetchProject(projectguid, userguid));
+        //dispatch(fetchProjectProfiles(projectguid))
     }
 
     renderProjectImage(imageIndex) {
         var photoList = Object.keys(images);
         return (
-            <Image style={{'border-radius':8}} src={images[photoList[imageIndex]]} size='small' />
+            <Grid.Column width={4}>
+                <Image style={{'border-radius':8}} src={images[photoList[imageIndex]]} size='small' />
+            </Grid.Column>
         );
     }
 
-    checkRender() {
-        if(typeof this.props.result === 'undefined') {
-            return(<Grid divided='vertically' style={{marginTop: '5em'}} centered>
-                <LoaderInlineCentered/>
-            </Grid>)
+    renderProjectDetails(project) {
+        return (
+            <Grid.Column width={9}>
+                <Grid.Row>
+                    <Header as='h1'>{project.name}</Header>
+                </Grid.Row>
+                <Grid.Row>
+                    <p>{project.description}</p>
+                </Grid.Row>
+                <Grid.Row>
+                    {project.tagList.map((tag, index) =>
+                        <Label key={index} >
+                            #{project.tagList[index].name}
+                        </Label>
+                    )}
+                </Grid.Row>
+            </Grid.Column>
+        );
+    }
+
+    renderProjectOwners() {
+        let owner = {
+            name: 'Andy Pandy'
+        }
+        if (this.props.profiles === null || this.props.profiles === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
         } else {
-            const { result } = this.props;
+            return (
+                <Grid.Column width={3}>
+                    <Grid.Row>
+                        <Image avatar floated='right' src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <span>Owned by {owner.name}</span>
+                    </Grid.Row>
+
+                </Grid.Column>
+            );
+        }
+
+    }
+
+    checkRender() {
+
+        if (this.props.project === null || this.props.project === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else {
+            const { project } = this.props;
             const { activeMenuItem, activeTaskButton } = this.state;
 
             return (
                 <div>
 
-                <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
-                    <Grid.Row columns={3}>
-                        <Grid.Column width={2}>
-                            {this.renderProjectImage(result.imageIndex)}
-                        </Grid.Column>
-                        <Grid.Column centered>
-                            <Grid.Row>
-                                <Header as='h1'>{result.name}</Header>
-                            </Grid.Row>
-                            <Grid.Row>
-                                <p>{result.description}</p>
-                            </Grid.Row>
-                            <Grid.Row>
-                                {result.tagList.map((tag, index) =>
-                                    <Label key={index} >
-                                        #{result.tagList[index].name}
-                                    </Label>
-                                )}
-                            </Grid.Row>
-                            <Grid.Row>
-                                <Grid.Row>
-                                    <br/>
-                                    <Button icon labelPosition='left'>
-                                        <Icon name='edit' />
-                                        Edit Project
-                                    </Button>
-                                </Grid.Row>
-                            </Grid.Row>
-                        </Grid.Column>
-                    </Grid.Row>
+                <Grid container style={{ marginTop: '5em', marginLeft: '5em', marginRight: '5em' }}>
+                    {this.renderProjectImage(project.imageIndex)}
+                    {this.renderProjectDetails(project)}
+                    {this.renderProjectOwners()}
                 </Grid>
 
                     <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
-
-
-
 
                     <Menu pointing secondary style={{ marginLeft: '5em', marginRight: '5em'}}>
                         <Menu.Item
@@ -110,7 +132,7 @@ class ProjectPageLayout extends React.Component {
                     {activeMenuItem === "Tasks" &&
 
                         /*Tasks*/
-                        <ProjectTasks taskList={result.taskList} projectGuid={result.guid}/>
+                        <ProjectTasks taskList={project.taskList} projectGuid={project.guid}/>
 
                     }
 
@@ -153,9 +175,6 @@ class ProjectPageLayout extends React.Component {
     }
 
     render() {
-
-        const { isRetrieving, result, lastUpdated } = this.props;
-
         return (
           <div>
             <TopNavBar/>
@@ -167,12 +186,15 @@ class ProjectPageLayout extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { projectController } = state;
+    const { projectController, projectOwnersController } = state;
     const { isRetrieving, lastUpdated, result } = projectController;
+    const { isRetrievingOwners, owners } = projectOwnersController;
     return {
         isRetrieving: isRetrieving,
-        result: result,
+        project: result,
         lastUpdated: lastUpdated,
+        projectOwners: owners,
+        isRetrievingOwners: isRetrievingOwners
     };
 };
 

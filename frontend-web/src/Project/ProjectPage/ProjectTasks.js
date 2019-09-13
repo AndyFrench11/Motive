@@ -84,12 +84,16 @@ class ProjectTasks extends Component {
             result.destination.index
         );
 
+        taskList.map((task, index) => {
+            task.orderIndex = index;
+        });
+
         this.setState({
             taskList
         });
 
         //Patch the task list on the project to now be in that order
-        //this.props.updateTaskOrder(this.props.projectGuid, taskList);
+        this.props.updateTaskOrder(this.props.projectGuid, taskList);
 
     }
 
@@ -101,15 +105,14 @@ class ProjectTasks extends Component {
                 //Just used to create a unique id on the front end
                 
                 const newIndex = uuidv4();
-
-                taskList.push({name: currentInput, completed: false, guid: newIndex});
+                const orderIndex = taskList.length;
+                taskList.push({name: currentInput, completed: false, orderIndex: orderIndex, guid: newIndex});
                 this.setState({
                         taskList: taskList
                     }
                 );
-
                 //TODO Update the backend!
-                this.props.postTask(this.props.projectGuid, {name: currentInput, completed: false, guid: newIndex});
+                this.props.postTask(this.props.projectGuid, {name: currentInput, completed: false, orderIndex: orderIndex, guid: newIndex});
 
             }
             this.setState({
@@ -141,6 +144,14 @@ class ProjectTasks extends Component {
         this.props.deleteTask(taskList[index].guid)
 
         taskList.splice(index, 1);
+
+        taskList.map((task, index) => {
+            task.orderIndex = index;
+        });
+
+        //Patch the task list on the project to now be in that order
+        this.props.updateTaskOrder(this.props.projectGuid, taskList);
+
         this.setState({taskList: taskList});
         
 
@@ -157,6 +168,53 @@ class ProjectTasks extends Component {
 
 
     };
+
+    renderDraggableTasks() {
+        let { taskList } = this.state;
+
+        taskList = taskList.sort((a, b) => (a.orderIndex > b.orderIndex) ? 1 : ((b.orderIndex > a.orderIndex) ? -1 : 0));
+
+        return(
+            taskList.map((task, index) => (
+                <Draggable key={task.guid} draggableId={task.guid} index={index}>
+                    {(provided, snapshot) => (
+                        <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style,
+                                task.completed
+                            )}
+                        >
+
+                            <Grid divided='vertically' >
+                                <Grid.Row >
+                                    <Grid.Column width={1} >
+                                        <Button listIndex={index} basic circular toggle active={task.completed} onClick={this.markTaskAsDone}
+                                                icon='check'>
+                                        </Button>
+                                    </Grid.Column>
+                                    <Grid.Column width={10} style={{marginLeft: '2em'}}>
+                                        {taskList[index].name}
+
+                                    </Grid.Column>
+                                    <Grid.Column width={1} floated='right' style={{marginRight:'2em'}}>
+                                        <Button index={index} icon onClick={this.deleteTask} basic circular negative
+                                                icon='delete'>
+                                        </Button>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+
+
+                        </div>
+                    )}
+                </Draggable>
+            ))
+        )
+    }
 
     render() {
 
@@ -176,44 +234,7 @@ class ProjectTasks extends Component {
                                     ref={provided.innerRef}
                                     style={getListStyle(snapshot.isDraggingOver)}
                                 >
-                                    {this.state.taskList.map((task, index) => (
-                                        <Draggable key={task.guid} draggableId={task.guid} index={index}>
-                                            {(provided, snapshot) => (
-                                                <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                    style={getItemStyle(
-                                                        snapshot.isDragging,
-                                                        provided.draggableProps.style,
-                                                        task.completed
-                                                    )}
-                                                >
-
-                                                    <Grid divided='vertically' >
-                                                        <Grid.Row >
-                                                            <Grid.Column width={1} >
-                                                                <Button listIndex={index} basic circular toggle active={task.completed} onClick={this.markTaskAsDone}
-                                                                        icon='check'>
-                                                                </Button>
-                                                            </Grid.Column>
-                                                            <Grid.Column width={10} style={{marginLeft: '2em'}}>
-                                                                {taskList[index].name}
-
-                                                            </Grid.Column>
-                                                            <Grid.Column width={1} floated='right' style={{marginRight:'2em'}}>
-                                                                <Button index={index} icon onClick={this.deleteTask} basic circular negative
-                                                                        icon='delete'>
-                                                                </Button>
-                                                            </Grid.Column>
-                                                        </Grid.Row>
-                                                    </Grid>
-
-
-                                                </div>
-                                            )}
-                                        </Draggable>
-                                    ))}
+                                    {this.renderDraggableTasks()}
                                     {provided.placeholder}
                                 </div>
                             )}

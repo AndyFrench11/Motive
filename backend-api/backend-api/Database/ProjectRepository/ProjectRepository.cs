@@ -190,7 +190,8 @@ namespace backend_api.Database.ProjectRepository
                 string taskName = task.name;
                 string taskGuid = task.Guid.ToString();
                 bool completed = task.completed;
-                tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, guid: $taskGuid})", new { taskName, completed, taskGuid });
+                int orderIndex = taskList.IndexOf(task);
+                tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, orderIndex: $orderIndex, guid: $taskGuid})", new { taskName, completed, orderIndex, taskGuid });
             }
         }
 
@@ -211,9 +212,7 @@ namespace backend_api.Database.ProjectRepository
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
-                    session.WriteTransaction(tx => RemoveExistingTaskNodes(tx, projectGuid));
-                    session.WriteTransaction(tx => CreateTaskNodes(tx, projectTaskList));
-                    session.WriteTransaction(tx => CreateTaskRelationships(tx, projectTaskList, projectGuid));
+                    session.WriteTransaction(tx => UpdateTaskNodeOrderIndex(tx, projectTaskList));
 
                     return new RepositoryReturn<bool>(true);
                 }
@@ -224,12 +223,17 @@ namespace backend_api.Database.ProjectRepository
             }
         }
         
-        private void RemoveExistingTaskNodes(ITransaction tx, Guid projectGuid)
+        private void UpdateTaskNodeOrderIndex(ITransaction tx, List<ProjectTask> projectTaskList)
         {
-            //Create the relationship to the project
-            string projectId = projectGuid.ToString();
-            tx.Run("MATCH (p:Project) -- (pt:ProjectTask) WHERE p.guid = $projectId DETACH DELETE pt", new { projectId });
-            
+            foreach (var task in projectTaskList)
+            {
+                //Edit the task node based on completion status
+                string projectTaskId = task.Guid.ToString();
+                int orderIndex = task.orderIndex;
+                tx.Run("MATCH (a:ProjectTask) WHERE a.guid = $projectTaskId SET a.orderIndex = $orderIndex",
+                    new {projectTaskId, orderIndex});
+            }
+
         }
 
         public RepositoryReturn<bool> Delete(Guid projectGuid)
