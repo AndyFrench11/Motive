@@ -281,14 +281,14 @@ function requestProjectProfiles() {
 function receiveProjectProfiles(json) {
     return {
         type: RECEIVE_PROJECT_PROFILES,
-        profiles: json
+        owners: json
     }
 }
 
 export function fetchProjectProfiles (guid) {
     return function (dispatch) {
         dispatch(requestProjectProfiles());
-        return fetch(serverUrl + `/project/${guid}`)
+        return fetch(serverUrl + `/project/${guid}/owners`)
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred!!", error)

@@ -30,7 +30,7 @@ class ProjectPageLayout extends React.Component {
         const { dispatch } = this.props;
         const { userguid, projectguid } = this.props.match.params;
         dispatch(fetchProject(projectguid, userguid));
-        //dispatch(fetchProjectProfiles(projectguid))
+        dispatch(fetchProjectProfiles(projectguid));
     }
 
     renderProjectImage(imageIndex) {
@@ -66,20 +66,36 @@ class ProjectPageLayout extends React.Component {
         let owner = {
             name: 'Andy Pandy'
         }
-        if (this.props.profiles === null || this.props.profiles === undefined) {
+        if (this.props.projectOwners === null || this.props.projectOwners === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>
                 </Grid>
             )
         } else {
+            const { projectOwners } = this.props;
+            let ownerString = "";
+            for(var i = 0; i < projectOwners.length; i++) {
+                const owner = projectOwners[i];
+                ownerString += `${owner.firstName} ${owner.lastName}`
+                if (projectOwners.length > 1) {
+                    if (i === projectOwners.length - 2) {
+                        ownerString += " and ";
+                    } else if(i !== projectOwners.length - 1) {
+                        ownerString += ", "
+                    }
+                }
+            }
+            //Do something to check if the number of owners is greater than some threshold
             return (
                 <Grid.Column width={3}>
                     <Grid.Row>
-                        <Image avatar floated='right' src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
+                        {projectOwners.map((owner, index) => (
+                            <Image avatar floated='right' src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
+                        ))}
                     </Grid.Row>
                     <Grid.Row>
-                        <span>Owned by {owner.name}</span>
+                        <span>Owned by {ownerString}</span>
                     </Grid.Row>
 
                 </Grid.Column>

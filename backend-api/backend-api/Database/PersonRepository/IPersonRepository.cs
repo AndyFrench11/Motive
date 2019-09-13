@@ -7,6 +7,8 @@ namespace backend_api.Database.PersonRepository
     public interface IPersonRepository
     {
         RepositoryReturn<IEnumerable<Person>> GetAll();
+        
+        RepositoryReturn<IEnumerable<Person>> GetAllForProject(Guid projectGuid);
 
         RepositoryReturn<Person> GetByGuid(Guid personGuid);
         

@@ -208,7 +208,7 @@ function projectOwnersController(state = {}, action) {
         case RECEIVE_PROJECT_PROFILES:
             return {...state,
                 isRetrievingOwners: false,
-                profiles: action.profiles
+                owners: action.owners
             };
         default:
             return state
