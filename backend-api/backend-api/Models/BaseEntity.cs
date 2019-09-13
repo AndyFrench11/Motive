@@ -16,7 +16,7 @@ namespace backend_api.Models
 
         #region Public Properties
 
-        public Guid Guid { get; protected set; }
+        public Guid Guid { get; set; }
 
         #endregion
     }

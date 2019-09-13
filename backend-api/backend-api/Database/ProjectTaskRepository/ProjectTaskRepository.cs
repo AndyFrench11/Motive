@@ -37,7 +37,8 @@ namespace backend_api.Database.ProjectTaskRepository
             string taskName = task.name;
             string taskGuid = task.Guid.ToString();
             bool completed = task.completed;
-            tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, guid: $taskGuid})", new { taskName, completed, taskGuid });
+            int orderIndex = task.orderIndex;
+            tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, orderIndex: $orderIndex, guid: $taskGuid})", new { taskName, completed, orderIndex, taskGuid });
         }
 
         private void CreateTaskRelationship(ITransaction tx, ProjectTask task, Guid projectGuid)
@@ -96,5 +97,6 @@ namespace backend_api.Database.ProjectTaskRepository
             tx.Run("MATCH (a:ProjectTask) WHERE a.guid = $projectTaskId DETACH DELETE a", new { projectTaskId });
 
         }
+        
     }
 }

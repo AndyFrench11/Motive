@@ -108,15 +108,14 @@ class NewProjectForm extends Component {
         } = props;
 
         this.state = {
-            selectedImageIndex: -1,
-
+            selectedImageIndex: this.props.selectedImageIndex,
         }
 
     }
 
     renderTaskList = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({name: this.props.taskInputValue, completed: false})}>Add Task</Button>
+            <Button type="button" onClick={() => fields.push({name: this.props.taskInputValue, completed: false, orderIndex: -1})}>Add Task</Button>
 
             <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
                 {fields.map((task, index) =>
@@ -155,35 +154,36 @@ class NewProjectForm extends Component {
         </Form.Field>
     );
 
-    renderStartDateInput = ({ input, placeholder, label, meta: { touched, error, warning } }) => {
-        let today = new Date();
-        let dd = today.getDate();
-        let mm = today.getMonth()+1; //As January is 0.
-        let yyyy = today.getFullYear();
+    // renderStartDateInput = ({ input, placeholder, label, meta: { touched, error, warning } }) => {
+    //     let today = new Date();
+    //     let dd = today.getDate();
+    //     let mm = today.getMonth()+1; //As January is 0.
+    //     let yyyy = today.getFullYear();
 
-        if(dd<10) dd='0'+dd;
-        if(mm<10) mm='0'+mm;
+    //     if(dd<10) dd='0'+dd;
+    //     if(mm<10) mm='0'+mm;
 
-        return (
-            <Form.Field>
-                <div>
-                    <Input
-                        {...input}
-                        label={label}
-                        placeholder={dd+"/"+mm+"/"+yyyy}
-                    />
+    //     return (
+    //         <Form.Field>
+    //             <div>
+    //                 <Input
+    //                     {...input}
+    //                     label={label}
+    //                     placeholder={dd+"/"+mm+"/"+yyyy}
+    //                 />
 
-                    {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
-                </div>
-            </Form.Field>
-        );
-    };
+    //                 {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+    //             </div>
+    //         </Form.Field>
+    //     );
+    // };
 
 
     setSelectedImage = (event, {index}) => {
         this.setState({
             selectedImageIndex: index
         });
+        this.props.updateSelectedImageIndex(index)
 
     };
 
@@ -196,12 +196,9 @@ class NewProjectForm extends Component {
                 <Image.Group size='tiny'>
                     {photoList.map((photo, index) =>
                         <Button basic toggle active={index == this.state.selectedImageIndex} index={index} onClick={this.setSelectedImage}>
-                            <Image src={images[photoList[index]]} fluid
-                                   />
+                            <Image src={images[photoList[index]]} fluid/>
                         </Button>
-
                     )}
-
                 </Image.Group>
             </Segment>
         )
@@ -230,13 +227,13 @@ class NewProjectForm extends Component {
                             validate={requiredDescription}
                         />
 
-                        <Field
+                        {/* <Field
                             component={this.renderStartDateInput}
                             name="startDateInput"
                             id="startDateInput"
                             label="Start Date"
                             validate={requiredStartDate}
-                        />
+                        /> */}
 
                         {/*<Field*/}
                         {/*    component={renderEndDateInput}*/}

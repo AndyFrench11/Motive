@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using backend_api.Database;
+using backend_api.Database.PersonRepository;
 using backend_api.Database.ProjectRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,12 @@ namespace backend_api.Controllers
     public class ProjectController : Controller
     {
         private IProjectRepository _projectRepository;
+        private IPersonRepository _personRepository;
 
         public ProjectController()
         {
             _projectRepository = new ProjectRepository();
+            _personRepository = new PersonRepository();
         }
         
 
@@ -157,6 +160,35 @@ namespace backend_api.Controllers
             }
 
             return StatusCode(200);
+        }
+        
+        // Get all of the owners of a single project
+        [HttpGet("{projectId}/owners")]
+        public ActionResult<Project> GetProjectOwners(string projectId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<Person>> result = _personRepository.GetAllForProject(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200, result.ReturnValue);
+
         }
 
        

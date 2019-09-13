@@ -11,7 +11,9 @@ import {
     REQUEST_UPDATE_TASK,
     RECEIVE_UPDATE_TASK_RESPONSE,
     REQUEST_UPDATE_TASK_ORDER,
-    RECEIVE_UPDATE_TASK_ORDER_RESPONSE
+    RECEIVE_UPDATE_TASK_ORDER_RESPONSE,
+    REQUEST_PROJECT_PROFILES, 
+    RECEIVE_PROJECT_PROFILES
 } from './actions'
 import {reducer as formReducer} from "redux-form";
 import profilePage from "../UserProfile/reducers";
@@ -197,6 +199,22 @@ function projectTaskController(state = {}, action) {
     }
 }
 
+function projectOwnersController(state = {}, action) {
+    switch (action.type) {
+        case REQUEST_PROJECT_PROFILES:
+            return {...state,
+                isRetrievingOwners: true
+            };
+        case RECEIVE_PROJECT_PROFILES:
+            return {...state,
+                isRetrievingOwners: false,
+                owners: action.owners
+            };
+        default:
+            return state
+    }
+}
+
 const rootReducer = combineReducers({
     form: formReducer,
     createProjectController,
@@ -205,7 +223,8 @@ const rootReducer = combineReducers({
     signUpReducer,
     profilePage,
     projectController,
-    projectTaskController
+    projectTaskController,
+    projectOwnersController
 });
 
 export default rootReducer
