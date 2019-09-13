@@ -3,7 +3,7 @@ import {Button, Form, Grid, Header, Container, Segment, Icon, List, Menu, Dropdo
 import {DateInput} from '@opuscapita/react-dates'
 import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
-import {postSignUp} from "./actions";
+import {postSignUp, resetSignUpState} from "./actions";
 import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
 import validate from "../Common/FormValidation";
@@ -24,6 +24,8 @@ const ValidationStatus = Object.freeze({
 class SignUp extends Component {
     constructor(props) {
         super(props);
+
+        this.props.resetSignUp();
 
         this.state = {
             firstNameInput: '',
@@ -251,6 +253,7 @@ class SignUp extends Component {
 function mapDispatchToProps(dispatch) {
     return {
         postSignUp: (valuesJson) => dispatch(postSignUp(valuesJson)),
+        resetSignUp: () => dispatch(resetSignUpState())
     };
 }
 

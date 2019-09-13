@@ -8,8 +8,8 @@ import {
 import {reducer as formReducer} from "redux-form";
 import profilePage from "./UserProfile/reducers";
 import signUpReducer from "./Signup/reducers";
-import loginReducer from "./Login/reducers";
 import authReducer from "./Common/Auth/reducer";
+import {USER_LOGOUT} from "./Common/Auth/actions";
 
 
 function newProject(
@@ -78,13 +78,21 @@ function projectController(state = {}, action) {
     }
 }
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
+    /* app’s top-level reducers */
     form: formReducer,
     createProjectController,
     authReducer,
-    loginReducer,
     signUpReducer,
     profilePage
 });
+
+const rootReducer = (state, action) => {
+    if (action.type === USER_LOGOUT) {
+        state = undefined
+    }
+
+    return appReducer(state, action)
+};
 
 export default rootReducer

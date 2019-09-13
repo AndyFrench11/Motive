@@ -14,15 +14,22 @@ import {connect} from "react-redux";
 import {Link, withRouter} from "react-router-dom";
 import UserProfile from "../UserProfile/UserProfile";
 import {logout} from "./Auth/actions";
+import Redirect from "react-router-dom/es/Redirect";
 
 class TopNavBar extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            goToLogin: false
+        }
     }
 
     handleLogoutClick = () => {
-        this.props.logout();
-        this.props.history.push("/");
+        // Fire logout then set state to reroute to logout
+        this.props.logout().then(
+            this.props.history.replace('/login')
+        );
     };
 
     handleLoginClick = () => {
@@ -30,8 +37,8 @@ class TopNavBar extends React.Component {
     };
 
     render() {
-        const isLoggedIn = this.props.isLoggedIn;
         const currentUser = this.props.currentUser;
+
         return (
             <div>
                 <Menu fixed='top' inverted>
@@ -61,7 +68,7 @@ class TopNavBar extends React.Component {
                             </Dropdown.Menu>
                         </Dropdown>
                     </Container>
-                    {isLoggedIn ? (
+                    {currentUser ? (
                         <Menu.Menu position='right'>
                             <Menu.Item>
                                 Welcome, {currentUser.firstName} {currentUser.lastName}
@@ -90,8 +97,7 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = state => {
     return {
-        currentUser: state.authReducer.authController.currentUser,
-        isLoggedIn: state.authReducer.authController.isLoggedIn,
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 
