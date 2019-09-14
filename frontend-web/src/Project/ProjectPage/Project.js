@@ -1,15 +1,19 @@
 import React from 'react'
 import {
-    Divider, Grid, Header, Image, Segment, Label, Menu, Transition, List, Button, Icon, Card,
+    Divider, Grid, Header, Image, Segment, Label, Menu, Input, Button, Icon, Card,
 } from 'semantic-ui-react'
 
 import TopNavBar from '../../Common/TopNavBar'
 import Footer from '../../Common/Footer'
-import BookImage from '../ProjectImages/image15.png'
 import {connect} from "react-redux";
 import {fetchProject, fetchProjectProfiles} from "../actions";
 import LoaderInlineCentered from "../../Common/Loader";
 import ProjectTasks from "./ProjectTasks";
+import ProjectTags from "./ProjectTags";
+import ProjectName from "./ProjectName";
+import ProjectDescription from "./ProjectDescription";
+import ProjectSettings from "./ProjectSettings";
+import UpdateProjectImageModal from "./UpdateProjectImageModal";
 
 function importAll(r) {
     let images = {};
@@ -21,23 +25,39 @@ const images = importAll(require.context('.././ProjectImages', false, /\.(png|jp
 
 
 class ProjectPageLayout extends React.Component {
-    state = { activeMenuItem: "Updates" };
+    state = { 
+        activeMenuItem: "Updates",
+        updatingProjectImage: false
+    };
 
     handleItemClick = (e, { name }) => this.setState({ activeMenuItem: name });
     handleTaskButtonClick = () => this.setState({ activeTaskButton: !this.state.activeTaskButton });
 
     componentDidMount() {
         const { dispatch } = this.props;
-        const { userguid, projectguid } = this.props.match.params;
-        dispatch(fetchProject(projectguid, userguid));
+        const { projectguid } = this.props.match.params;
+        dispatch(fetchProject(projectguid));
         dispatch(fetchProjectProfiles(projectguid));
+    }
+
+    showUpdateProjectPhotoModal = () => {
+        this.setState({ updatingProjectImage: true })
+    }   
+
+    closeUpdateProjectModal = () => {
+        this.setState({ updatingProjectImage: false })
     }
 
     renderProjectImage(imageIndex) {
         var photoList = Object.keys(images);
         return (
             <Grid.Column width={4}>
-                <Image style={{'border-radius':8}} src={images[photoList[imageIndex]]} size='small' />
+                <Image 
+                    style={{ 'border-radius': 8, 'border-color': '#dddddd', 'border-width': '2px', 'borderStyle': 'solid'}}
+                    className='ProjectImage'
+                    src={images[photoList[imageIndex]]} 
+                    size='small' 
+                    onClick={this.showUpdateProjectPhotoModal}/>
             </Grid.Column>
         );
     }
@@ -45,19 +65,9 @@ class ProjectPageLayout extends React.Component {
     renderProjectDetails(project) {
         return (
             <Grid.Column width={9}>
-                <Grid.Row>
-                    <Header as='h1'>{project.name}</Header>
-                </Grid.Row>
-                <Grid.Row>
-                    <p>{project.description}</p>
-                </Grid.Row>
-                <Grid.Row>
-                    {project.tagList.map((tag, index) =>
-                        <Label key={index} >
-                            #{project.tagList[index].name}
-                        </Label>
-                    )}
-                </Grid.Row>
+                <ProjectName projectName={project.name}/>
+                <ProjectDescription projectDescription={project.description}/>
+                <ProjectTags tagList={project.tagList}/>
             </Grid.Column>
         );
     }
@@ -114,10 +124,14 @@ class ProjectPageLayout extends React.Component {
             )
         } else {
             const { project } = this.props;
-            const { activeMenuItem, activeTaskButton } = this.state;
+            const { activeMenuItem, updatingProjectImage } = this.state;
 
             return (
                 <div>
+            
+                {updatingProjectImage && 
+                    <UpdateProjectImageModal closeCallback={this.closeUpdateProjectModal}/>
+                }
 
                 <Grid container style={{ marginTop: '5em', marginLeft: '5em', marginRight: '5em' }}>
                     {this.renderProjectImage(project.imageIndex)}
@@ -141,6 +155,11 @@ class ProjectPageLayout extends React.Component {
                         <Menu.Item
                             name='Highlights'
                             active={activeMenuItem === 'Highlights'}
+                            onClick={this.handleItemClick}
+                        />
+                        <Menu.Item
+                            name='Settings'
+                            active={activeMenuItem === 'Settings'}
                             onClick={this.handleItemClick}
                         />
                     </Menu>
@@ -183,6 +202,10 @@ class ProjectPageLayout extends React.Component {
                         <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
                             Highlights
                         </Segment>
+                    }
+
+                    {activeMenuItem === "Settings" &&
+                        <ProjectSettings/>
                     }
 
             </div>

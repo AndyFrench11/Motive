@@ -14,3 +14,7 @@ code {
 {
    font-family: Roboto !important;
 } */
+
+.ui.small.image.ProjectImage:hover {
+  background-color: grey !important;
+}
