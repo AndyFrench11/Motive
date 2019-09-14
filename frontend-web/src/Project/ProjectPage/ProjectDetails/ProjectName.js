@@ -4,6 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
+import { updateProjectName } from "./actions";
 
 class ProjectName extends React.Component {
     state = { 
@@ -29,6 +30,7 @@ class ProjectName extends React.Component {
                 projectName: projectNameInputValue
             });
             //Update the backend!
+            this.props.updateProjectName(this.props.projectGuid, projectNameInputValue)
 
         } else {
             this.setState({
@@ -63,8 +65,21 @@ class ProjectName extends React.Component {
   }
 }
 
+function mapDispatchToProps(dispatch) {
+    return {
+        updateProjectName: (projectGuid, projectName) => dispatch(updateProjectName(projectGuid, projectName)),
+    };
+}
+
 const mapStateToProps = state => {
-    return {};
+    const { projectDetailsReducer } = state;
+    const { projectDetailsController } = projectDetailsReducer;
+    const { isUpdating, lastUpdated, result } = projectDetailsController;
+    return {
+        isUpdating: isUpdating,
+        result: result,
+        lastUpdated: lastUpdated,
+    };
 };
 
-export default connect(mapStateToProps)(ProjectName);
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectName);

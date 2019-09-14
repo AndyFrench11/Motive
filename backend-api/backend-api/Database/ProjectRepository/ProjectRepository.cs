@@ -222,7 +222,7 @@ namespace backend_api.Database.ProjectRepository
                 return new RepositoryReturn<bool>(true, e);
             }
         }
-        
+
         private void UpdateTaskNodeOrderIndex(ITransaction tx, List<ProjectTask> projectTaskList)
         {
             foreach (var task in projectTaskList)
@@ -235,10 +235,114 @@ namespace backend_api.Database.ProjectRepository
             }
 
         }
+        
+        public RepositoryReturn<bool> EditName(Guid projectGuid, string newProjectName)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => UpdateProjectNodeName(tx, projectGuid, newProjectName));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+        private void UpdateProjectNodeName(ITransaction tx, Guid projectGuid, string newProjectName)
+        {
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project) WHERE p.guid = $projectId SET p.name = $newProjectName", new {projectId, newProjectName});
+        }
+
+        public RepositoryReturn<bool> EditDescription(Guid projectGuid, string newProjectDescription)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => UpdateProjectNodeDescription(tx, projectGuid, newProjectDescription));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void UpdateProjectNodeDescription(ITransaction tx, Guid projectGuid, string newProjectDescription)
+        {
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project) WHERE p.guid = $projectId SET p.description = $newProjectDescription", new {projectId, newProjectDescription});
+        }
+
+        public RepositoryReturn<bool> AddTag(Guid projectGuid, Tag newTag)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RepositoryReturn<bool> RemoveTag(Guid tagId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RepositoryReturn<bool> EditPhotoIndex(Guid projectGuid, int photoIndex)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => UpdateProjectNodeImageIndex(tx, projectGuid, photoIndex));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void UpdateProjectNodeImageIndex(ITransaction tx, Guid projectGuid, int newImageIndex)
+        {
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project) WHERE p.guid = $projectId SET p.imageIndex = $newImageIndex", new {projectId, newImageIndex});
+        }
 
         public RepositoryReturn<bool> Delete(Guid projectGuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => RemoveProjectTasks(tx, projectGuid));
+                    session.WriteTransaction(tx => RemoveProjectNode(tx, projectGuid));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveProjectTasks(ITransaction tx, Guid projectGuid)
+        {
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project) -- (pt:ProjectTask) WHERE p.guid = $projectId DETACH DELETE pt", new { projectId });
+        }
+        
+        private void RemoveProjectNode(ITransaction tx, Guid projectGuid)
+        {
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project) WHERE p.guid = $projectId DETACH DELETE p", new { projectId });
         }
     }
 }

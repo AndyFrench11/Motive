@@ -14,7 +14,17 @@ namespace backend_api.Database.ProjectRepository
         RepositoryReturn<bool> Add(Project projectToAdd, Guid userGuid);
 
         RepositoryReturn<bool> EditTaskOrder(List<ProjectTask> projectTaskList, Guid projectGuid);
-
+        
+        RepositoryReturn<bool> EditName(Guid projectGuid, string newProjectName);
+        
+        RepositoryReturn<bool> EditDescription(Guid projectGuid, string newProjectDescription);
+        
+        RepositoryReturn<bool> AddTag(Guid projectGuid, Tag newTag);
+        
+        RepositoryReturn<bool> RemoveTag(Guid tagId);
+        
+        RepositoryReturn<bool> EditPhotoIndex(Guid projectGuid, int photoIndex);
+        
         RepositoryReturn<bool> Delete(Guid projectGuid);
 
     }

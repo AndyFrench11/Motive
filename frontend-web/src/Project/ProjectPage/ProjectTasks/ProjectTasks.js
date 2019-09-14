@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import {postTask, deleteTask, updateTask, updateTaskOrder} from "../actions";
+import {postTask, deleteTask, updateTask, updateTaskOrder} from "./actions";
 import uuidv4 from 'uuid/v4';
 
 //Drag and Drop Properties
@@ -277,7 +277,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    const { projectTaskController } = state;
+    const { projectTaskReducer } = state;
+    const { projectTaskController } = projectTaskReducer;
     const { isUpdating, lastUpdated, result } = projectTaskController;
     return {
         isUpdating: isUpdating,
