@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    Divider, Grid, Header, Image, Segment, Label, Menu, Input, Button, Icon, Card,
+    Divider, Grid, Header, Image, Segment, Label, Menu, Input, Button, Icon, Card, Modal
 } from 'semantic-ui-react'
 
 import TopNavBar from '../../Common/TopNavBar'
@@ -14,6 +14,7 @@ import ProjectName from "./ProjectDetails/ProjectName";
 import ProjectDescription from "./ProjectDetails/ProjectDescription";
 import ProjectSettings from "./ProjectSettings/ProjectSettings";
 import UpdateProjectImageModal from "./ProjectDetails/UpdateProjectImageModal";
+import CreateProjectUpdateModal from "./ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
 
 function importAll(r) {
     let images = {};
@@ -25,11 +26,18 @@ const images = importAll(require.context('.././ProjectImages', false, /\.(png|jp
 
 
 class ProjectPageLayout extends React.Component {
-    state = { 
-        activeMenuItem: "Updates",
-        updatingProjectImage: false,
-        selectedImageIndex: -1
-    };
+    
+    constructor(props) {
+        super(props);
+
+        this.state = { 
+            activeMenuItem: "Updates",
+            updatingProjectImage: false,
+            selectedImageIndex: -1,
+            createProjectUpdateModalOpen: false
+        };
+    }
+
 
     handleItemClick = (e, { name }) => this.setState({ activeMenuItem: name });
     handleTaskButtonClick = () => this.setState({ activeTaskButton: !this.state.activeTaskButton });
@@ -47,6 +55,14 @@ class ProjectPageLayout extends React.Component {
 
     closeUpdateProjectModal = () => {
         this.setState({ updatingProjectImage: false })
+    }
+
+    showCreateProjectUpdateModal = () => {
+        this.setState({ createProjectUpdateModalOpen: true })
+    }   
+
+    closeCreateProjectUpdateModal = () => {
+        this.setState({ createProjectUpdateModalOpen: false })
     }
 
     updateSelectedImageIndex = (index) => {
@@ -77,6 +93,9 @@ class ProjectPageLayout extends React.Component {
                 <ProjectName projectName={project.name} projectGuid={project.guid}/>
                 <ProjectDescription projectDescription={project.description} projectGuid={project.guid}/>
                 <ProjectTags tagList={project.tagList} projectGuid={project.guid}/>
+                <Grid.Row>
+                    <Button onClick={this.showCreateProjectUpdateModal}>Show Modal</Button>
+                </Grid.Row>
             </Grid.Column>
         );
     }
@@ -130,10 +149,14 @@ class ProjectPageLayout extends React.Component {
             )
         } else {
             const { project } = this.props;
-            const { activeMenuItem, updatingProjectImage } = this.state;
+            const { activeMenuItem, updatingProjectImage, createProjectUpdateModalOpen } = this.state;
 
             return (
                 <div>
+                {createProjectUpdateModalOpen &&
+                    <CreateProjectUpdateModal closeCallback={this.closeCreateProjectUpdateModal}/>
+                }
+                
                     
                 {updatingProjectImage && 
                     <UpdateProjectImageModal 
