@@ -7,8 +7,12 @@ import {
     createProjectController,
     projectController,
     projectOwnersController,
-    projectTaskController
 } from "./Project/reducers";
+import projectTaskReducer from "./Project/ProjectPage/ProjectTasks/reducers";
+import projectSettingsReducer from "./Project/ProjectPage/ProjectSettings/reducers";
+import projectDetailsReducer from "./Project/ProjectPage/ProjectDetails/reducers";
+
+
 import {USER_LOGOUT} from "./Common/Auth/actions";
 
 const appReducer = combineReducers({
@@ -18,8 +22,10 @@ const appReducer = combineReducers({
     signUpReducer,
     profilePage,
     projectController,
-    projectTaskController,
-    projectOwnersController
+    projectTaskReducer,
+    projectOwnersController,
+    projectSettingsReducer,
+    projectDetailsReducer
 });
 
 const rootReducer = (state, action) => {

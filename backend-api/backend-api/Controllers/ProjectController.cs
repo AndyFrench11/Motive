@@ -129,17 +129,48 @@ namespace backend_api.Controllers
             return StatusCode(201, projectToCreate.Guid);
         }
         
+        // POST api/values
+        [HttpPost("{projectId}/tags")]
+        public ActionResult PostNewTag(string projectId, [FromBody]Tag tagToCreate)
+        {
+            
+            //Check user is valid first
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result = _projectRepository.AddTag(projectGuidToGet, tagToCreate);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(201);
+        }
+        
         // PATCH api/values
-        [HttpPatch("{projectId}")]
-        public ActionResult Update(string projectId, [FromBody]List<ProjectTask> projectTaskList)
+        [HttpPatch("{projectId}/tasks")]
+        public ActionResult UpdateTasks(string projectId, [FromBody]List<ProjectTask> projectTaskList)
         {
         
             //Check user is valid first
             
-            Guid projectTaskGuidToGet;
+            Guid projectGuidToGet;
             try
             {
-                projectTaskGuidToGet = Guid.Parse(projectId);
+                projectGuidToGet = Guid.Parse(projectId);
             }
             catch (ArgumentNullException)
             {
@@ -152,7 +183,113 @@ namespace backend_api.Controllers
             
             // TODO sanitise incoming project body
             RepositoryReturn<bool> result =
-                _projectRepository.EditTaskOrder(projectTaskList, projectTaskGuidToGet);
+                _projectRepository.EditTaskOrder(projectTaskList, projectGuidToGet);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
+        
+        public class UpdateProjectObject
+        {
+            public string newProjectName { get; set; }
+            public string newProjectDescription { get; set; }
+            public int newImageIndex { get; set; }
+        }
+        
+        // PATCH api/values
+        [HttpPatch("{projectId}/name")]
+        public ActionResult UpdateName(string projectId, [FromBody]UpdateProjectObject updateProjectNameObject)
+        {
+        
+            //Check user is valid first
+            
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result =
+                _projectRepository.EditName(projectGuidToGet, updateProjectNameObject.newProjectName);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
+        
+        // PATCH api/values
+        [HttpPatch("{projectId}/description")]
+        public ActionResult UpdateDescription(string projectId, [FromBody]UpdateProjectObject updateProjectDescriptionObject)
+        {
+        
+            //Check user is valid first
+            
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result =
+                _projectRepository.EditDescription(projectGuidToGet, updateProjectDescriptionObject.newProjectDescription);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
+        
+        // PATCH api/values
+        [HttpPatch("{projectId}/imageIndex")]
+        public ActionResult UpdateImageIndex(string projectId, [FromBody]UpdateProjectObject updateProjectImageIndexObject)
+        {
+        
+            //Check user is valid first
+            
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result =
+                _projectRepository.EditPhotoIndex(projectGuidToGet, updateProjectImageIndexObject.newImageIndex);
             
             if (result.IsError)
             {
@@ -189,6 +326,65 @@ namespace backend_api.Controllers
             
             return StatusCode(200, result.ReturnValue);
 
+        }
+        
+        // DELETE api/values/5
+        [HttpDelete("{projectId}")]
+        public ActionResult Delete(string projectId)
+        {
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result = _projectRepository.Delete(projectGuidToGet);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
+        
+        // DELETE api/values/5
+        [HttpDelete("{projectId}/tags")]
+        public ActionResult Delete(string projectId, [FromHeader]string tagName)
+        {
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+           
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result = _projectRepository.RemoveTag(projectGuidToGet, tagName);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
         }
 
        
