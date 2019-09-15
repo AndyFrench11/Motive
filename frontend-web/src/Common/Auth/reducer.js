@@ -1,50 +1,69 @@
 import {combineReducers} from 'redux'
-import jwtDecode from 'jwt-decode'
-import {LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT} from "./actions";
+import {
+    LOGIN_FAILURE,
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
+    LOGOUT_REQUEST,
+    LOGOUT_FAILURE,
+    LOGOUT_SUCCESS, RESET_AUTH,
+} from "./actions";
 
-const initialState = (token => ({
-    isAuthenticating: false,
-    currentUser: token ? jwtDecode(token) : null,
-    statusCode: -1,
-    lastUpdated: -1,
-    complete: false,
-    error: false
-}))(localStorage.authToken);
+const initialState = {
+    isLoggingIn: false,
+    currentUser: null,
+    loginError: false,
+
+    isLoggingOut: false,
+    logoutError: false,
+
+    lastUpdated: -1
+};
 
 function authController(state = initialState, action) {
     switch (action.type) {
+        case RESET_AUTH:
+            return state;
+
         case LOGIN_REQUEST:
-            return {...state,
-                isAuthenticating: true,
-                complete: false,
-                error: false
-            };
-        case LOGIN_FAILURE:
-            console.log(action);
-            return {...state,
-                isAuthenticating: false,
-                statusCode: action.statusCode,
-                lastUpdated: action.receivedAt,
-                complete: true,
-                error: true
-            };
-        case LOGIN_SUCCESS:
             return {
-                isAuthenticating: false,
-                currentUser: action.user,
-                statusCode: action.statusCode,
-                lastUpdated: action.receivedAt,
-                complete: true,
-                error: false
-            };
-        case LOGOUT:
-            return {
-                isAuthenticating: false,
+                isLoggingIn: true,
                 currentUser: null,
-                lastUpdated: action.receivedAt,
-                complete: true,
-                error: false
+                loginError: false,
+
+                isLoggingOut: false,
+                logoutError: false,
+
+                lastUpdated: -1
             };
+
+        case LOGIN_SUCCESS:
+            return {...state,
+                isLoggingIn: false,
+                currentUser: action.receivedUser,
+                loginError: false,
+
+                lastUpdated: action.receivedAt
+            };
+
+
+        case LOGIN_FAILURE:
+            return {...state,
+                isLoggingIn: false,
+                currentUser: null,
+                loginError: action.receivedError,
+
+                lastUpdated: action.receivedAt
+            };
+
+
+        case LOGOUT_REQUEST:
+            return {...state,
+                isLoggingOut: true,
+                logoutError: false,
+
+                lastUpdated: action.receivedAt
+            };
+
         default:
             return state
     }

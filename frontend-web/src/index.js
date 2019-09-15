@@ -15,44 +15,25 @@ import history from "./history"
 import "react-datepicker/dist/react-datepicker.css";
 import Signup from "./Signup/Signup";
 import Login from "./Login/Login";
+import {createStore} from "redux";
+import rootReducer from "./rootReducer";
+import StateLoader from "./stateLoader";
+import Redirect from "react-router-dom/es/Redirect";
+import AppRouter from "./app";
 
-const store = configureStore();
+const stateLoader = new StateLoader();
+const store = configureStore(stateLoader.loadState());
 
+store.subscribe(() => {
+    stateLoader.saveState(store.getState());
+});
 
-function About() {
-  return <h2>About</h2>;
-}
-
-function Users() {
-  return <h2>Users</h2>;
-}
-
-function AppRouter() {
-  return (
-        <Router history={history}>
-          <div>
-            <Route exact path="/" component={Login} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/signup" component={Signup} />
-
-
-            <Route exact path ="/home" component={Home}/>
-            <Route path="/about" component={About} />
-            <Route path="/users" component={Users} />
-            <Route path="/test" component={Users} />
-            <Route exact path="/profile/:userguid" component={UserProfile} />
-            <Route exact path="/project/:projectguid" component={Project} />
-          </div>
-        </Router>
-  );
-}
-
-export default AppRouter;
-
-ReactDOM.render(<Provider store={store}>
-                  <AppRouter/>
-                </Provider>,
-                    document.getElementById('root'));
+ReactDOM.render(
+    <Provider store={store}>
+        <AppRouter/>
+    </Provider>,
+    document.getElementById('root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
