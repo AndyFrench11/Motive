@@ -44,6 +44,30 @@ namespace backend_api.Database.PersonRepository
             }
         }
 
+        public RepositoryReturn<IEnumerable<Person>> GetAllForProject(Guid projectGuid)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    var returnedPeople = session.ReadTransaction(tx =>
+                    {
+                        string projectId = projectGuid.ToString();
+                        var result = tx.Run("MATCH (p:Project) -- (a:Person) WHERE p.guid = $projectId RETURN a", new { projectId });
+                        var records = result.Select(record => new Person(record[0].As<INode>().Properties)).ToList();
+
+                        return records;
+                    });
+
+                    return new RepositoryReturn<IEnumerable<Person>>(returnedPeople);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<IEnumerable<Person>>(true, e);
+            }
+        }
+
         public RepositoryReturn<Person> GetByGuid(Guid personGuid)
         {
             try

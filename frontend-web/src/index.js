@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import * as serviceWorker from './serviceWorker'
 import './index.css';
-import Project from './Project/Project';
+import Project from './Project/ProjectPage/Project';
 import 'semantic-ui-css/semantic.min.css';
 import 'semantic-ui/dist/semantic.min.css';
 import { Router, Route, Link } from "react-router-dom";

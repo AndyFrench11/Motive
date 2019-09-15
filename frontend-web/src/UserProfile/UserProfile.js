@@ -3,7 +3,7 @@ import {
     Grid,
     Header,
     Image, List,
-    Button, Item, Modal, TransitionablePortal
+    Button, Item, Modal, TransitionablePortal, Segment
 } from 'semantic-ui-react'
 
 import TopNavBar from '../Common/TopNavBar'
@@ -15,8 +15,8 @@ import reducer from "./reducers"
 import {connect} from "react-redux";
 import {fetchProfile, fetchProjects} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
-import NewProjectForm from "../Project/ModalForm";
-import {postProject} from "../actions";
+import NewProjectForm from "../Project/CreateNewProject/ModalForm";
+import {postProject} from "../Project/actions";
 import { Route } from 'react-router-dom';
 
 
@@ -26,7 +26,8 @@ class UserProfile extends React.Component {
         super(props);
         this.state = {
             modalVisible: false,
-            submitButtonDisabled: true
+            submitButtonDisabled: true,
+            selectedImageIndex: -1
         };
     }
 
@@ -42,9 +43,13 @@ class UserProfile extends React.Component {
         });
     };
 
+    updateSelectedImageIndex = (selectedImageIndex) => {
+        this.setState({selectedImageIndex: selectedImageIndex})
+    }
+
     handleModalSubmit = () => {
         const { userguid } = this.props.match.params;
-        this.props.postProject(userguid, this.props.values);
+        this.props.postProject(userguid, this.props.values, this.state.selectedImageIndex);
         this.setState({
             modalVisible: false
         });
@@ -56,8 +61,7 @@ class UserProfile extends React.Component {
         if(oldProps.values !== newProps.values) {
             const values = newProps.values;
             if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
-                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList') && ((values.hasOwnProperty('startDateInput')) &&
-                    (/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/.test(values.startDateInput)))))) {
+                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')) )) {
                 this.setState({
                     submitButtonDisabled: false
                 })
@@ -65,6 +69,10 @@ class UserProfile extends React.Component {
 
         }
     }
+
+    //Start Date validation
+    // && ((values.hasOwnProperty('startDateInput')) &&
+    //                 (/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/.test(values.startDateInput))))
 
     componentDidMount() {
         const { userguid } = this.props.match.params;
@@ -75,8 +83,7 @@ class UserProfile extends React.Component {
 
     ProfileHeader() {
         if(typeof this.props.result !== 'undefined') {
-            const { userguid } = this.props.match.params;
-            this.props.history.push(`/profile/${userguid}/project/${this.props.result}`)
+            this.props.history.push(`/project/${this.props.result}`)
         }
         else if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
             return (
@@ -109,7 +116,7 @@ class UserProfile extends React.Component {
                         <Modal open={true} onClose={this.closeModal} closeIcon>
                             <Modal.Header>Create a New Project</Modal.Header>
                             <Modal.Content>
-                                <NewProjectForm/>
+                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex}/>
                             </Modal.Content>
                             <Modal.Actions>
                                 <Button
@@ -138,23 +145,36 @@ class UserProfile extends React.Component {
             )
         } else {
             const { userguid } = this.props.match.params;
-            return (
-                <div>
-                    <Item.Group link>
-                        {this.props.projects.items.map((item, index) => (
-                            <Route render={({ history }) => (
-                                <Item key={index} item={item} onClick={() => { history.push(`/profile/${userguid}/project/${item.guid}/`) }}>
-                                    <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
-                                    <Item.Content>
-                                        <Item.Header>{item.name}</Item.Header>
-                                        <Item.Description>{item.description}</Item.Description>
-                                    </Item.Content>
-                                </Item>
-                            )} />
-                        ))}
-                    </Item.Group>
-                </div>
-            );
+            if(this.props.projects.items.length == 0){
+                return(
+                    <div>
+                          <Segment placeholder style={{marginRight: '1em'}}>
+                            <Header icon>
+                                No projects have been created.
+                            </Header>
+                        </Segment>
+                    </div>
+                );
+            } else {
+
+                return (
+                    <div>
+                        <Item.Group link>
+                            {this.props.projects.items.map((item, index) => (
+                                <Route render={({ history }) => (
+                                    <Item key={index} item={item} onClick={() => { history.push(`/project/${item.guid}/`) }}>
+                                        <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
+                                        <Item.Content>
+                                            <Item.Header>{item.name}</Item.Header>
+                                            <Item.Description>{item.description}</Item.Description>
+                                        </Item.Content>
+                                    </Item>
+                                )} />
+                            ))}
+                        </Item.Group>
+                    </div>
+                );
+            }
         }
     }
 
@@ -187,7 +207,7 @@ function mapDispatchToProps(dispatch) {
     return {
         fetchProjects: (guid) => dispatch(fetchProjects(guid)),
         fetchProfile: (guid) => dispatch(fetchProfile(guid)),
-        postProject: (guid, values) => dispatch(postProject(guid, values))
+        postProject: (guid, values, imageIndex) => dispatch(postProject(guid, values, imageIndex))
     };
 }
 

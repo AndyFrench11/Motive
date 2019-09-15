@@ -46,7 +46,7 @@ namespace backend_api
                     .SetIsOriginAllowed((host) => true)
                     .AllowCredentials()
             );
-            
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }

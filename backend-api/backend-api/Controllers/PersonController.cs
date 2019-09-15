@@ -70,6 +70,8 @@ namespace backend_api.Controllers
             return StatusCode(200, result.ReturnValue);
         }
         
+        
+        
         // DELETE api/person/{guid}
         [HttpDelete("{guid}")]
         public ActionResult<Person> Delete(string guid)
