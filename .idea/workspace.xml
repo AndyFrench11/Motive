@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3b73335d-e96a-4155-ac37-22dc3929547b" name="Default Changelist" comment="" />
+    <list default="true" id="3b73335d-e96a-4155-ac37-22dc3929547b" name="Default Changelist" comment="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js">
+      <change afterPath="$PROJECT_DIR$/frontend-web/src/app.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend-web/src/rootReducer.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend-web/src/stateLoader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend-api/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Controllers/LoginController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Controllers/LoginController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Controllers/RandomController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Controllers/RandomController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Models/Person.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Models/Person.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/Startup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Common/Auth/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Common/Auth/actions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Common/Auth/reducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Common/Auth/reducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Common/TopNavBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Common/TopNavBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Login/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Login/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Login/actions.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Login/reducers.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Project/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Project/reducers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Signup/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Signup/Signup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Signup/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Signup/actions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/Signup/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/Signup/reducers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/configureStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/configureStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/yarn.lock" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,37 +37,71 @@
       <usages-collector id="statistics.lifecycle.project">
         <counts>
           <entry key="project.closed" value="2" />
-          <entry key="project.open.time.7" value="2" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.7" value="3" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="js" value="5" />
+          <entry key="js" value="148" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JavaScript" value="5" />
+          <entry key="JavaScript" value="148" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
+          <entry key="js" value="7" />
           <entry key="json" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="JSON" value="1" />
+          <entry key="JavaScript" value="7" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/frontend-web/src/rootReducer.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="315">
+              <caret line="25" column="27" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+              <folding>
+                <element signature="e#0#38#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectDetails/reducers.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2283">
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/frontend-web/src/Project/reducers.js" />
+        <option value="$PROJECT_DIR$/frontend-web/src/rootReducer.js" />
+      </list>
+    </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
@@ -60,7 +118,7 @@
       <path value="$PROJECT_DIR$/frontend-web/semantic/tasks/config/admin/templates/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
     <option name="width" value="1440" />
     <option name="height" value="805" />
@@ -70,6 +128,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -83,7 +142,6 @@
       </pane>
       <pane id="Scope" />
       <pane id="PackagesPane" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -117,6 +175,7 @@
       <updated>1565761134507</updated>
       <workItem from="1565761138053" duration="1000000" />
       <workItem from="1567429275259" duration="344000" />
+      <workItem from="1568522089767" duration="463000" />
     </task>
     <task id="LOCAL-00001" summary="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js">
       <created>1565761900406</created>
@@ -143,12 +202,12 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1344000" />
+    <option name="totallyTimeSpent" value="1807000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="955" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25274727" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21855922" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -162,7 +221,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.32908458" />
+      <window_info anchor="bottom" id="Version Control" order="7" visible="true" weight="0.27114716" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="SBT Console" order="9" />
       <window_info anchor="bottom" id="Terminal" order="10" />
@@ -194,6 +253,55 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="12" column="34" lean-forward="true" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/reducers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="477">
+          <caret line="93" column="75" selection-start-line="93" selection-start-column="75" selection-end-line="93" selection-end-column="75" />
+          <folding>
+            <element signature="e#0#202#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectSettings/reducers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="447">
+          <caret line="42" column="29" lean-forward="true" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectTasks/reducers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="121" column="5" lean-forward="true" selection-start-line="121" selection-start-column="5" selection-end-line="121" selection-end-column="5" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend-web/src/rootReducer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="25" column="27" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectDetails/reducers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2283">
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

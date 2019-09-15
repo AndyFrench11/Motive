@@ -3,6 +3,7 @@ import axios from "axios";
 export const REQUEST_SIGN_UP = 'REQUEST_SIGN_UP';
 export const RECEIVE_SIGN_UP_RESPONSE = 'RECEIVE_SIGN_UP_RESPONSE';
 export const RECEIVE_SIGN_UP_ERROR = 'RECEIVE_SIGN_UP_ERROR';
+export const RESET_SIGN_UP = 'RESET_SIGN_UP';
 
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
 
@@ -36,6 +37,14 @@ export function postSignUp(valuesJson) {
                     console.log('Error', error.message);
                 }
             });
+    }
+}
+
+export function resetSignUpState() {
+    return dispatch => {
+        dispatch({
+            type: RESET_SIGN_UP,
+        })
     }
 }
 

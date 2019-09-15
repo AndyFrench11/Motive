@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Net;
+
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Web.Http.Cors;
 using backend_api.Database;
 using backend_api.Database.PersonRepository;
 using backend_api.Database.SessionRepository;
 using backend_api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver.V1;
-using Neo4jClient;
 
 namespace backend_api.Controllers
 {
@@ -59,11 +63,37 @@ namespace backend_api.Controllers
                 // Server-side/DB error
                 return StatusCode(500, requestSessionAdd.ErrorException.Message);
             }
-            
-            return StatusCode(200, newSession.sessionId);
+
+            // TODO switch to secure with HTTPS
+            Response.Cookies.Append("sessionId", newSession.sessionId, new CookieOptions
+            {
+                HttpOnly = true,
+                Domain = null,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.Now.AddHours(1)
+            });            
+            return Ok(new StrippedPerson(allegedAccount.ReturnValue));
         }
         
+        // Used to serialise user account details to client
+        class StrippedPerson
+        {
+            public string firstName { get; set; }
         
+            public string lastName { get; set; }
+        
+            public string email { get; set; }
+
+            public StrippedPerson(Person personToStrip)
+            {
+                this.firstName = personToStrip.firstName;
+                this.lastName = personToStrip.lastName;
+                this.email = personToStrip.email;
+            }
+        }
+
+
+
         private bool IsValidPassword(string plaintextPassword, string hashPassword)
         {
             byte[] hashBytes = Convert.FromBase64String(hashPassword);
@@ -87,8 +117,9 @@ namespace backend_api.Controllers
                 
         // DELETE api/login
         [HttpDelete]
-        public ActionResult Delete([FromHeader] string sessionId)
+        public ActionResult Delete()
         {
+            string sessionId = Request.Cookies["sessionId"];
             RepositoryReturn<Person> requestGetPersonOnSession = _sessionRepository.GetUserOnSession(sessionId);
             if (requestGetPersonOnSession.IsError)
             {
@@ -107,6 +138,14 @@ namespace backend_api.Controllers
                 // Server-side/DB error
                 return StatusCode(500, requestSessionDelete.ErrorException.Message);
             }
+            
+            Response.Cookies.Append("sessionId", sessionId, new CookieOptions
+            {
+                HttpOnly = true,
+                Domain = null,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.Now.AddHours(-1),
+            });  
             return StatusCode(200);
         }
     }
