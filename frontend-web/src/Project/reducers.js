@@ -91,4 +91,4 @@ function projectOwnersController(state = {}, action) {
 }
 
 // TODO tidy up the project state using a combinerReducer
-export {projectOwnersController, createProjectController, projectController, projectTaskController}
+export {projectOwnersController, createProjectController, projectController}
