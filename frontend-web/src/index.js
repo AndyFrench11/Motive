@@ -16,7 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Signup from "./Signup/Signup";
 import Login from "./Login/Login";
 import {createStore} from "redux";
-import rootReducer from "./reducers";
+import rootReducer from "./rootReducer";
 import StateLoader from "./stateLoader";
 import Redirect from "react-router-dom/es/Redirect";
 import AppRouter from "./app";

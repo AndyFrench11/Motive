@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux'
 import {
     REQUEST_SINGLE_PROJECT,
     RECEIVE_SINGLE_PROJECT,
@@ -15,11 +14,7 @@ import {
     REQUEST_PROJECT_PROFILES, 
     RECEIVE_PROJECT_PROFILES
 } from './actions'
-import {reducer as formReducer} from "redux-form";
-import profilePage from "../UserProfile/reducers";
-import signUpReducer from "../Signup/reducers";
-import loginReducer from "../Login/reducers";
-import authReducer from "../Common/Auth/reducer";
+
 
 function newProject(
     state = {
@@ -215,16 +210,5 @@ function projectOwnersController(state = {}, action) {
     }
 }
 
-const rootReducer = combineReducers({
-    form: formReducer,
-    createProjectController,
-    authReducer,
-    loginReducer,
-    signUpReducer,
-    profilePage,
-    projectController,
-    projectTaskController,
-    projectOwnersController
-});
-
-export default rootReducer
+// TODO tidy up the project state using a combinerReducer
+export {projectOwnersController, createProjectController, projectController, projectTaskController}

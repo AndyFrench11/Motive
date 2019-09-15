@@ -4,9 +4,9 @@ import Login from "./Login/Login";
 import Signup from "./Signup/Signup";
 import Home from "./Home/Home";
 import UserProfile from "./UserProfile/UserProfile";
-import Project from "./Project/Project";
 import {Redirect, Route, Router, Switch} from "react-router-dom";
 import {connect} from "react-redux";
+import Project from "./Project/ProjectPage/Project";
 
 const ProtectedRoute
     = ({ isAllowed, ...props }) =>
@@ -31,7 +31,7 @@ class App extends Component {
 
                     <ProtectedRoute exact path="/home" component={Home} isAllowed={isLoggedIn}/>
                     <Route exact path="/profile/:userguid" component={UserProfile} />
-                    <Route exact path="/profile/:userguid/project/:projectguid" component={Project} />
+                    <Route exact path="/project/:projectguid" component={Project} />
                 </Switch>
             </Router>
         );
