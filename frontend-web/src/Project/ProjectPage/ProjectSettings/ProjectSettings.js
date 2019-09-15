@@ -67,9 +67,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    const { projectDetailsReducer } = state;
-    const { projectDetailsController } = projectDetailsReducer;
-    const { isUpdating, lastUpdated, result } = projectDetailsController;
+    const { projectSettingsReducer } = state;
+    const { projectSettingsController } = projectSettingsReducer;
+    const { isUpdating, lastUpdated, result } = projectSettingsController;
     return {
         isUpdating: isUpdating,
         result: result,

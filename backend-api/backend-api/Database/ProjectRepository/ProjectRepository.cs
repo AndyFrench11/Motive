@@ -284,12 +284,58 @@ namespace backend_api.Database.ProjectRepository
 
         public RepositoryReturn<bool> AddTag(Guid projectGuid, Tag newTag)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => CreateTagNode(tx, newTag));
+                    session.WriteTransaction(tx => CreateTagRelationship(tx, projectGuid, newTag));
+                    
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void CreateTagNode(ITransaction tx, Tag tag) {
+            //Add the tag node to the database
+            string tagName = tag.name;
+            tx.Run("MERGE(t:Tag {name: $tagName})", new { tagName });
+
         }
 
-        public RepositoryReturn<bool> RemoveTag(Guid tagId)
+        private void CreateTagRelationship(ITransaction tx, Guid projectGuid, Tag newTag)
         {
-            throw new NotImplementedException();
+            //Create the relationship to the project
+            string projectId = projectGuid.ToString();
+            string tagName = newTag.name;
+            tx.Run("MATCH (p:Project),(t:Tag) WHERE p.guid = $projectId AND t.name = $tagName CREATE (p)-[:HAS]->(t)", new { projectId, tagName});
+        }
+
+        public RepositoryReturn<bool> RemoveTag(Guid projectId, string tagName)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => RemoveProjectTagRelationship(tx, projectId, tagName));
+                    
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveProjectTagRelationship(ITransaction tx, Guid projectGuid, string tagName)
+        {
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project)-[r:HAS]-(t:Tag) WHERE p.guid = $projectId AND t.name = $tagName DELETE r", new { projectId, tagName });
         }
 
         public RepositoryReturn<bool> EditPhotoIndex(Guid projectGuid, int photoIndex)

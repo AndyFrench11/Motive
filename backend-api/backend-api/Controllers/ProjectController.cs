@@ -129,6 +129,37 @@ namespace backend_api.Controllers
             return StatusCode(201, projectToCreate.Guid);
         }
         
+        // POST api/values
+        [HttpPost("{projectId}/tags")]
+        public ActionResult PostNewTag(string projectId, [FromBody]Tag tagToCreate)
+        {
+            
+            //Check user is valid first
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result = _projectRepository.AddTag(projectGuidToGet, tagToCreate);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(201);
+        }
+        
         // PATCH api/values
         [HttpPatch("{projectId}/tasks")]
         public ActionResult UpdateTasks(string projectId, [FromBody]List<ProjectTask> projectTaskList)
@@ -167,7 +198,6 @@ namespace backend_api.Controllers
             public string newProjectName { get; set; }
             public string newProjectDescription { get; set; }
             public int newImageIndex { get; set; }
-
         }
         
         // PATCH api/values
@@ -318,6 +348,36 @@ namespace backend_api.Controllers
             
             // TODO sanitise incoming project body
             RepositoryReturn<bool> result = _projectRepository.Delete(projectGuidToGet);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
+        
+        // DELETE api/values/5
+        [HttpDelete("{projectId}/tags")]
+        public ActionResult Delete(string projectId, [FromHeader]string tagName)
+        {
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+           
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result = _projectRepository.RemoveTag(projectGuidToGet, tagName);
             
             if (result.IsError)
             {

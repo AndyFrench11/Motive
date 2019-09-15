@@ -21,7 +21,7 @@ namespace backend_api.Database.ProjectRepository
         
         RepositoryReturn<bool> AddTag(Guid projectGuid, Tag newTag);
         
-        RepositoryReturn<bool> RemoveTag(Guid tagId);
+        RepositoryReturn<bool> RemoveTag(Guid projectId, string tagName);
         
         RepositoryReturn<bool> EditPhotoIndex(Guid projectGuid, int photoIndex);
         

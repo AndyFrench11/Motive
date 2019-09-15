@@ -4,6 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
+import { postTag, removeTag } from "./actions";
 
 class ProjectTags extends React.Component {
     state = { 
@@ -23,8 +24,9 @@ class ProjectTags extends React.Component {
     addNewTag = (event, {value}) => {
         console.log(this.state.tagInputValue)
         const { tagList, tagInputValue } = this.state;
-        const newGuid = uuidv4();
-        tagList.push({name: tagInputValue, guid: newGuid});
+        let newTag = {name: tagInputValue};
+        tagList.push(newTag);
+
         this.setState({
             addingNewTag: false,
             tagInputValue: "",
@@ -32,16 +34,18 @@ class ProjectTags extends React.Component {
         });
 
         //Update the backend!
-
+        this.props.postTag(this.props.projectGuid, newTag)
 
     }
 
     removeTag = (event, {index}) => {
         const { tagList } = this.state;
+        const tag = tagList[index];
         tagList.splice(index, 1);
         this.setState({ tagList: tagList })
 
         //Update the backend!
+        this.props.removeTag(this.props.projectGuid, tag);
     }
 
     render() {
@@ -80,8 +84,22 @@ class ProjectTags extends React.Component {
   }
 }
 
+function mapDispatchToProps(dispatch) {
+    return {
+        postTag: (projectGuid, tag) => dispatch(postTag(projectGuid, tag)),
+        removeTag: (projectGuid, tag) => dispatch(removeTag(projectGuid, tag))
+    };
+}
+
 const mapStateToProps = state => {
-    return {};
+    const { projectDetailsReducer } = state;
+    const { projectDetailsController } = projectDetailsReducer;
+    const { isUpdating, lastUpdated, result } = projectDetailsController;
+    return {
+        isUpdating: isUpdating,
+        result: result,
+        lastUpdated: lastUpdated,
+    };
 };
 
-export default connect(mapStateToProps)(ProjectTags);
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectTags);

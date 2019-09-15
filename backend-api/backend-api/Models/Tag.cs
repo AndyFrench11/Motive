@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace backend_api.Models
 {
-    public class Tag : BaseEntity
+    public class Tag
     {
         public string name { get; set; }
         public Tag()

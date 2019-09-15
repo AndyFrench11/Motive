@@ -12,6 +12,12 @@ export const RECEIVE_UPDATE_PROJECT_IMAGE_INDEX_RESPONSE = 'RECEIVE_UPDATE_PROJE
 export const REQUEST_DELETE_PROJECT = 'REQUEST_DELETE_PROJECT';
 export const RECEIVE_DELETE_PROJECT_RESPONSE = 'RECEIVE_DELETE_PROJECT_RESPONSE';
 
+export const REQUEST_NEW_TAG = 'REQUEST_NEW_TAG';
+export const RECEIVE_NEW_TAG_RESPONSE = 'RECEIVE_NEW_TAG_RESPONSE';
+
+export const REQUEST_REMOVE_TAG = 'REQUEST_REMOVE_TAG';
+export const RECEIVE_REMOVE_TAG_RESPONSE = 'RECEIVE_REMOVE_TAG_RESPONSE';
+
 const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
 
@@ -141,6 +147,87 @@ function receiveUpdateProjectImageIndexResponse(response) {
     } else if(response.status === 500) {
         return {
             type: RECEIVE_UPDATE_PROJECT_IMAGE_INDEX_RESPONSE,
+            result: "Internal Server Error",
+            receivedAt: Date.now()
+        }
+    }
+}
+
+function requestNewTag() {
+    return {
+        type: REQUEST_NEW_TAG,
+    }
+}
+
+export function postTag(projectGuid, tag) {
+    return dispatch => {
+        dispatch(requestNewTag());
+        //Take only the values needed for the request
+
+        return axios.post(serverUrl + `/project/${projectGuid}/tags`, tag, {headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => dispatch(receiveNewTagResponse(response)))
+            .catch(error =>  {
+                console.log("The server is not running!");
+                console.log("Need to update UI with error!");
+                console.log(error.response)
+            })
+
+    }
+}
+
+function receiveNewTagResponse(response) {
+    if(response.status === 201) {
+        return {
+            type: RECEIVE_NEW_TAG_RESPONSE,
+            result: response.data,
+            receivedAt: Date.now()
+        }
+    } else if(response.status === 500) {
+        return {
+            type: RECEIVE_NEW_TAG_RESPONSE,
+            result: "Internal Server Error",
+            receivedAt: Date.now()
+        }
+    }
+}
+
+function requestRemoveTag() {
+    return {
+        type: REQUEST_REMOVE_TAG,
+    }
+}
+
+export function removeTag(projectGuid, tag) {
+    return dispatch => {
+        dispatch(requestRemoveTag());
+    
+        return axios.delete(serverUrl + `/project/${projectGuid}/tags`, {headers: {
+                'tagName': tag.name
+            }
+        })
+            .then(response => dispatch(receiveRemoveTagResponse(response)))
+            .catch(error =>  {
+                console.log("The server is not running!");
+                console.log("Need to update UI with error!");
+                console.log(error.response)
+            })
+
+    }
+}
+
+function receiveRemoveTagResponse(response) {
+    if(response.status === 200) {
+        return {
+            type: RECEIVE_REMOVE_TAG_RESPONSE,
+            result: response.data,
+            receivedAt: Date.now()
+        }
+    } else if(response.status === 500) {
+        return {
+            type: RECEIVE_REMOVE_TAG_RESPONSE,
             result: "Internal Server Error",
             receivedAt: Date.now()
         }
