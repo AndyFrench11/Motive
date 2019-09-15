@@ -9,8 +9,9 @@ import {
     projectOwnersController,
     projectTaskController
 } from "./Project/reducers";
+import {USER_LOGOUT} from "./Common/Auth/actions";
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
     form: formReducer,
     createProjectController,
     authReducer,
@@ -20,5 +21,13 @@ const rootReducer = combineReducers({
     projectTaskController,
     projectOwnersController
 });
+
+const rootReducer = (state, action) => {
+    if (action.type === USER_LOGOUT) {
+        state = undefined
+    }
+
+    return appReducer(state, action)
+};
 
 export default rootReducer
