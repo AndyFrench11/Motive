@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './Home.css';
 import PersonImage from '../Images/stevie.jpg';
 import {
     Button,

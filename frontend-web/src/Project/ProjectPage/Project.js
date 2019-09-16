@@ -94,7 +94,12 @@ class ProjectPageLayout extends React.Component {
                 <ProjectDescription projectDescription={project.description} projectGuid={project.guid}/>
                 <ProjectTags tagList={project.tagList} projectGuid={project.guid}/>
                 <Grid.Row>
-                    <Button onClick={this.showCreateProjectUpdateModal}>Show Modal</Button>
+                    <Button animated size='small' onClick={this.showCreateProjectUpdateModal}>
+                        <Button.Content visible>Create new project update!</Button.Content>
+                        <Button.Content hidden>
+                            Let's CRUSH it! 🦍🦍🦍
+                        </Button.Content>
+                    </Button>
                 </Grid.Row>
             </Grid.Column>
         );
@@ -153,8 +158,9 @@ class ProjectPageLayout extends React.Component {
 
             return (
                 <div>
+                    
                 {createProjectUpdateModalOpen &&
-                    <CreateProjectUpdateModal closeCallback={this.closeCreateProjectUpdateModal}/>
+                    <CreateProjectUpdateModal taskOptions={project.taskList} closeCallback={this.closeCreateProjectUpdateModal}/>
                 }
                 
                     
