@@ -5,6 +5,8 @@ import {
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
 import { postProjectUpdate } from "./actions";
+import TrophyImage from '../../../ProjectImages/image16.png';
+import ProjectUpdateContent from './ProjectUpdateContent';
 
 class ProjectUpdate extends React.Component {
 
@@ -12,27 +14,42 @@ class ProjectUpdate extends React.Component {
         super(props);
 
         this.state = { 
-            collapsed: true
+            updating: false
         };
 
     }
 
-    updateContentInput = (event, {value}) => {
-        this.setState({ contentInput: value });
+    handleEditUpdateClicked = () => {
+        this.setState({updating: !this.state.updating});
     }
 
-    handleCheckbox = (e, { checked }) => this.setState({ collapsed: checked })
+    handleDeleteUpdateClicked = () => {
+        
+        this.props.removeUpdateCallback(this.props.index)
+        // Do the backend call!
+
+    }
 
 
     render() {
 
         const { update, projectName, tags } = this.props;
-        const { collapsed } = this.state;
         const { relatedPerson, relatedTask, content } = update;
+
+        const options = [
+            { key: '1', text: 'Edit Update', icon: 'edit', onClick: this.handleEditUpdateClicked },
+            { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.handleDeleteUpdateClicked },
+          ]
+
+        const trigger = (
+            <span>
+                <Icon name='ellipsis horizontal' floated='right' />
+            </span>
+            )
 
         return (
             <Segment style={{'marginLeft': '15em', 'marginRight': '15em'}}>
-                <Grid columns='three' divided>
+                <Grid columns='four' divided>
                     <Grid.Column width={2}>
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
                     </Grid.Column>
@@ -51,26 +68,57 @@ class ProjectUpdate extends React.Component {
                             )}
                         </Grid.Row>
                     </Grid.Column>
+                    <Grid.Column floated='right'>
+                        <Label attached='top right'>
+                            <Dropdown
+                                trigger={trigger}
+                                options={options}
+                                pointing='top left'
+                                icon={null}
+                            />
+                        </Label>
+                    </Grid.Column>
                 </Grid>
                 <Divider/>
                 <Grid columns='2' divided>
                     <Grid.Column width={10} fluid>
-                        {relatedTask !== null && 
-                            <Grid.Row>
-                                    <Segment>
-                                        Task: {relatedTask.name}
-                                    </Segment>
-                                </Grid.Row>
+                        {relatedTask !== null && (
+
+                            relatedTask.completed ? 
+                                    <Grid.Row>
+                                        <Segment>
+                                            <Grid>
+                                                <Grid.Column width={2}>
+                                                    <Image src={TrophyImage} size='large' rounded />
+                                                </Grid.Column>
+                                                <Grid.Column width={10}>
+                                                    <Header style={{'marginTop': 3}} size='medium'>Task Completed: {relatedTask.name}</Header>
+                                                </Grid.Column>
+                                            </Grid>
+                                        </Segment>
+                                    </Grid.Row>
+                            :
+                                    <Grid.Row>
+                                        <Segment>
+                                            <Grid>
+                                                <Grid.Column width={2}>
+                                                    <Icon size='large' name='tasks'/>
+                                                </Grid.Column>
+                                                <Grid.Column width={10}>
+                                                    <Header style={{'marginTop': 3}} size='medium'>Task: {relatedTask.name}</Header>
+                                                </Grid.Column>
+                                            </Grid>
+                                        </Segment>
+                                    </Grid.Row>
+                        )
+
+
 
                         }
                         {relatedTask !== null &&
                             <Divider/>
                         }
-                        <Grid.Row>
-                            <Segment>
-                                {content}
-                            </Segment>
-                        </Grid.Row>
+                        <ProjectUpdateContent content={content} updating={this.state.updating}/>
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">
                         <Segment style={{overflow: 'auto', maxHeight: 300 }}>
@@ -167,14 +215,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    const { projectDetailsReducer } = state;
-    const { projectDetailsController } = projectDetailsReducer;
-    const { isUpdating, lastUpdated, result } = projectDetailsController;
-    return {
-        isUpdating: isUpdating,
-        result: result,
-        lastUpdated: lastUpdated,
-    };
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectUpdate);

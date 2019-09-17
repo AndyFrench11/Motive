@@ -146,6 +146,13 @@ class ProjectPageLayout extends React.Component {
         }
     }
 
+    removeUpdateCallback = (index) => {
+        //NOT WORKING AS STATE ISN'T BEING TRACKED
+        const { projectUpdates } = this.props; 
+        projectUpdates.slice(1, index);
+        this.setState({projectUpdates: projectUpdates})
+    }
+
     renderProjectUpdates(tags, projectName) {
         const { projectUpdates } = this.props;
         if (projectUpdates === null || projectUpdates === undefined) {
@@ -171,6 +178,8 @@ class ProjectPageLayout extends React.Component {
                             tags={tags}
                             projectName={projectName}
                             update={update}
+                            index={index}
+                            removeUpdateCallback={this.removeUpdateCallback}
                         />
                     ))};
                  </Segment>
