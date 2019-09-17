@@ -7,6 +7,7 @@ import TopNavBar from '../../Common/TopNavBar'
 import Footer from '../../Common/Footer'
 import {connect} from "react-redux";
 import {fetchProject, fetchProjectProfiles} from "../actions";
+import { fetchProjectUpdates } from "./ProjectUpdates/ProjectUpdate/actions";
 import LoaderInlineCentered from "../../Common/Loader";
 import ProjectTasks from "./ProjectTasks/ProjectTasks";
 import ProjectTags from "./ProjectDetails/ProjectTags";
@@ -15,6 +16,7 @@ import ProjectDescription from "./ProjectDetails/ProjectDescription";
 import ProjectSettings from "./ProjectSettings/ProjectSettings";
 import UpdateProjectImageModal from "./ProjectDetails/UpdateProjectImageModal";
 import CreateProjectUpdateModal from "./ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
+import ProjectUpdate from "./ProjectUpdates/ProjectUpdate/ProjectUpdate";
 
 function importAll(r) {
     let images = {};
@@ -47,6 +49,7 @@ class ProjectPageLayout extends React.Component {
         const { projectguid } = this.props.match.params;
         dispatch(fetchProject(projectguid));
         dispatch(fetchProjectProfiles(projectguid));
+        dispatch(fetchProjectUpdates(projectguid));
     }
 
     showUpdateProjectPhotoModal = () => {
@@ -76,7 +79,7 @@ class ProjectPageLayout extends React.Component {
             photoIndex = this.state.selectedImageIndex
         }
         return (
-            <Grid.Column width={4}>
+            <Grid.Column width={3}>
                 <Image 
                     style={{ 'border-radius': 8, 'border-color': '#dddddd', 'border-width': '2px', 'borderStyle': 'solid'}}
                     className='ProjectImage'
@@ -128,7 +131,7 @@ class ProjectPageLayout extends React.Component {
             }
             //Do something to check if the number of owners is greater than some threshold
             return (
-                <Grid.Column width={3}>
+                <Grid.Column width={3} floated='right'>
                     <Grid.Row>
                         {projectOwners.map((owner, index) => (
                             <Image avatar floated='right' src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
@@ -141,7 +144,39 @@ class ProjectPageLayout extends React.Component {
                 </Grid.Column>
             );
         }
+    }
 
+    renderProjectUpdates(tags, projectName) {
+        const { projectUpdates } = this.props;
+        if (projectUpdates === null || projectUpdates === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else if(projectUpdates.length == 0) {
+            return (
+                <Segment placeholder style={{marginRight: '1em'}}>
+                    <Header icon>
+                        No updates have been made for this project.
+                    </Header>
+                </Segment>
+            )
+        } 
+        else {
+            return (
+                <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
+                    {projectUpdates.map((update, index) => (
+                        <ProjectUpdate
+                            tags={tags}
+                            projectName={projectName}
+                            update={update}
+                        />
+                    ))};
+                 </Segment>
+
+            );
+        }
     }
 
     checkRender() {
@@ -153,14 +188,20 @@ class ProjectPageLayout extends React.Component {
                 </Grid>
             )
         } else {
-            const { project } = this.props;
+            const { project, projectOwners } = this.props;
             const { activeMenuItem, updatingProjectImage, createProjectUpdateModalOpen } = this.state;
 
             return (
                 <div>
                     
                 {createProjectUpdateModalOpen &&
-                    <CreateProjectUpdateModal taskOptions={project.taskList} closeCallback={this.closeCreateProjectUpdateModal}/>
+                    <CreateProjectUpdateModal 
+                    projectGuid={project.guid}
+                    tags={project.tagList}
+                    projectName={project.name}
+                    user={projectOwners[0]}
+                    taskOptions={project.taskList} 
+                    closeCallback={this.closeCreateProjectUpdateModal}/>
                 }
                 
                     
@@ -174,7 +215,7 @@ class ProjectPageLayout extends React.Component {
                         projectGuid={project.guid}/>
                 }
 
-                <Grid container style={{ marginTop: '5em', marginLeft: '5em', marginRight: '5em' }}>
+                <Grid container style={{ marginTop: '5em'}}>
                     {this.renderProjectImage(project.imageIndex)}
                     {this.renderProjectDetails(project)}
                     {this.renderProjectOwners()}
@@ -213,27 +254,9 @@ class ProjectPageLayout extends React.Component {
                     }
 
                     {activeMenuItem === "Updates" &&
-
                         /*Tasks*/
+                        this.renderProjectUpdates(project.tagList, project.name)
 
-                        <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
-                            <Card>
-                                <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' />
-                                <Card.Content>
-                                    <Card.Header>Matthew</Card.Header>
-                                    <Card.Meta>
-                                        <span className='date'>Joined in 2015</span>
-                                    </Card.Meta>
-                                    <Card.Description>Matthew is a musician living in Nashville.</Card.Description>
-                                </Card.Content>
-                                <Card.Content extra>
-                                    <a>
-                                        <Icon name='user' />
-                                        22 Friends
-                                    </a>
-                                </Card.Content>
-                            </Card>
-                        </Segment>
                     }
 
                     {activeMenuItem === "Highlights" &&
@@ -266,15 +289,19 @@ class ProjectPageLayout extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { projectController, projectOwnersController } = state;
+    const { projectController, projectOwnersController, projectUpdateReducer } = state;
     const { isRetrieving, lastUpdated, result } = projectController;
     const { isRetrievingOwners, owners } = projectOwnersController;
+    const { projectUpdateController } = projectUpdateReducer;
+    const { isRetrievingProjectUpdates, updates} = projectUpdateController;
     return {
         isRetrieving: isRetrieving,
         project: result,
         lastUpdated: lastUpdated,
         projectOwners: owners,
-        isRetrievingOwners: isRetrievingOwners
+        isRetrievingOwners: isRetrievingOwners,
+        isRetrievingProjectUpdates: isRetrievingProjectUpdates,
+        projectUpdates: updates
     };
 };
 

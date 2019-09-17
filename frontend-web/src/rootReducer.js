@@ -12,6 +12,7 @@ import projectTaskReducer from "./Project/ProjectPage/ProjectTasks/reducers";
 import projectSettingsReducer from "./Project/ProjectPage/ProjectSettings/reducers";
 import projectDetailsReducer from "./Project/ProjectPage/ProjectDetails/reducers";
 import createProjectUpdateReducer from "./Project/ProjectPage/ProjectUpdates/CreateProjectUpdateModal/reducers";
+import projectUpdateReducer from "./Project/ProjectPage/ProjectUpdates/ProjectUpdate/reducers";
 
 
 import {USER_LOGOUT} from "./Common/Auth/actions";
@@ -27,7 +28,8 @@ const appReducer = combineReducers({
     projectOwnersController,
     projectSettingsReducer,
     projectDetailsReducer,
-    createProjectUpdateReducer
+    createProjectUpdateReducer,
+    projectUpdateReducer
 });
 
 const rootReducer = (state, action) => {

@@ -41,7 +41,7 @@ namespace backend_api.Database.ProjectRepository
                 return new RepositoryReturn<IEnumerable<Project>>(true, e);
             }
             
-            
+       
         }
 
         private List<Project> RetrieveUserProjects(ITransaction tx, Guid personGuid)

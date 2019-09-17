@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using backend_api.Database;
 using backend_api.Database.ProjectUpdateRepository;
 using backend_api.Models;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend_api.Controllers
 {
+    [Route("api/[controller]")]
     public class ProjectUpdateController : Controller
     {
 
@@ -51,7 +53,8 @@ namespace backend_api.Controllers
                 return BadRequest();
             }
             
-            // TODO sanitise incoming project body
+            //TODO Add in a check for the Task Guid as well
+
             RepositoryReturn<bool> result =
                 _projectUpdateRepository.Add(projectUpdateToCreate, projectGuidToGet, userGuidToGet);
             
@@ -61,6 +64,35 @@ namespace backend_api.Controllers
             }
 
             return StatusCode(201);
+        }
+        
+        // Get all of the updates for a single project
+        [HttpGet("{projectId}/project")]
+        public ActionResult<Project> GetUpdatesForAProject(string projectId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<ProjectUpdate>> result = _projectUpdateRepository.GetAllForProject(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200, result.ReturnValue);
+
         }
         
 //        // DELETE api/values/5
