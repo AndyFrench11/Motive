@@ -95,6 +95,35 @@ namespace backend_api.Controllers
 
         }
         
+        // Get all of the updates for a single project
+        [HttpGet("{personId}/person")]
+        public ActionResult<Project> GetAllUpdatesForPerson(string personId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(personId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<ProjectUpdate>> result = _projectUpdateRepository.GetAllForPerson(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200, result.ReturnValue);
+
+        }
+        
         // DELETE api/values/5
         [HttpDelete("{updateId}")]
         public ActionResult Delete(string updateId)

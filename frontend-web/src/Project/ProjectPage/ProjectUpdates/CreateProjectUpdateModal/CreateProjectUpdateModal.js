@@ -62,7 +62,7 @@ class CreateProjectUpdateModal extends React.Component {
                             <Grid.Column width={4}>
                                 <Header size='large'>Update from {user.firstName}</Header>
                             </Grid.Column>
-                            <Grid.Column>
+                            <Grid.Column width={10}>
                                 <Grid.Row>
                                     <Header size='large'>{projectName}</Header>    
                                 </Grid.Row>

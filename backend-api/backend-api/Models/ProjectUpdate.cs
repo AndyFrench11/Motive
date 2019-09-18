@@ -9,6 +9,7 @@ namespace backend_api.Models
         public Guid taskGuid { get; set; }
         public ProjectTask relatedTask { get; set; }
         public Person relatedPerson { get; set; }
+        public Project relatedProject { get; set; }
         //public List<Tag> relatedTags { get; set; }
 
         public ProjectUpdate()

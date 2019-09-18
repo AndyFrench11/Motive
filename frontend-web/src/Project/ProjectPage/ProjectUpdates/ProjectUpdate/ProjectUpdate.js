@@ -51,7 +51,7 @@ class ProjectUpdate extends React.Component {
             )
 
         return (
-            <Segment style={{'marginLeft': '15em', 'marginRight': '15em'}}>
+            <Segment style={{'marginLeft': '20em', 'marginRight': '20em'}}>
                 <Grid columns='four' divided>
                     <Grid.Column width={2}>
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
@@ -59,7 +59,7 @@ class ProjectUpdate extends React.Component {
                     <Grid.Column width={4}>
                         <Header size='large'>Update from {relatedPerson.firstName}</Header>
                     </Grid.Column>
-                    <Grid.Column>
+                    <Grid.Column width={5}>
                         <Grid.Row>
                             <Header size='large'>{projectName}</Header>    
                         </Grid.Row>

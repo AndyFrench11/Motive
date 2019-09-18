@@ -6,8 +6,8 @@ namespace backend_api.Database.ProjectUpdateRepository
 {
     public interface IProjectUpdateRepository
     {
-        //Returns all of the updates on projects that a user is related to
-        RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForUser(Guid userGuid);
+        //Returns all of the updates on projects that a person is involved with
+        RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForPerson(Guid personGuid);
         
         RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForProject(Guid projectGuid);
 

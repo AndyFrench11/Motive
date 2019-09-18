@@ -163,7 +163,7 @@ class ProjectPageLayout extends React.Component {
             )
         } else if(projectUpdates.length == 0) {
             return (
-                <Segment placeholder style={{marginRight: '1em'}}>
+                <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
                     <Header icon>
                         No updates have been made for this project.
                     </Header>
@@ -291,7 +291,7 @@ class ProjectPageLayout extends React.Component {
           <div>
             <TopNavBar/>
               {this.checkRender()}
-          <Footer/>
+            <Footer/>
         </div>
         );
   }
