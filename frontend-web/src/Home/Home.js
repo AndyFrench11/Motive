@@ -94,10 +94,9 @@ class Home extends Component {
           )} />
         )
     }
+
     showModal = () => {
-        this.setState({
-            modalVisible: true
-        })
+        this.setState({ modalVisible: true })
     };
 
     closeModal = () => {
