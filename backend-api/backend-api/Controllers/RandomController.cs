@@ -13,19 +13,15 @@ using Neo4j.Driver.V1;
 namespace backend_api.Controllers
 {
     [Route("api/[controller]")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class RandomController : Controller
     {
-        // GET: api/values
+        // GET: api/random
         [HttpGet]
         public String Get()
         {
-            List<String> people = new List<string>() { "Andy", "Matilda", "Buzz" };
-            Random r = new Random();
-            int rInt = r.Next(0, 3);
-
-            return people.ElementAt(rInt);
-
+            string roll = Request.Cookies["sessionId"];
+            return roll;
         }
 
         // GET api/values/5

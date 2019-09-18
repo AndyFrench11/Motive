@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux'
 import {
     REQUEST_SIGN_UP,
-    RECEIVE_SIGN_UP_RESPONSE, RECEIVE_SIGN_UP_ERROR
+    RECEIVE_SIGN_UP_RESPONSE, RECEIVE_SIGN_UP_ERROR, RESET_SIGN_UP
 } from './actions'
 
 const signUpInitialState = {
@@ -14,6 +14,8 @@ const signUpInitialState = {
 
 function signUpController(state = signUpInitialState, action) {
     switch (action.type) {
+        case RESET_SIGN_UP:
+            return state;
         case REQUEST_SIGN_UP:
             return {...state,
                 isPosting: true,

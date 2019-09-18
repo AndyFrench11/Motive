@@ -41,10 +41,12 @@ namespace backend_api
                 app.UseHsts();
             }
 
-            app.UseCors(builder =>
-            {
-                builder.AllowAnyOrigin().AllowAnyHeader();
-            });
+            app.UseCors(builder => builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowCredentials()
+            );
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }

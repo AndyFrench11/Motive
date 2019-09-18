@@ -7,22 +7,26 @@ import {
     Modal,
     TransitionablePortal,
 } from 'semantic-ui-react'
-import NewProjectForm from "../Project/ModalForm";
-import {postProject} from "../actions";
-import {connect} from "react-redux";
 
 import {Link, withRouter} from "react-router-dom";
-import UserProfile from "../UserProfile/UserProfile";
 import {logout} from "./Auth/actions";
+import {connect} from "react-redux";
+import Redirect from "react-router-dom/es/Redirect";
 
 class TopNavBar extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            goToLogin: false
+        }
     }
 
     handleLogoutClick = () => {
-        this.props.logout();
-        this.props.history.push("/");
+        // Fire logout then set state to reroute to logout
+        this.props.logout().then(
+            this.props.history.replace('/login')
+        );
     };
 
     handleLoginClick = () => {
@@ -30,7 +34,8 @@ class TopNavBar extends React.Component {
     };
 
     render() {
-        const isLoggedIn = this.props.currentUser;
+        const currentUser = this.props.currentUser;
+
         return (
             <div>
                 <Menu fixed='top' inverted>
@@ -45,25 +50,12 @@ class TopNavBar extends React.Component {
                             Home
                         </Menu.Item>
 
-                        <Menu.Item item simple text='Profile'
-                                   as={Link} to='/profile'>
-                            Profile
-                        </Menu.Item>
 
-                        <Dropdown item simple text='Profile'>
-                            <Dropdown.Menu>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Header>Header Item</Dropdown.Header>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
                     </Container>
-                    {isLoggedIn ? (
+                    {currentUser ? (
                         <Menu.Menu position='right'>
                             <Menu.Item>
-                                Welcome, {isLoggedIn.name}
+                                Welcome, {currentUser.firstName} {currentUser.lastName}
                             </Menu.Item>
 
                             <Menu.Item>
@@ -75,11 +67,8 @@ class TopNavBar extends React.Component {
                             <Button primary onClick={this.handleLoginClick}>Log In</Button>
                         </Menu.Item>
                     )}
-
                 </Menu>
-
             </div>
-
         );
     }
 }
@@ -92,7 +81,7 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = state => {
     return {
-        currentUser: state.authReducer.authController.currentUser,
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 

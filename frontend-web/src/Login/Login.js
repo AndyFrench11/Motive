@@ -4,16 +4,18 @@ import TopNavBar from '../Common/TopNavBar'
 import Footer from '../Common/Footer'
 import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
-import {postLogin} from "./actions";
-import {login} from "../Common/Auth/actions";
+import {login, resetAuthState} from "../Common/Auth/actions";
+import {Redirect, withRouter} from "react-router-dom";
 
 class Login extends Component {
     constructor(props) {
         super(props);
 
+        this.props.resetAuthState();
+
         this.state = {
             loginEmail: '',
-            loginPassword: ''
+            loginPassword: '',
         };
     }
 
@@ -29,7 +31,11 @@ class Login extends Component {
             password: this.state.loginPassword
         };
 
-        this.props.login(loginDetails);
+        this.props.login(loginDetails).then(() => {
+            if (this.props.loggedInUser) {
+                this.props.history.replace('/home')
+            }}
+        );
 
         this.setState({
             loginEmail: '',
@@ -38,31 +44,24 @@ class Login extends Component {
     };
 
     handleSignUpSelected = () => {
-        this.props.history.push('/signup')
+        this.props.history.push("/signup");
     };
 
     getCompleteMessage = (statusCode) => {
         switch (statusCode) {
-            case 200: return "Logging you in...";
             case 401: return "Invalid email/password combination.";
             case 500: return "The server is down, please try again.";
-            default: return "This shouldn't appear...";
+            default: return "";
         }
     };
 
-    // HANDY!!!
-    componentWillReceiveProps (nextProps) {
-        if (nextProps.loginAttemptCompleted && !nextProps.loginError) {
-            this.props.history.push('/home')
-        }
-    }
-
     render() {
-        const { loginEmail, loginPassword} = this.state;
+        // Attach state to form, so we can clear it
+        const { loginEmail, loginPassword } = this.state;
 
         let responseMessage;
-        if (this.props.loginAttemptCompleted && this.props.statusCode) {
-            responseMessage = this.getCompleteMessage(this.props.statusCode)
+        if (this.props.loginError) {
+            responseMessage = this.getCompleteMessage(this.props.loginError.statusCode)
         }
 
         return (
@@ -81,8 +80,7 @@ class Login extends Component {
                                 </Header>
                                 <Form id="loginForm"
                                       loading={this.props.isLoggingIn}
-                                      error={this.props.loginAttemptCompleted && this.props.loginError}
-                                      success={this.props.loginAttemptCompleted && !this.props.loginError}
+                                      error={this.props.loginError}
                                       size='large' onSubmit={this.handleLoginSubmit}>
                                     <Segment>
                                         <Form.Input
@@ -109,11 +107,6 @@ class Login extends Component {
                                         <Message
                                             error
                                             header="Oops!"
-                                            content={responseMessage}
-                                        />
-                                        <Message
-                                            success
-                                            header='Welcome!'
                                             content={responseMessage}
                                         />
                                     </Segment>
@@ -143,17 +136,18 @@ class Login extends Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        login: (valuesJson) => dispatch(login(valuesJson))
+        login: (valuesJson) => dispatch(login(valuesJson)),
+        resetAuthState: () => dispatch(resetAuthState())
     };
 }
 
 const mapStateToProps = state => {
     return {
-        isLoggingIn: state.authReducer.authController.isAuthenticating,
-        statusCode: state.authReducer.authController.statusCode,
-        loginAttemptCompleted: state.authReducer.authController.complete,
-        loginError: state.authReducer.authController.error,
+        isLoggingIn: state.authReducer.authController.isLoggingIn,
+        loginError: state.authReducer.authController.loginError,
+        loggedInUser: state.authReducer.authController.currentUser,
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps) (Login);
+const LoginPage = connect(mapStateToProps, mapDispatchToProps) (Login);
+export default withRouter(LoginPage)

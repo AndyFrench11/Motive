@@ -37,7 +37,7 @@ function receiveProfile(json) {
 export function fetchProjects(guid) {
     return function(dispatch) {
         dispatch(requestProjects());
-        return fetch(serverUrl + `/person/${guid}/project`)
+        return fetch(serverUrl + `/project`, {headers: {'userId': guid}})
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred", error)
