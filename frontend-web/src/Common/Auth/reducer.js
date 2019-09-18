@@ -22,7 +22,7 @@ const initialState = {
 function authController(state = initialState, action) {
     switch (action.type) {
         case RESET_AUTH:
-            return state;
+            return initialState;
 
         case LOGIN_REQUEST:
             return {
