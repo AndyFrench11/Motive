@@ -13,7 +13,7 @@ namespace backend_api.Controllers
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     public class SignUpController : Controller
     {
-        private IPersonRepository _personRepository;
+        private readonly IPersonRepository _personRepository;
         
         public SignUpController()
         {
@@ -43,6 +43,8 @@ namespace backend_api.Controllers
             }
             
             personToSignUp.password = GetSaltAndHashedPassword(personToSignUp.password);
+            personToSignUp.mediaKey = GetNewMediaKey();
+            
             RepositoryReturn<bool> result = _personRepository.Add(personToSignUp);
             if (result.IsError)
             {
@@ -71,6 +73,15 @@ namespace backend_api.Controllers
             Array.Copy(hash, 0, hashBytes, 16, 20);
 
             return Convert.ToBase64String(hashBytes);
+        }
+
+        private string GetNewMediaKey()
+        {
+            byte[] mediaKey = new byte[16];
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(mediaKey);
+
+            return Convert.ToBase64String(mediaKey);
         }
     }
 

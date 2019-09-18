@@ -15,6 +15,8 @@ namespace backend_api.Models
 
         public string password { get; set; }
         
+        public string mediaKey { get; set; }
+        
         public string dateOfBirth { get; set; }
         
         public string dateJoined { get; set; }

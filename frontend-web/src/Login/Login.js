@@ -6,6 +6,7 @@ import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
 import {login, resetAuthState} from "../Common/Auth/actions";
 import {Redirect, withRouter} from "react-router-dom";
+import generateHash from "../Common/Auth/hashGenerator";
 
 class Login extends Component {
     constructor(props) {
@@ -30,6 +31,9 @@ class Login extends Component {
             email: this.state.loginEmail,
             password: this.state.loginPassword
         };
+
+        loginDetails.password = generateHash(loginDetails.password);
+
 
         this.props.login(loginDetails).then(() => {
             if (this.props.loggedInUser) {
