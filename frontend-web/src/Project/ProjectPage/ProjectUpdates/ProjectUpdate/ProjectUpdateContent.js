@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
-import { updateProjectDescription } from "./actions";
+import { updateProjectUpdateContent } from "./actions";
 
 class ProjectUpdateContent extends React.Component {
     
@@ -28,6 +28,10 @@ class ProjectUpdateContent extends React.Component {
 
     updateProjectUpdateContent = () => {
         console.log("Hello");
+        //Do a backend call here!
+
+    }
+
         // const { projectDescriptionInputValue, projectDescription } = this.state;
         // if((projectDescriptionInputValue !== "") && (projectDescriptionInputValue !== projectDescription)) {
         //     this.setState({
@@ -45,7 +49,6 @@ class ProjectUpdateContent extends React.Component {
         //         projectDescriptionInputValue: "",
         //     });
         // }
-    }
 
     render() {
         const { projectUpdateContent, updatingProjectUpdateContent } = this.state;
@@ -79,19 +82,19 @@ class ProjectUpdateContent extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        //updateProjectDescription: (projectGuid, projectDescription) => dispatch(updateProjectDescription(projectGuid, projectDescription)),
+        updateProjectUpdateContent: (updateGuid, newContent) => dispatch(updateProjectUpdateContent(updateGuid, newContent)),
     };
 }
 
 const mapStateToProps = state => {
-    // const { projectDetailsReducer } = state;
-    // const { projectDetailsController } = projectDetailsReducer;
-    // const { isUpdating, lastUpdated, result } = projectDetailsController;
-    // return {
-    //     isUpdating: isUpdating,
-    //     result: result,
-    //     lastUpdated: lastUpdated,
-    // };
+    const { projectUpdateReducer } = state;
+    const { projectUpdateController } = projectUpdateReducer;
+    const { isUpdating, lastUpdated, result } = projectUpdateController;
+    return {
+        isUpdating: isUpdating,
+        result: result,
+        lastUpdated: lastUpdated,
+    };
 };
 
 

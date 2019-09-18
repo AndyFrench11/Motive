@@ -95,75 +95,74 @@ namespace backend_api.Controllers
 
         }
         
-//        // DELETE api/values/5
-//        [HttpDelete("{guid}")]
-//        public ActionResult Delete(string guid)
-//        {
-//            Guid projectTaskGuidToGet;
-//            try
-//            {
-//                projectTaskGuidToGet = Guid.Parse(guid);
-//            }
-//            catch (ArgumentNullException)
-//            {
-//                return BadRequest();
-//            }
-//            catch (FormatException)
-//            {
-//                return BadRequest();
-//            }
-//            
-//            // TODO sanitise incoming project body
-//            RepositoryReturn<bool> result = _projectTaskRepository.Delete(projectTaskGuidToGet);
-//            
-//            if (result.IsError)
-//            {
-//                return StatusCode(500, result.ErrorException.Message);
-//            }
-//
-//            return StatusCode(200);
-//        }
+        // DELETE api/values/5
+        [HttpDelete("{updateId}")]
+        public ActionResult Delete(string updateId)
+        {
+            Guid projectUpdateGuidToGet;
+            try
+            {
+                projectUpdateGuidToGet = Guid.Parse(updateId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<bool> result = _projectUpdateRepository.Delete(projectUpdateGuidToGet);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
 //        
-//        // PATCH api/values
-//        [HttpPatch]
-//        public ActionResult Update([FromBody]UpdateTaskObject updateTaskObject, [FromHeader]string projectTaskId)
-//        {
-//        
-//            //Check user is valid first
-//            
-//            Guid projectTaskGuidToGet;
-//            try
-//            {
-//                projectTaskGuidToGet = Guid.Parse(projectTaskId);
-//            }
-//            catch (ArgumentNullException)
-//            {
-//                return BadRequest();
-//            }
-//            catch (FormatException)
-//            {
-//                return BadRequest();
-//            }
-//            
-//            // TODO sanitise incoming project body
-//            RepositoryReturn<bool> result =
-//                _projectTaskRepository.EditCompletionStatus(updateTaskObject.completed, projectTaskGuidToGet);
-//            
-//            if (result.IsError)
-//            {
-//                return StatusCode(500, result.ErrorException.Message);
-//            }
-//
-//            return StatusCode(200);
-//        }
-//
-//        public class UpdateTaskObject
-//        {
-//            public bool completed { get; set; }
-//
-//           
-//        }
         
+        public class UpdateProjectUpdateObject
+        {
+            public string content { get; set; }
+
+           
+        }
+        
+        // PATCH api/values
+        [HttpPatch("{updateId}")]
+        public ActionResult Update([FromBody]UpdateProjectUpdateObject updateProjectUpdateObject, [FromHeader]string updateId)
+        {
+        
+            //Check user is valid first
+            
+            Guid projectUpdateGuidToGet;
+            try
+            {
+                projectUpdateGuidToGet = Guid.Parse(updateId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result =
+                _projectUpdateRepository.EditContent(projectUpdateGuidToGet, updateProjectUpdateObject.content);
+                
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
         
         
     }

@@ -4,9 +4,9 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
-import { postProjectUpdate } from "./actions";
 import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
+import { deleteProjectUpdate } from "./actions";
 
 class ProjectUpdate extends React.Component {
 
@@ -24,9 +24,12 @@ class ProjectUpdate extends React.Component {
     }
 
     handleDeleteUpdateClicked = () => {
-        
+        const { update } = this.props;
         this.props.removeUpdateCallback(this.props.index)
-        // Do the backend call!
+        // Do the backend call! And put up an are you sure modal!
+
+        //this.props.deleteProjectUpdate(update.guid)
+
 
     }
 
@@ -210,12 +213,19 @@ class ProjectUpdate extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-
+        deleteProjectUpdate: (updateGuid) => dispatch(deleteProjectUpdate(updateGuid)),
     };
 }
 
 const mapStateToProps = state => {
-
+    const { projectUpdateReducer } = state;
+    const { projectUpdateController } = projectUpdateReducer;
+    const { isUpdating, lastUpdated, result } = projectUpdateController;
+    return {
+        isUpdating: isUpdating,
+        result: result,
+        lastUpdated: lastUpdated,
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectUpdate);

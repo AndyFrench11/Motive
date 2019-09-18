@@ -6,6 +6,7 @@ namespace backend_api.Database.ProjectUpdateRepository
 {
     public interface IProjectUpdateRepository
     {
+        //Returns all of the updates on projects that a user is related to
         RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForUser(Guid userGuid);
         
         RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForProject(Guid projectGuid);
@@ -14,7 +15,9 @@ namespace backend_api.Database.ProjectUpdateRepository
         
         RepositoryReturn<bool> Add(ProjectUpdate projectUpdateToAdd, Guid projectGuid, Guid userGuid);
 
-        RepositoryReturn<bool> Edit(Guid projectUpdateGuid);
+        RepositoryReturn<bool> EditContent(Guid projectUpdateGuid, string content);
+        
+        RepositoryReturn<bool> EditAssociatedTask(Guid projectUpdateGuid);
 
         RepositoryReturn<bool> Delete(Guid projectUpdateGuid);
     }

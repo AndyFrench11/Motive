@@ -156,14 +156,56 @@ namespace backend_api.Database.ProjectUpdateRepository
                 new { projectUpdateId, taskId });
         }
 
-        public RepositoryReturn<bool> Edit(Guid projectUpdateGuid)
+        public RepositoryReturn<bool> EditContent(Guid projectUpdateGuid, string content)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => UpdateProjectUpdateNodeContent(tx, projectUpdateGuid, content));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void UpdateProjectUpdateNodeContent(ITransaction tx, Guid projectUpdateGuid, string content)
+        {
+            string updateId = projectUpdateGuid.ToString();
+            tx.Run("MATCH (pu:ProjectUpdate) WHERE pu.guid = $updateId SET pu.content = $content", 
+                new { updateId, content});
+        }
+
+        public RepositoryReturn<bool> EditAssociatedTask(Guid projectUpdateGuid)
         {
             throw new NotImplementedException();
         }
 
         public RepositoryReturn<bool> Delete(Guid projectUpdateGuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => RemoveProjectUpdateNode(tx, projectUpdateGuid));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveProjectUpdateNode(ITransaction tx, Guid updateGuid)
+        {
+            string updateId = updateGuid.ToString();
+            tx.Run("MATCH (pu:ProjectUpdate) WHERE pu.guid = $updateId DETACH DELETE pu", new { updateId });
         }
     }
 }
