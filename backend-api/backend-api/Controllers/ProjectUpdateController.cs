@@ -151,18 +151,15 @@ namespace backend_api.Controllers
 
             return StatusCode(200);
         }
-//        
         
         public class UpdateProjectUpdateObject
         {
-            public string content { get; set; }
-
-           
+            public string newContent { get; set; }
         }
         
         // PATCH api/values
         [HttpPatch("{updateId}")]
-        public ActionResult Update([FromBody]UpdateProjectUpdateObject updateProjectUpdateObject, [FromHeader]string updateId)
+        public ActionResult Update(string updateId, [FromBody]UpdateProjectUpdateObject updateProjectUpdateObject)
         {
         
             //Check user is valid first
@@ -183,7 +180,7 @@ namespace backend_api.Controllers
             
             // TODO sanitise incoming project body
             RepositoryReturn<bool> result =
-                _projectUpdateRepository.EditContent(projectUpdateGuidToGet, updateProjectUpdateObject.content);
+                _projectUpdateRepository.EditContent(projectUpdateGuidToGet, updateProjectUpdateObject.newContent);
                 
             if (result.IsError)
             {

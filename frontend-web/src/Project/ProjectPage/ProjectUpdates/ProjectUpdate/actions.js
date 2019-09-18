@@ -52,7 +52,6 @@ export function updateProjectUpdateContent(updateGuid, newContent) {
         let updateContent = {
             newContent: newContent
         }
-
         return axios.patch(serverUrl + `/projectUpdate/${updateGuid}` , updateContent, {headers: {
                 'Content-Type': 'application/json',
             }

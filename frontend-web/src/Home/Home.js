@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { 
-    Grid, Segment, Header
+    Grid, Segment, Header, Divider
 } from 'semantic-ui-react';
 import TopNavBar from '../Common/TopNavBar';
 import Footer from '../Common/Footer';
@@ -24,7 +24,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        //this.props.fetchProjectUpdatesForUser()
+        this.props.fetchProjectUpdatesForUser(this.props.currentUser.guid);
     }
 
     renderHomeFeed() {
@@ -49,8 +49,8 @@ class Home extends Component {
                 <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
                     {projectUpdates.map((update, index) => (
                         <ProjectUpdate
-                            //tags={tags}
-                            //projectName={projectName}
+                            tags={update.relatedProject.tagList}
+                            projectName={update.relatedProject.name}
                             update={update}
                             index={index}
                             removeUpdateCallback={this.removeUpdateCallback}
@@ -67,6 +67,7 @@ class Home extends Component {
         return (
             <div className='home'>
                 <TopNavBar/>
+                    <Header centered size='large' style={{ marginLeft:'6em', marginTop: '3em'}}>Welcome to the Home Feed! Here, you see updates from all of the projects you are contributing to. 🦍🦍🦍</Header>
                     {this.renderHomeFeed()}
                 <Footer/>
             </div>
@@ -83,11 +84,12 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
     const { homeReducer } = state;
     const { homeController } = homeReducer;
-    const { isUpdating, lastUpdated, updates } = homeController;
+    const { isUpdating, lastUpdated, result } = homeController;
     return {
         isUpdating: isUpdating,
-        updates: updates,
+        projectUpdates: result,
         lastUpdated: lastUpdated,
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 

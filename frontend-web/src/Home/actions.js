@@ -26,6 +26,7 @@ export function fetchProjectUpdatesForUser (userGuid) {
 }
 
 function receiveProjectUpdatesForUser(response) {
+    console.log(response);
     if(response.status === 200) {
         return {
             type: RECEIVE_PROJECT_UPDATES_FOR_USER_RESPONSE,

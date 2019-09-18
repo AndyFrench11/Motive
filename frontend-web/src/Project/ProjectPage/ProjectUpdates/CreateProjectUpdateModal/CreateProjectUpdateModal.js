@@ -5,13 +5,14 @@ import {
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
 import { postProjectUpdate } from "./actions";
+import TrophyImage from '../../../ProjectImages/image16.png';
 
 class CreateProjectUpdateModal extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.taskOptions = this.props.taskOptions.map((task, index) => {
+        this.taskOptions = this.props.project.taskList.map((task, index) => {
             return {
                 key: task.guid,
                 text: task.name,
@@ -19,10 +20,20 @@ class CreateProjectUpdateModal extends React.Component {
             }
         });
 
-        this.state = { 
-            contentInput: "",
-            selectedTaskGuid: ""
-        };
+        const { completedTaskIndex } = this.props;
+
+        if(completedTaskIndex !== -1) {
+            this.state = { 
+                contentInput: "",
+                selectedTaskGuid: this.props.project.taskList[completedTaskIndex].guid
+            };
+    
+        } else {
+            this.state = { 
+                contentInput: "",
+                selectedTaskGuid: ""
+            };
+        }
 
     }
 
@@ -42,13 +53,13 @@ class CreateProjectUpdateModal extends React.Component {
             update["taskGuid"] = selectedTaskGuid;
         }
         
-        this.props.postProjectUpdate(this.props.projectGuid, this.props.user.guid, update)
+        this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
         this.props.closeCallback()
     }
 
     render() {
 
-        const { user, projectName, tags } = this.props;
+        const { user, project, completedTaskIndex } = this.props;
 
         return (
             <Modal open={true} onClose={this.props.closeCallback} closeIcon>
@@ -64,12 +75,12 @@ class CreateProjectUpdateModal extends React.Component {
                             </Grid.Column>
                             <Grid.Column width={10}>
                                 <Grid.Row>
-                                    <Header size='large'>{projectName}</Header>    
+                                    <Header size='large'>{project.name}</Header>    
                                 </Grid.Row>
                                 <Grid.Row>
-                                    {tags.map((tag, index) =>
+                                    {project.tagList.map((tag, index) =>
                                         <Label key={index} >
-                                            #{tags[index].name}
+                                            #{project.tagList[index].name}
                                         </Label>
                                     )}
                                 </Grid.Row>
@@ -79,24 +90,39 @@ class CreateProjectUpdateModal extends React.Component {
                         </Grid>
                         
                         <Divider/>
+                        {completedTaskIndex !== -1 &&
+                            <Segment>
+                                <Grid>
+                                    <Grid.Column width={2}>
+                                        <Image src={TrophyImage} size='large' rounded />
+                                    </Grid.Column>
+                                    <Grid.Column width={10}>
+                                        <Header style={{'marginTop': 3}} size='medium'>Task Completed: {project.taskList[completedTaskIndex].name}</Header>
+                                    </Grid.Column>
+                                </Grid>
+                            </Segment>
+                        }
                         <Form>
                             <TextArea placeholder='Tell us more...' onChange={this.updateContentInput}/>
-                            <Divider/>
 
-                            <Dropdown
-                                placeholder='Does this relate to a task?'
-                                fluid
-                                selection
-                                options={this.taskOptions}
-                                clearable
-                                onChange={this.updateSelectedTask}
-                            />
+                            {completedTaskIndex === -1 &&
 
-                            <Divider/>
+                                <Divider/>
+                            }
+                            {completedTaskIndex === -1 && 
+                                <Dropdown
+                                    placeholder='Does this relate to a task?'
+                                    fluid
+                                    selection
+                                    options={this.taskOptions}
+                                    clearable
+                                    onChange={this.updateSelectedTask}
+                                />
+                            }
+                            {completedTaskIndex === -1 &&
+                                <Divider/>
+                            }
                         </Form>
-
-                        {/* <Progress percent={25} success style={{'marginTop': 10}}>
-                        </Progress> */}
 
                     </Segment>
                 </Modal.Content>

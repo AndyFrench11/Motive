@@ -12,64 +12,52 @@ class ProjectUpdateContent extends React.Component {
         super(props);
     
         this.state = { 
-            updatingProjectUpdateContent: this.props.updating,
             projectUpdateInputValue: "",
             projectUpdateContent: this.props.content
         };
     }
-
-    updateProjectUpdateContentState = () => {
-        this.setState({ updatingProjectUpdateContent: !this.state.updatingProjectUpdateContent });
-    };
 
     updateProjectUpdateInputValue = (event, {value}) => {
         this.setState({ projectUpdateInputValue: value });
     }
 
     updateProjectUpdateContent = () => {
-        console.log("Hello");
-        //Do a backend call here!
+        const { projectUpdateInputValue, projectUpdateContent } = this.state;
+        
+        if((projectUpdateInputValue !== "") && (projectUpdateInputValue !== projectUpdateContent)) {
 
+            this.setState({ projectUpdateContent: projectUpdateInputValue });
+            this.props.updateContentStateCallback();
+            //Update the backend!
+            this.props.updateProjectUpdateContent(this.props.updateGuid, projectUpdateInputValue);
+            
+        } else {
+            this.setState({ projectUpdateInputValue: "" });
+            this.props.updateContentStateCallback();
+        }
     }
 
-        // const { projectDescriptionInputValue, projectDescription } = this.state;
-        // if((projectDescriptionInputValue !== "") && (projectDescriptionInputValue !== projectDescription)) {
-        //     this.setState({
-        //         updatingProjectDescription: false,
-        //         projectDescriptionInputValue: "",
-        //         projectDescription: projectDescriptionInputValue
-        //     });
-        //     //Update the backend!
-        //     this.props.updateProjectDescription(this.props.projectGuid, projectDescriptionInputValue);
-            
-            
-        // } else {
-        //     this.setState({
-        //         updatingProjectDescription: false,
-        //         projectDescriptionInputValue: "",
-        //     });
-        // }
+    cancelUpdateContent = () => {
+        this.props.updateContentStateCallback()
+    }
 
     render() {
-        const { projectUpdateContent, updatingProjectUpdateContent } = this.state;
-
+        const { projectUpdateContent } = this.state;
+        const { updatingContent } = this.props;
         return (
             <Grid.Row>
-                {updatingProjectUpdateContent ?  
-                    <Form>
+                {updatingContent ?  
+                    <Form style={{'marginLeft': '1em', 'marginRight': '1em'}}>
                         <Grid>
-                            <Grid.Column width={15}>
+                            <Grid.Row width={15} style={{ minHeight: 200 }}>
                                 <TextArea defaultValue={projectUpdateContent} onChange={this.updateProjectUpdateInputValue} />
-                            </Grid.Column>
-                            <Grid.Column width={2}>
-                                <Grid.Row>
-                                    <Button icon='check' onClick={this.updateProjectUpdateContent} size='medium'/>
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Button icon='delete' onClick={this.updateProjectUpdateContentState} size='medium'/>  
-                                </Grid.Row>
-                                
-                            </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row>
+                                <Segment>
+                                    <Button floated="left" icon='check' onClick={this.updateProjectUpdateContent} size='medium'/>
+                                    <Button floated="right" icon='delete' onClick={this.cancelUpdateContent} size='medium'/>  
+                                </Segment>
+                            </Grid.Row>
                         </Grid>
                     </Form>
                     : 
@@ -99,3 +87,4 @@ const mapStateToProps = state => {
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectUpdateContent);
+

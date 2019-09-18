@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Checkbox
+    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
@@ -14,34 +14,43 @@ class ProjectUpdate extends React.Component {
         super(props);
 
         this.state = { 
-            updating: false
+            updatingContent: false,
+            deleteUpdateConfirmOpen: false
         };
 
     }
 
     handleEditUpdateClicked = () => {
-        this.setState({updating: !this.state.updating});
+        this.setState({ updatingContent: !this.state.updatingContent });
+
     }
 
-    handleDeleteUpdateClicked = () => {
+    handleConfirmUpdateDeletion = () => {
         const { update } = this.props;
-        this.props.removeUpdateCallback(this.props.index)
-        // Do the backend call! And put up an are you sure modal!
+        this.setState({ deleteUpdateConfirmOpen: false });
+        this.props.deleteUpdateCallback(this.props.index)
+        this.props.deleteProjectUpdate(update.guid)
+    }
 
-        //this.props.deleteProjectUpdate(update.guid)
+    showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true })
 
+    handleCancelUpdateDeletion = () => this.setState({ deleteUpdateConfirmOpen: false })
 
+    updateContentStateCallback = () => {
+        this.setState({ updatingContent: false });
     }
 
 
     render() {
 
         const { update, projectName, tags } = this.props;
-        const { relatedPerson, relatedTask, content } = update;
+        const { relatedPerson, relatedTask, content, guid } = update;
+
+        const { deleteUpdateConfirmOpen, updatingContent } = this.state;
 
         const options = [
             { key: '1', text: 'Edit Update', icon: 'edit', onClick: this.handleEditUpdateClicked },
-            { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.handleDeleteUpdateClicked },
+            { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.showDeleteUpdateConfirm },
           ]
 
         const trigger = (
@@ -52,6 +61,17 @@ class ProjectUpdate extends React.Component {
 
         return (
             <Segment style={{'marginLeft': '20em', 'marginRight': '20em'}}>
+
+                <Confirm
+                    open={deleteUpdateConfirmOpen}
+                    content='Are you sure you want to delete this update?'
+                    header='Delete Update'
+                    cancelButton='No'
+                    confirmButton="Yes"
+                    onCancel={this.handleCancelUpdateDeletion}
+                    onConfirm={this.handleConfirmUpdateDeletion}
+                    />
+
                 <Grid columns='four' divided>
                     <Grid.Column width={2}>
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
@@ -85,8 +105,7 @@ class ProjectUpdate extends React.Component {
                 <Divider/>
                 <Grid columns='2' divided>
                     <Grid.Column width={10} fluid>
-                        {relatedTask !== null && (
-
+                        {/* {relatedTask !== null && (
                             relatedTask.completed ? 
                                     <Grid.Row>
                                         <Segment>
@@ -113,15 +132,16 @@ class ProjectUpdate extends React.Component {
                                             </Grid>
                                         </Segment>
                                     </Grid.Row>
-                        )
-
-
-
-                        }
+                        )}
                         {relatedTask !== null &&
                             <Divider/>
-                        }
-                        <ProjectUpdateContent content={content} updating={this.state.updating}/>
+                        } */}
+
+                        <ProjectUpdateContent 
+                            updateGuid={guid}
+                            content={content} 
+                            updatingContent={updatingContent} 
+                            updateContentStateCallback={this.updateContentStateCallback}/>
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">
                         <Segment style={{overflow: 'auto', maxHeight: 300 }}>
