@@ -59,6 +59,7 @@ class ProjectTags extends React.Component {
                     </Label>
                 )}
                 {addingNewTag ?  
+                    
                     <Input
                         placeholder='Enter tags'
                         size='mini'

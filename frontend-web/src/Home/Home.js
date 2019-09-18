@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './Home.css';
 import PersonImage from '../Images/stevie.jpg';
 import {
     Button,
@@ -95,10 +94,9 @@ class Home extends Component {
           )} />
         )
     }
+
     showModal = () => {
-        this.setState({
-            modalVisible: true
-        })
+        this.setState({ modalVisible: true })
     };
 
     closeModal = () => {
