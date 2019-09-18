@@ -201,88 +201,6 @@ namespace backend_api.Controllers
         }
         
         
-        //
-//        
-//        /**
-//         * Add a relationship between a project and a given owner.
-//         */
-//        private void AddProjectRelationship(GraphClient client, string projectGuid, string ownerGuid)
-//        {
-//            client.Connect();
-//            client.Cypher
-//                .Match("(project:Project), (newOwner:Person)")
-//                .Where((Person newOwner) => newOwner.guid == ownerGuid)
-//                .AndWhere((Project project) => project.guid == projectGuid)
-//                .CreateUnique("(newOwner)-[:CONTRIBUTES_TO {type:ownerType}]->(project)")
-//                .WithParam("ownerType", "type")
-//                .ExecuteWithoutResults();
-//        }
-//
-//        /**
-//         * Remove a relationship between a project and a given owner.
-//         */
-//        private void RemoveProjectRelationship(GraphClient client, string projectGuid, string ownerGuid)
-//        {
-//            client.Connect();
-//            
-//            client.Cypher
-//                .Match("(contributor:Person)-[contributes:CONTRIBUTES_TO]-(project:Project)")
-//                .Where((Person contributor) => contributor.guid == ownerGuid)
-//                .AndWhere((Project project) => project.guid == projectGuid)
-//                .Delete("contributes")
-//                .ExecuteWithoutResults();
-//        }
-//        
-//        /**
-//         * Completes action to add a new member to a given project.
-//         *
-//         * PATCH api/person/:userId/project/:projectId/add/:newMemberId
-//         */
-//        [HttpPatch("{projectGuid}/add/{newMemberGuid}")]
-//        public ActionResult AddNewMember(string projectGuid, string newMemberGuid)
-//        {
-//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
-//            try
-//            {
-//                AddProjectRelationship(client, projectGuid, newMemberGuid);
-//                return StatusCode(200, "Successfully added user.");
-//            }
-//            catch (ServiceUnavailableException)
-//            {
-//                return StatusCode(503);
-//            }
-//            catch (Exception e)
-//            {
-//                Console.WriteLine(e);
-//                return StatusCode(500);
-//            }
-//        }
-//
-//        /**
-//         * Completes action to remove a specified member from a given project.
-//         *
-//         * PATCH api/person/:userId/project/:projectId/remove/:newMemberId
-//         */
-//        [HttpPatch("{projectGuid}/remove/{newMemberGuid}")]
-//        public ActionResult RemoveMember(string projectGuid, string newMemberGuid)
-//        {
-//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
-//            try
-//            {
-//                RemoveProjectRelationship(client, projectGuid, newMemberGuid);
-//                return StatusCode(200, "Successfully removed user.");
-//            }
-//            catch (ServiceUnavailableException)
-//            {
-//                return StatusCode(503, "Uh oh...");
-//            }
-//            catch (Exception e)
-//            {
-//                Console.WriteLine(e);
-//                return StatusCode(500, "Oops...");
-//            }
-//        }
-        
         // PATCH api/values
         [HttpPatch("{projectId}/name")]
         public ActionResult UpdateName(string projectId, [FromBody]UpdateProjectObject updateProjectNameObject)
@@ -470,7 +388,94 @@ namespace backend_api.Controllers
             return StatusCode(200);
         }
 
-       
+        
+        /**
+         * Attempts to parse a given string into a Guid.
+         * If the given string is null or cannot be formatted, returns a read only empty guid.
+         */
+        private Guid ParseGuid(string id)
+        {
+            Guid newGuid;
+            try
+            {
+                newGuid = Guid.Parse(id);
+            }
+            catch (ArgumentNullException)
+            {
+                return Guid.Empty;
+            }
+            catch (FormatException)
+            {
+                return Guid.Empty;
+            }
+            return newGuid;
+        }
+        
+        
+        /**
+         * Completes action to add a new member to a given project.
+         *
+         * PATCH api/project/:projectId/add/:newMemberId
+         */
+        [HttpPatch("{projectId}/add/{newMemberId}")]
+        public ActionResult AddNewMember(string projectId, string newMemberId)
+        {
+            // Parse project guid and new member guid
+            var projectGuid = ParseGuid(projectId);
+            var newMemberGuid = ParseGuid(newMemberId);
+            if (projectGuid.Equals(Guid.Empty) || newMemberGuid.Equals(Guid.Empty))
+            {
+                return BadRequest("Invalid guid.");
+            }
+            
+            // TODO
+            // Check user is logged in - Unauthorised()
+            // Check logged in user owns the project - Forbidden()
+            // Check new member exists - NotFound()
+            // Check project exists - NotFound()
+
+            // Add member
+            var result = _projectRepository.AddProjectMember(projectGuid, newMemberGuid);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200, "Successfully added user.");
+        }
+        
+        /**
+         * Completes action to remove a specified member from a given project.
+         *
+         * PATCH api/project/:projectId/remove/:newMemberId
+         */
+        [HttpPatch("{projectId}/remove/{memberId}")]
+        public ActionResult RemoveMember(string projectId, string memberId)
+        {
+            // Parse project guid and new member guid
+            var projectGuid = ParseGuid(projectId);
+            var newMemberGuid = ParseGuid(memberId);
+            if (projectGuid.Equals(Guid.Empty) || newMemberGuid.Equals(Guid.Empty))
+            {
+                return BadRequest("Invalid guid.");
+            }
+            
+            // TODO
+            // Check user is logged in - Unauthorised()
+            // Check logged in user owns the project - Forbidden()
+            // Check new member exists - NotFound()
+            // Check project exists - NotFound()
+
+            // Add member
+            var result = _projectRepository.RemoveProjectMember(projectGuid, newMemberGuid);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200, "Successfully removed user.");
+        }
+
     }
 }
 
