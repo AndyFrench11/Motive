@@ -194,8 +194,9 @@ namespace backend_api.Database.ProjectUpdateRepository
         {
             string projectUpdateContent = projectUpdate.content;
             string projectUpdateId = projectUpdate.Guid.ToString();
-            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, guid: $projectUpdateId})", 
-                new { projectUpdateContent, projectUpdateId });
+            bool highlight = projectUpdate.highlight;
+            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, highlight: $highlight, guid: $projectUpdateId})", 
+                new { projectUpdateContent, highlight, projectUpdateId });
         }
 
         private void CreateProjectUpdateToProjectRelationship(ITransaction tx, Guid projectUpdateGuid, Guid projectGuid)

@@ -7,6 +7,7 @@ import {
     Modal,
     TransitionablePortal,
 } from 'semantic-ui-react'
+import { Route } from 'react-router-dom';
 
 import {Link, withRouter} from "react-router-dom";
 import {logout} from "./Auth/actions";
@@ -54,9 +55,10 @@ class TopNavBar extends React.Component {
                     </Container>
                     {currentUser ? (
                         <Menu.Menu position='right'>
-                            <Menu.Item>
-                                Welcome, {currentUser.firstName} {currentUser.lastName}
-                            </Menu.Item>
+                            <Menu.Item item simple
+                                    as={Link} to={`/profile/${currentUser.guid}/`}>
+                                {`Welcome, ${currentUser.firstName} ${currentUser.lastName}`}
+                            </Menu.Item>      
 
                             <Menu.Item>
                                 <Button onClick={this.handleLogoutClick}>Log Out</Button>

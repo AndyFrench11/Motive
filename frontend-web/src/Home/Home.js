@@ -100,13 +100,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(Home);
 //     console.log(this.state.users)
 //     return this.state.users.map((item, key) =>
 
-//       <Route render={({ history }) => (
-//         <button
-//           type='button'
-//           onClick={() => { history.push(`/profile/${item.guid}/`) }}
-//         >
-//           {item.firstName} {item.lastName}
-//         </button>
-//       )} />
+//       
 //     )
 // }

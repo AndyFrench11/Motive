@@ -6,6 +6,7 @@ namespace backend_api.Models
     public class ProjectUpdate : BaseEntity
     {
         public string content { get; set; }
+        public bool highlight { get; set; }
         public Guid taskGuid { get; set; }
         public ProjectTask relatedTask { get; set; }
         public Person relatedPerson { get; set; }
