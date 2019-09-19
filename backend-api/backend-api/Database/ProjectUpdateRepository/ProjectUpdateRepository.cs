@@ -194,8 +194,9 @@ namespace backend_api.Database.ProjectUpdateRepository
         {
             string projectUpdateContent = projectUpdate.content;
             string projectUpdateId = projectUpdate.Guid.ToString();
-            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, guid: $projectUpdateId})", 
-                new { projectUpdateContent, projectUpdateId });
+            bool highlight = projectUpdate.highlight;
+            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, highlight: $highlight, guid: $projectUpdateId})", 
+                new { projectUpdateContent, highlight, projectUpdateId });
         }
 
         private void CreateProjectUpdateToProjectRelationship(ITransaction tx, Guid projectUpdateGuid, Guid projectGuid)
@@ -240,12 +241,38 @@ namespace backend_api.Database.ProjectUpdateRepository
                 return new RepositoryReturn<bool>(true, e);
             }
         }
-        
+
+
         private void UpdateProjectUpdateNodeContent(ITransaction tx, Guid projectUpdateGuid, string content)
         {
             string updateId = projectUpdateGuid.ToString();
             tx.Run("MATCH (pu:ProjectUpdate) WHERE pu.guid = $updateId SET pu.content = $content", 
                 new { updateId, content});
+        }
+        
+        public RepositoryReturn<bool> EditHighlightStatus(Guid projectUpdateGuid, bool highlightStatus)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => UpdateProjectUpdateNodeHighlightStatus(tx, projectUpdateGuid, highlightStatus));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+        private void UpdateProjectUpdateNodeHighlightStatus(ITransaction tx, Guid projectUpdateGuid, bool highlightStatus)
+        {
+            string updateId = projectUpdateGuid.ToString();
+            tx.Run("MATCH (pu:ProjectUpdate) WHERE pu.guid = $updateId SET pu.highlight = $highlightStatus", 
+                new { updateId, highlightStatus});
+            
         }
 
         public RepositoryReturn<bool> EditAssociatedTask(Guid projectUpdateGuid)

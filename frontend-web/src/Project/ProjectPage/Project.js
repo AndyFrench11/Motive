@@ -156,7 +156,23 @@ class ProjectPageLayout extends React.Component {
             )
         } else {
             return (
-                <ProjectUpdateList project={project} projectUpdates={projectUpdates}/>
+                <ProjectUpdateList project={project} projectUpdates={projectUpdates} listType="projectUpdates"/>
+            );
+        }
+    }
+
+    renderProjectHighlights(project) {
+        const { projectUpdates } = this.props;
+        if (projectUpdates === null || projectUpdates === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else {
+            const highlights = projectUpdates.filter((update) => update.highlight); 
+            return (
+                <ProjectUpdateList project={project} projectUpdates={highlights} listType="projectHighlights"/>
             );
         }
     
@@ -228,25 +244,15 @@ class ProjectPageLayout extends React.Component {
                     </Menu>
 
                     {activeMenuItem === "Tasks" &&
-
-                        /*Tasks*/
                         <ProjectTasks project={project} projectOwners={projectOwners} projectGuid={project.guid}/>
-
                     }
 
                     {activeMenuItem === "Updates" &&
-                        /*Tasks*/
                         this.renderProjectUpdates(project)
-
                     }
 
                     {activeMenuItem === "Highlights" &&
-
-                        /*Tasks*/
-
-                        <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
-                            Highlights
-                        </Segment>
+                        this.renderProjectHighlights(project)                        
                     }
 
                     {activeMenuItem === "Settings" &&

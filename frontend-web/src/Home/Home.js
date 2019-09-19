@@ -39,7 +39,7 @@ class Home extends Component {
             return (
                 <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
                     <Header icon>
-                        No updates have been made for this project.
+                        You have not made any updates! Create a project to get started.
                     </Header>
                 </Segment>
             )
@@ -100,13 +100,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(Home);
 //     console.log(this.state.users)
 //     return this.state.users.map((item, key) =>
 
-//       <Route render={({ history }) => (
-//         <button
-//           type='button'
-//           onClick={() => { history.push(`/profile/${item.guid}/`) }}
-//         >
-//           {item.firstName} {item.lastName}
-//         </button>
-//       )} />
+//       
 //     )
 // }
