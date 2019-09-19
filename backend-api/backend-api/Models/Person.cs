@@ -15,7 +15,9 @@ namespace backend_api.Models
 
         public string password { get; set; }
         
-        public string mediaKey { get; set; }
+        public string encryptedPrivateKey { get; set; }
+        
+        public string publicKey { get; set; }
         
         public string dateOfBirth { get; set; }
         
@@ -59,6 +61,8 @@ namespace backend_api.Models
             this.lastName = props["lastName"].ToString();
             this.email = props["email"].ToString();
             this.password = props["password"].ToString();
+            this.encryptedPrivateKey = props["encryptedPrivateKey"].ToString();
+            this.publicKey = props["publicKey"].ToString();
             this.dateOfBirth = props["dateOfBirth"].ToString();
             this.profileBio = props["profileBio"].ToString();
             this.dateJoined = props["dateJoined"].ToString();

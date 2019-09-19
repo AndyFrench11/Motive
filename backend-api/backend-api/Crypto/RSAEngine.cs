@@ -5,6 +5,7 @@ namespace backend_api.Crypto
 {
     public class RSAEngine
     {
+        
         public Tuple<RSAParameters, RSAParameters> GenerateKeyPair() 
         {
             //lets take a new CSP with a new 2048 bit rsa key pair
@@ -49,7 +50,7 @@ namespace backend_api.Crypto
             var bytesPlainTextData = System.Text.Encoding.Unicode.GetBytes(data);
 
             //apply pkcs#1.5 padding and encrypt our data 
-            var bytesCypherText = csp.Encrypt(bytesPlainTextData, false);
+            var bytesCypherText = csp.Encrypt(bytesPlainTextData, true);
 
             return bytesCypherText;
         }
@@ -61,7 +62,7 @@ namespace backend_api.Crypto
             csp.ImportParameters(privateKey);
 
             //decrypt and strip pkcs#1.5 padding
-            var bytesPlainTextData = csp.Decrypt(data, false);
+            var bytesPlainTextData = csp.Decrypt(data, true);
 
             //get our original plainText back...
             var plainTextData = System.Text.Encoding.Unicode.GetString(bytesPlainTextData);

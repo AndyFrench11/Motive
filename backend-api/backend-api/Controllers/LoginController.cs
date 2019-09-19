@@ -7,9 +7,9 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web.Http.Cors;
+using backend_api.Crypto;
 using backend_api.Database;
 using backend_api.Database.PersonRepository;
-using backend_api.Database.SessionRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +21,10 @@ namespace backend_api.Controllers
     public class LoginController : Controller
     {
         private IPersonRepository _personRepository;
-        private ISessionRepository _sessionRepository;
 
         public LoginController()
         {
             _personRepository = new PersonRepository();
-            _sessionRepository = new SessionRepository();
         }
         
         // POST api/login
@@ -55,17 +53,22 @@ namespace backend_api.Controllers
                 // Wrong password, unauthorized
                 return StatusCode(401);
             }
-            
-            Session newSession = new Session();
-            RepositoryReturn<bool> requestSessionAdd = _sessionRepository.Add(newSession, allegedAccount.ReturnValue.Guid);
-            if (requestSessionAdd.IsError)
-            {
-                // Server-side/DB error
-                return StatusCode(500, requestSessionAdd.ErrorException.Message);
-            }
 
+            string plaintextPassword = loginPerson.password;
+            AESEngine aesEngine = new AESEngine();
+            
+            // Decrypt their private key to use in the session
+            Session newSession = new Session
+            (
+                aesEngine.DecryptStringFromBytes_Aes(
+                    Convert.FromBase64String(allegedAccount.ReturnValue.encryptedPrivateKey),
+                    plaintextPassword)
+            );
+
+            string createdSessionId = SessionsController.CreateSession(allegedAccount.ReturnValue.Guid, newSession);
+            
             // TODO switch to secure with HTTPS
-            Response.Cookies.Append("sessionId", newSession.sessionId, new CookieOptions
+            Response.Cookies.Append("sessionId", createdSessionId, new CookieOptions
             {
                 HttpOnly = true,
                 Domain = null,
@@ -92,8 +95,7 @@ namespace backend_api.Controllers
             }
         }
 
-
-
+        
         private bool IsValidPassword(string plaintextPassword, string hashPassword)
         {
             byte[] hashBytes = Convert.FromBase64String(hashPassword);
@@ -120,32 +122,16 @@ namespace backend_api.Controllers
         public ActionResult Delete()
         {
             string sessionId = Request.Cookies["sessionId"];
-            RepositoryReturn<Person> requestGetPersonOnSession = _sessionRepository.GetUserOnSession(sessionId);
-            if (requestGetPersonOnSession.IsError)
-            {
-                return StatusCode(500, requestGetPersonOnSession.ErrorException.Message);
-            }
-            if (requestGetPersonOnSession.ReturnValue == null)
-            {
-                // Session ID does not exist, return Unauthorized
-                return StatusCode(401);
-            }
+            if (!SessionsController.CloseSession(sessionId)) return StatusCode(401);
             
-            
-            RepositoryReturn<bool> requestSessionDelete = _sessionRepository.Delete(sessionId);
-            if (requestSessionDelete.IsError)
-            {
-                // Server-side/DB error
-                return StatusCode(500, requestSessionDelete.ErrorException.Message);
-            }
-            
+            // Successfully closed session
             Response.Cookies.Append("sessionId", sessionId, new CookieOptions
             {
                 HttpOnly = true,
                 Domain = null,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.Now.AddHours(-1),
-            });  
+            });
             return StatusCode(200);
         }
     }

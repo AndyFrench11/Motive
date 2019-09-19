@@ -160,7 +160,9 @@ namespace backend_api.Database.PersonRepository
                    $"dateOfBirth: '{personToCreate.dateOfBirth}', " +
                    $"email: '{personToCreate.email}', " +
                    $"profileBio: '{personToCreate.profileBio}'," +
-                   $"password: '{personToCreate.password}'" +
+                   $"password: '{personToCreate.password}'," +
+                   $"encryptedPrivateKey: '{personToCreate.encryptedPrivateKey}'," +
+                   $"publicKey: '{personToCreate.publicKey}'" +
                    "})");
         }
 
