@@ -12,27 +12,31 @@
     <session id="1426648351">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
+          <entry key="project.closed" value="5" />
           <entry key="project.open.time.7" value="3" />
           <entry key="project.open.time.8" value="1" />
-          <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="5" />
+          <entry key="project.open.time.9" value="2" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
+          <entry key="config" value="28" />
+          <entry key="env" value="1" />
           <entry key="js" value="148" />
-          <entry key="txt" value="41" />
+          <entry key="txt" value="71" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JavaScript" value="148" />
-          <entry key="PLAIN_TEXT" value="41" />
+          <entry key="PLAIN_TEXT" value="100" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
+          <entry key="config" value="1" />
+          <entry key="env" value="1" />
           <entry key="js" value="7" />
           <entry key="json" value="1" />
         </counts>
@@ -41,6 +45,7 @@
         <counts>
           <entry key="JSON" value="1" />
           <entry key="JavaScript" value="7" />
+          <entry key="PLAIN_TEXT" value="2" />
         </counts>
       </usages-collector>
     </session>
@@ -59,14 +64,32 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectDetails/reducers.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="330">
-              <caret line="22" column="3" lean-forward="true" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
+              <caret line="22" column="3" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backend-api/backend-api/App.config">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="77" selection-start-line="5" selection-start-column="77" selection-end-line="5" selection-end-column="77" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/frontend-web/.env">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="31" selection-start-column="31" selection-end-column="31" />
             </state>
           </provider>
         </entry>
@@ -81,6 +104,8 @@
       <list>
         <option value="$PROJECT_DIR$/frontend-web/src/Project/reducers.js" />
         <option value="$PROJECT_DIR$/frontend-web/src/rootReducer.js" />
+        <option value="$PROJECT_DIR$/backend-api/backend-api/App.config" />
+        <option value="$PROJECT_DIR$/frontend-web/.env" />
       </list>
     </option>
   </component>
@@ -111,8 +136,6 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -120,10 +143,17 @@
               <item name="Motive" type="b2602c69:ProjectViewProjectNode" />
               <item name="Motive" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="Motive" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Motive" type="462c0819:PsiDirectoryNode" />
+              <item name="frontend-web" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -160,6 +190,7 @@
       <workItem from="1568522089767" duration="943000" />
       <workItem from="1568776957513" duration="66000" />
       <workItem from="1568851235443" duration="465000" />
+      <workItem from="1568893122588" duration="103000" />
     </task>
     <task id="LOCAL-00001" summary="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js">
       <created>1565761900406</created>
@@ -196,16 +227,24 @@
       <option name="project" value="LOCAL" />
       <updated>1568522587363</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Updated configs for deployment">
+      <created>1568893204284</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1568893204284</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2818000" />
+    <option name="totallyTimeSpent" value="2921000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1440" y="-157" width="1920" height="985" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16719915" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1687966" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -219,7 +258,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.2150056" />
+      <window_info anchor="bottom" id="Version Control" order="7" visible="true" weight="0.2150056" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="SBT Console" order="9" />
       <window_info anchor="bottom" id="Terminal" order="10" />
@@ -245,7 +284,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js" />
     <MESSAGE value="Updated reducers to match new scheme" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated reducers to match new scheme" />
+    <MESSAGE value="Updated configs for deployment" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated configs for deployment" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/backend-api/backend-api/Properties/launchSettings.json">
@@ -289,10 +329,24 @@
     <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectDetails/reducers.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
-          <caret line="22" column="3" lean-forward="true" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
+          <caret line="22" column="3" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backend-api/backend-api/App.config">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="77" selection-start-line="5" selection-start-column="77" selection-end-line="5" selection-end-column="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend-web/.env">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="31" selection-start-column="31" selection-end-column="31" />
         </state>
       </provider>
     </entry>

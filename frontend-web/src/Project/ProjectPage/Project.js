@@ -17,6 +17,7 @@ import ProjectSettings from "./ProjectSettings/ProjectSettings";
 import UpdateProjectImageModal from "./ProjectDetails/UpdateProjectImageModal";
 import CreateProjectUpdateModal from "./ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
 import ProjectUpdateList from "./ProjectUpdates/ProjectUpdate/ProjectUpdateList";
+import ProjectTimeline from "./ProjectTimeline/ProjectTimeline";
 
 function importAll(r) {
     let images = {};
@@ -96,7 +97,7 @@ class ProjectPageLayout extends React.Component {
                 <ProjectName projectName={project.name} projectGuid={project.guid}/>
                 <ProjectDescription projectDescription={project.description} projectGuid={project.guid}/>
                 <ProjectTags tagList={project.tagList} projectGuid={project.guid}/>
-                <Grid.Row>
+                <Grid.Row style={{'marginTop': '1em'}}>
                     <Button animated size='small' onClick={this.showCreateProjectUpdateModal}>
                         <Button.Content visible>Create new project update!</Button.Content>
                         <Button.Content hidden>
@@ -187,7 +188,7 @@ class ProjectPageLayout extends React.Component {
                 </Grid>
             )
         } else {
-            const { project, projectOwners } = this.props;
+            const { project, projectOwners, projectUpdates } = this.props;
             const { activeMenuItem, updatingProjectImage, createProjectUpdateModalOpen } = this.state;
 
             return (
@@ -218,46 +219,50 @@ class ProjectPageLayout extends React.Component {
                     {this.renderProjectOwners()}
                 </Grid>
 
-                    <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
+                <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 
-                    <Menu pointing secondary style={{ marginLeft: '5em', marginRight: '5em'}}>
-                        <Menu.Item
-                            name='Updates'
-                            active={activeMenuItem === 'Updates'}
-                            onClick={this.handleItemClick}
-                        />
-                        <Menu.Item
-                            name='Tasks'
-                            active={activeMenuItem === 'Tasks'}
-                            onClick={this.handleItemClick}
-                        />
-                        <Menu.Item
-                            name='Highlights'
-                            active={activeMenuItem === 'Highlights'}
-                            onClick={this.handleItemClick}
-                        />
-                        <Menu.Item
-                            name='Settings'
-                            active={activeMenuItem === 'Settings'}
-                            onClick={this.handleItemClick}
-                        />
-                    </Menu>
+                <ProjectTimeline updates={projectUpdates}/>
 
-                    {activeMenuItem === "Tasks" &&
-                        <ProjectTasks project={project} projectOwners={projectOwners} projectGuid={project.guid}/>
-                    }
+                <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 
-                    {activeMenuItem === "Updates" &&
-                        this.renderProjectUpdates(project)
-                    }
+                <Menu pointing secondary style={{ marginLeft: '5em', marginRight: '5em'}}>
+                    <Menu.Item
+                        name='Updates'
+                        active={activeMenuItem === 'Updates'}
+                        onClick={this.handleItemClick}
+                    />
+                    <Menu.Item
+                        name='Tasks'
+                        active={activeMenuItem === 'Tasks'}
+                        onClick={this.handleItemClick}
+                    />
+                    <Menu.Item
+                        name='Highlights'
+                        active={activeMenuItem === 'Highlights'}
+                        onClick={this.handleItemClick}
+                    />
+                    <Menu.Item
+                        name='Settings'
+                        active={activeMenuItem === 'Settings'}
+                        onClick={this.handleItemClick}
+                    />
+                </Menu>
 
-                    {activeMenuItem === "Highlights" &&
-                        this.renderProjectHighlights(project)                        
-                    }
+                {activeMenuItem === "Tasks" &&
+                    <ProjectTasks project={project} projectOwners={projectOwners} projectGuid={project.guid}/>
+                }
 
-                    {activeMenuItem === "Settings" &&
-                        <ProjectSettings projectGuid={project.guid}/>
-                    }
+                {activeMenuItem === "Updates" &&
+                    this.renderProjectUpdates(project)
+                }
+
+                {activeMenuItem === "Highlights" &&
+                    this.renderProjectHighlights(project)                        
+                }
+
+                {activeMenuItem === "Settings" &&
+                    <ProjectSettings projectGuid={project.guid}/>
+                }
 
             </div>
             )

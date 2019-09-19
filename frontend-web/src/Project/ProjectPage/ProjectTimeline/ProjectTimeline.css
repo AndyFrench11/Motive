@@ -1,0 +1,21 @@
+.column.centerDot {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    width: 3rem !important;
+  }
+
+.column.connector {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    width: 4rem !important;
+  }
+
+.ui.grid.timelineItem {
+    
+}
+
+.column.timelineColumn {
+    width: 10rem !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+}
