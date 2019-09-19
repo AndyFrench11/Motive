@@ -17,6 +17,8 @@ namespace backend_api.Database.ProjectUpdateRepository
 
         RepositoryReturn<bool> EditContent(Guid projectUpdateGuid, string content);
         
+        RepositoryReturn<bool> EditHighlightStatus(Guid projectUpdateGuid, bool highlightStatus);
+        
         RepositoryReturn<bool> EditAssociatedTask(Guid projectUpdateGuid);
 
         RepositoryReturn<bool> Delete(Guid projectUpdateGuid);

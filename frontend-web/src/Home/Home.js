@@ -39,7 +39,7 @@ class Home extends Component {
             return (
                 <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
                     <Header icon>
-                        No updates have been made for this project.
+                        You have not made any updates! Create a project to get started.
                     </Header>
                 </Segment>
             )

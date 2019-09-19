@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
-import { deleteProjectUpdate } from "./actions";
+import { deleteProjectUpdate, updateProjectUpdateHighlight } from "./actions";
 
 class ProjectUpdate extends React.Component {
 
@@ -15,7 +15,8 @@ class ProjectUpdate extends React.Component {
 
         this.state = { 
             updatingContent: false,
-            deleteUpdateConfirmOpen: false
+            deleteUpdateConfirmOpen: false,
+            highlight: this.props.update.highlight
         };
 
     }
@@ -40,18 +41,33 @@ class ProjectUpdate extends React.Component {
         this.setState({ updatingContent: false });
     }
 
+    handleHighlightStatusChange = () => {
+        const { highlight } = this.state;
+        const { update } = this.props;
+        this.setState({ highlight: !highlight });
+        //Do backend call!
+        this.props.updateProjectUpdateHighlight(update.guid, !highlight)
+
+    }
+
 
     render() {
 
         const { update, projectName, tags } = this.props;
         const { relatedPerson, relatedTask, content, guid } = update;
 
-        const { deleteUpdateConfirmOpen, updatingContent } = this.state;
+        const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
         const options = [
             { key: '1', text: 'Edit Update', icon: 'edit', onClick: this.handleEditUpdateClicked },
             { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.showDeleteUpdateConfirm },
           ]
+
+        if(highlight) {
+            options.splice(1, 0, { key: '3', text: 'Unmark Update as Highlight', icon: 'heart', onClick: this.handleHighlightStatusChange });
+        } else {
+            options.splice(1, 0, { key: '3', text: 'Mark Update as Highlight', icon: 'heart', onClick: this.handleHighlightStatusChange });
+        }
 
         const trigger = (
             <span>
@@ -60,7 +76,7 @@ class ProjectUpdate extends React.Component {
             )
 
         return (
-            <Segment style={{'marginLeft': '20em', 'marginRight': '20em'}}>
+            <Segment style={{'marginLeft': '20em', 'marginRight': '20em', 'marginTop': '3em'}}>
 
                 <Confirm
                     open={deleteUpdateConfirmOpen}
@@ -74,10 +90,16 @@ class ProjectUpdate extends React.Component {
 
                 <Grid columns='four' divided>
                     <Grid.Column width={2}>
+                        {highlight &&
+                            <Label floating color='red' circular icon="heart" size="massive"/>
+                            }   
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
                     </Grid.Column>
                     <Grid.Column width={4}>
-                        <Header size='large'>Update from {relatedPerson.firstName}</Header>
+                        <Grid.Row>
+                            <Header size='large'>Update from {relatedPerson.firstName}</Header>
+                        </Grid.Row>
+                        
                     </Grid.Column>
                     <Grid.Column width={5}>
                         <Grid.Row>
@@ -234,6 +256,7 @@ class ProjectUpdate extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         deleteProjectUpdate: (updateGuid) => dispatch(deleteProjectUpdate(updateGuid)),
+        updateProjectUpdateHighlight: (updateGuid, newHighlightStatus) => dispatch(updateProjectUpdateHighlight(updateGuid, newHighlightStatus))
     };
 }
 

@@ -25,14 +25,20 @@ class ProjectUpdateList extends React.Component {
 
     render() {
 
-        const { project } = this.props;
+        const { project, listType } = this.props;
         const { projectUpdates } = this.state;
+        const listTypes = { 
+            "projectUpdates": "No updates have been made for this project.",  
+            "projectHighlights": "No highlights have been made for this project.",
+            "feedUpdates": "You have not made any updates! Create a project to get started.",
+        }
 
         if(projectUpdates.length == 0) {
+            
             return (
                 <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
                     <Header icon>
-                        No updates have been made for this project.
+                        { listTypes[listType] }
                     </Header>
                 </Segment>
             )

@@ -21,6 +21,7 @@ namespace backend_api.Models
         public ProjectUpdate(IReadOnlyDictionary<string, object> props)
         {
             this.content = props["content"].ToString();
+            this.highlight = Boolean.Parse(props["highlight"].ToString());
             this.Guid = Guid.Parse(props["guid"].ToString());
         }
     }
