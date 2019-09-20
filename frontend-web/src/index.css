@@ -19,7 +19,7 @@ code {
   background-color: grey !important;
 }
 
-.ui.red.massive.circular.floating.label {
+.ui.red.massive.circular.floating.label.updateHighlight {
   position: absolute;
   z-index: 100;
   top: -1em;

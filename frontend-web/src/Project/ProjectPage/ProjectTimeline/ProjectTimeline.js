@@ -1,9 +1,11 @@
 import React from 'react'
 import {
-    Divider, Grid, Popup, Icon, Label, Image, Header
+    Divider, Grid, Popup, Icon, Label, Image, Header, Segment
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import "./ProjectTimeline.css";
+import TrophyImage from "../../ProjectImages/image16.png";
+import MatthewImage from "../../../Images/matthew_nuezrz.png";
 
 class ProjectTimeline extends React.Component {
 
@@ -17,6 +19,7 @@ class ProjectTimeline extends React.Component {
     render() {
 
         const { updates } = this.props;
+        console.log(updates);
 
         return (
             <Grid columns={updates.length} style={{'marginLeft': '5em', 'marginRight': '5em', 'marginTop': '2em', 'marginBottom': '2em'}} >
@@ -30,19 +33,49 @@ class ProjectTimeline extends React.Component {
                                 <Popup
                                     trigger={<Icon color='red' size='large' circular />}
                                     position='top center'
+                                    className="timelineItemPopup"
+                                    hoverable
                                     >
-                                    <Grid divided>
-                                        <Grid.Row>
-                                            <Grid.Column>
-                                                <Icon name='heart'/>
+                                    <Label floating color='red' circular icon="heart" size="massive" className="timelineHighlight"/>
+                                    <Grid divided compact>
+                                        <Grid.Row className="popUpRow">
+                                            <Grid.Column width={6}>
+                                                <Image className="popUpImage" avatar src={MatthewImage} size='huge'/>
                                             </Grid.Column>
                                             <Grid.Column>
                                                 <Header size='medium'> {update.relatedPerson.firstName} </Header>
                                             </Grid.Column>
                                         </Grid.Row>
-                                        <Divider/>
-                                        <Grid.Row>
-                                            <p style={{'marginLeft': '1em', 'marginRight': '1em'}}>{update.content}</p>
+                                        <Divider className="popUpDivider"/>
+                                        {update.relatedTask !== null && (
+                                            update.relatedTask.completed ? 
+                                                    <Grid.Row className="taskPopUpRow">
+                                                        <Grid>
+                                                            <Grid.Column width={4} className="trophyImageColumn">
+                                                                <Image src={TrophyImage} rounded />
+                                                            </Grid.Column>
+                                                            <Grid.Column width={12}>
+                                                                <Header style={{'marginTop': 3}} size='medium'>Task Completed: {update.relatedTask.name}</Header>
+                                                            </Grid.Column>
+                                                        </Grid>
+                                                    </Grid.Row>
+                                            :
+                                                    <Grid.Row className="taskPopUpRow">
+                                                        <Grid>
+                                                            <Grid.Column width={2}>
+                                                                <Icon size='large' name='tasks' className='taskIcon'/>
+                                                            </Grid.Column>
+                                                            <Grid.Column width={14}>
+                                                                <Header style={{'marginTop': 3}} size='medium'>Task: {update.relatedTask.name}</Header>
+                                                            </Grid.Column>
+                                                        </Grid>
+                                                    </Grid.Row>
+                                        )}
+                                        {update.relatedTask !== null &&
+                                            <Divider className="popUpDivider"/>
+                                        }
+                                        <Grid.Row className="popUpRow">
+                                            <p>{update.content}</p>
                                         </Grid.Row>
                                     </Grid>
                                 </Popup>

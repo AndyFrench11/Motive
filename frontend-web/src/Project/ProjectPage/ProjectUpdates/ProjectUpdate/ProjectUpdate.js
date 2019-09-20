@@ -91,7 +91,7 @@ class ProjectUpdate extends React.Component {
                 <Grid columns='four' divided>
                     <Grid.Column width={2}>
                         {highlight &&
-                            <Label floating color='red' circular icon="heart" size="massive"/>
+                            <Label floating color='red' circular icon="heart" size="massive" className="updateHighlight"/>
                             }   
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
                     </Grid.Column>
@@ -127,7 +127,7 @@ class ProjectUpdate extends React.Component {
                 <Divider/>
                 <Grid columns='2' divided>
                     <Grid.Column width={10} fluid>
-                        {/* {relatedTask !== null && (
+                        {relatedTask !== null && (
                             relatedTask.completed ? 
                                     <Grid.Row>
                                         <Segment>
@@ -157,7 +157,7 @@ class ProjectUpdate extends React.Component {
                         )}
                         {relatedTask !== null &&
                             <Divider/>
-                        } */}
+                        }
 
                         <ProjectUpdateContent 
                             updateGuid={guid}

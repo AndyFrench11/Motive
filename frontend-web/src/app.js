@@ -30,8 +30,8 @@ class App extends Component {
 
 
                     <ProtectedRoute exact path="/home" component={Home} isAllowed={isLoggedIn}/>
-                    <Route exact path="/profile/:userguid" component={UserProfile} />
-                    <Route exact path="/project/:projectguid" component={Project} />
+                    <ProtectedRoute exact path="/profile/:userguid" component={UserProfile} isAllowed={isLoggedIn}/>
+                    <ProtectedRoute exact path="/project/:projectguid" component={Project} isAllowed={isLoggedIn}/>
                 </Switch>
             </Router>
         );
