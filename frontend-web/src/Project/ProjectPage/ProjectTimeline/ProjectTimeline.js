@@ -34,16 +34,15 @@ class ProjectTimeline extends React.Component {
                                     trigger={<Icon color='red' size='large' circular />}
                                     position='top center'
                                     className="timelineItemPopup"
-                                    hoverable
                                     >
                                     <Label floating color='red' circular icon="heart" size="massive" className="timelineHighlight"/>
                                     <Grid divided compact>
                                         <Grid.Row className="popUpRow">
-                                            <Grid.Column width={6}>
-                                                <Image className="popUpImage" avatar src={MatthewImage} size='huge'/>
+                                            <Grid.Column width={4} className="popUpProfileImage">
+                                                <Image className="popUpImage" avatar src={MatthewImage} size='small'/>
                                             </Grid.Column>
-                                            <Grid.Column>
-                                                <Header size='medium'> {update.relatedPerson.firstName} </Header>
+                                            <Grid.Column width={12}>
+                                                <Header className="popUpName" size='medium'> {update.relatedPerson.firstName} {update.relatedPerson.lastName} </Header>
                                             </Grid.Column>
                                         </Grid.Row>
                                         <Divider className="popUpDivider"/>
@@ -51,8 +50,8 @@ class ProjectTimeline extends React.Component {
                                             update.relatedTask.completed ? 
                                                     <Grid.Row className="taskPopUpRow">
                                                         <Grid>
-                                                            <Grid.Column width={4} className="trophyImageColumn">
-                                                                <Image src={TrophyImage} rounded />
+                                                            <Grid.Column width={3} className="trophyImageColumn">
+                                                                <Image src={TrophyImage} rounded className="trophyImage"/>
                                                             </Grid.Column>
                                                             <Grid.Column width={12}>
                                                                 <Header style={{'marginTop': 3}} size='medium'>Task Completed: {update.relatedTask.name}</Header>

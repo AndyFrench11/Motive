@@ -42,7 +42,7 @@
   top: -1em;
   right: 100%;
   left: 100%;
-  margin: 0 0 0 -1em!important;
+  margin: 0 0 0 -1em !important;
 }
 
 .row.taskPopUpRow {
@@ -56,6 +56,18 @@
   padding-top: 0.5em !important;
 }
 
-.four.wide.column.trophyImageColumn {
+.three.wide.column.trophyImageColumn {
   padding-right: 0em !important;
+}
+
+.four.wide.column.popUpProfileImage {
+  padding-left: 0em !important;
+}
+
+.ui.rounded.image.trophyImage {
+  padding-top: 0.5em !important;
+}
+
+.ui.medium.header.popUpName {
+  padding-top: 0.5em !important;
 }
