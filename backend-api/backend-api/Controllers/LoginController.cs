@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Net;
-
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-using System.Web.Http.Cors;
 using backend_api.Crypto;
 using backend_api.Database;
 using backend_api.Database.PersonRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Neo4j.Driver.V1;
 
 namespace backend_api.Controllers
 {
@@ -62,12 +54,13 @@ namespace backend_api.Controllers
             (
                 aesEngine.DecryptStringFromBytes_Aes(
                     Convert.FromBase64String(allegedAccount.ReturnValue.encryptedPrivateKey),
-                    plaintextPassword)
+                    plaintextPassword),
+                allegedAccount.ReturnValue.Guid
             );
 
             string createdSessionId = SessionsController.CreateSession(allegedAccount.ReturnValue.Guid, newSession);
             
-            // TODO switch to secure with HTTPS
+            // TODO switch to 'Secure' with HTTPS
             Response.Cookies.Append("sessionId", createdSessionId, new CookieOptions
             {
                 HttpOnly = true,

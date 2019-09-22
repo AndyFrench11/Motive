@@ -13,9 +13,13 @@
     <PackageReference Include="Neo4j.Driver" Version="1.7.1" />
     <PackageReference Include="Neo4jClient" Version="3.1.0.6" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0-preview7.19362.9" />
+    <PackageReference Include="UploadStream" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="testImageDirectory" />
+    <Folder Include="PlaintextUploads" />
+    <Folder Include="Resources" />
+    <Folder Include="Resources_Output" />
+    <Folder Include="Uploads" />
   </ItemGroup>
 </Project>

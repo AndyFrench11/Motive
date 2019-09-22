@@ -42,7 +42,7 @@ namespace backend_api.Controllers
                 // Account already exists
                 return StatusCode(409);
             }
-            
+
             // Create Crypto instances
             RSAEngine rsaEngine = new RSAEngine();
             AESEngine aesEngine = new AESEngine();

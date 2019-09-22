@@ -11,9 +11,10 @@ namespace backend_api.Models
         
         public string privateKey { get; set; }
 
-        public Session(string decryptedPrivateKey)
+        public Session(string decryptedPrivateKey, Guid userGuid)
         {
-            this.privateKey = decryptedPrivateKey;            
+            this.privateKey = decryptedPrivateKey;
+            this.userGuid = userGuid;
             this.expiry = DateTime.Now.AddHours(1);
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using backend_api.Crypto;
 using backend_api.Models;
 
 namespace backend_api.Controllers
@@ -41,10 +42,7 @@ namespace backend_api.Controllers
         private static string GenerateNewSessionId()
         {
             // Random 256 bit session ID
-            byte[] newSessionId = new byte[32];
-            //RNGCryptoServiceProvider is an implementation of a random number generator.
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(newSessionId); // The array is now filled with cryptographically strong random bytes.
+            byte[] newSessionId = CryptoHelpers.GetRandomBytes(32);
             return Convert.ToBase64String(newSessionId); 
         }
     }
