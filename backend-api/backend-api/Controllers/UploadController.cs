@@ -87,6 +87,7 @@ namespace backend_api.Controllers
             return Ok();
         }
         
+        
         [HttpGet]
         public IActionResult Get([FromQuery] string resourceGuid)
         {
@@ -135,6 +136,8 @@ namespace backend_api.Controllers
             queriedMediaTracker.DecryptHeaders(plainTextMediaKey);
             
             AESEngine aesEngine = new AESEngine();
+
+
             return new FileStreamResult(aesEngine.DecryptFileToStream(queriedMediaTracker.encryptedFilePath,
                 plainTextMediaKey,
                 queriedMediaTracker.salt), 
@@ -209,6 +212,13 @@ namespace backend_api.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet("test")]
+        public IActionResult GetTestFile()
+        {
+            var stream = new FileStream(@"/home/buzz/code/Motive/backend-api/backend-api/Resources_Output/apple.mkv", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 65536, FileOptions.Asynchronous | FileOptions.SequentialScan);
+            return File(stream, "application/octet-stream", "apple.mkv");
         }
     }
 }
