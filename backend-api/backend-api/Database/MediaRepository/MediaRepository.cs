@@ -51,9 +51,12 @@ namespace backend_api.Database.MediaRepository
             string encryptedMediaPassword,
             AccessLevel accessLevel)
         {
+            // Looks for an existing relationship and replaces it.
             tx.Run("MATCH (user:Person),(media:Media)\n" +
                    $"WHERE user.guid = '{userGuid}' AND media.guid = '{mediaGuid}'\n" +
-                   $"CREATE (user)-[r:{accessLevel} {{ encryptedKey: '{encryptedMediaPassword}' }}]->(media)"
+                   $"MERGE (user)-[r:{accessLevel}]->(media)\n" + 
+                   $"ON CREATE SET r.encryptedKey = '{encryptedMediaPassword}'\n" + 
+                   $"ON MATCH SET r.encryptedKey = '{encryptedMediaPassword}'\n"
             );
         }
 

@@ -72,7 +72,7 @@ namespace backend_api.Controllers
                 return StatusCode(500, returnCreate.ErrorException.Message);
             }
             
-            return StatusCode(201, Json(newFileTracker.Guid));
+            return StatusCode(201, newFileTracker.Guid);
         }
     }
 }
