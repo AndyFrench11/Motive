@@ -106,32 +106,34 @@ namespace backend_api.Database.MediaRepository
             }
         }
 
-        public RepositoryReturn<string> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid)
+        public RepositoryReturn<MediaAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid)
         {
             try
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
 
-                    var returnedMediaTracker = session.ReadTransaction(tx =>
+                    var returnedMediaAccessRelationship = session.ReadTransaction(tx =>
                     {
                         var result = tx.Run(
                             $"MATCH (person:Person {{ guid: '{userGuid}' }})-[r]->(m:Media {{ guid : '{mediaGuid}'}})\nRETURN r");
 
                         var record = result.SingleOrDefault();
-                        return record?[0].As<IRelationship>().Properties;
+                        return new MediaAccessRelationship(record?[0].As<IRelationship>());
                     });
-                    if (returnedMediaTracker == null)
+                    switch (returnedMediaAccessRelationship)
                     {
-                        return new RepositoryReturn<string>(null);
+                        case null:
+                            return new RepositoryReturn<MediaAccessRelationship>(null);
+                        default:
+                            return new RepositoryReturn<MediaAccessRelationship>(returnedMediaAccessRelationship);
                     }
-                    return new RepositoryReturn<string>(returnedMediaTracker["encryptedKey"].ToString());
                 }
             }
 
             catch (Neo4jException e)
             {
-                return new RepositoryReturn<string>(true, e);
+                return new RepositoryReturn<MediaAccessRelationship>(true, e);
             }
         }
 

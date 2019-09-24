@@ -62,7 +62,22 @@ namespace backend_api.Controllers
 
         public static Session GetLoggedInSession(string sessionId)
         {
-            return LoggedInSessions[sessionId];
+            if (LoggedInSessions.TryGetValue(sessionId, out Session loggedInSession))
+            {
+                return loggedInSession;
+            }
+
+            return null;
+        }
+
+        public static bool IsSessionLoggedIn(string sessionId)
+        {
+            if (LoggedInSessions.TryGetValue(sessionId, out Session loggedInSession))
+            {
+                return true;
+            }
+
+            return false;
         }
         
         private static string GenerateNewSessionId()

@@ -5,7 +5,7 @@ class VideoPlayer extends Component {
     constructor(props) {
         super(props);
 
-        this.fetchVideo("https://localhost:8081/api/upload?resourceGuid=" + this.props.videoGuid);
+        this.fetchVideo("https://localhost:8081/api/upload?resourceGuid=" + "65ef7095-0062-4fc9-a660-e7791f54c79e");
 
         this.state = {
             videoUrl: "",
@@ -36,7 +36,12 @@ class VideoPlayer extends Component {
     render() {
         return (
             <div>
-                <ReactPlayer url={this.state.videoUrl} controls playing={this.state.isPlaying} />
+                <ReactPlayer
+                    url={this.state.videoUrl}
+                    controls
+                    playing={this.state.isPlaying}
+                    volume={0}
+                />
             </div>
         );
     };

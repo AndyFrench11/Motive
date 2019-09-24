@@ -1,4 +1,4 @@
 namespace backend_api.Models
 {
-    enum AccessLevel {Owner, Viewer};
+    public enum AccessLevel {Owner, Viewer};
 }

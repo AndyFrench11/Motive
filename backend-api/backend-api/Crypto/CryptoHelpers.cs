@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 
 namespace backend_api.Crypto
 {
-    public class CryptoHelpers
+    public static class CryptoHelpers
     {
         public static byte[] GetRandomBytes(int numberOfBytes)
         {
