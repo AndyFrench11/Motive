@@ -16,7 +16,7 @@ import ProjectDescription from "./ProjectDetails/ProjectDescription";
 import ProjectSettings from "./ProjectSettings/ProjectSettings";
 import UpdateProjectImageModal from "./ProjectDetails/UpdateProjectImageModal";
 import CreateProjectUpdateModal from "./ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
-import ProjectUpdate from "./ProjectUpdates/ProjectUpdate/ProjectUpdate";
+import ProjectUpdateList from "./ProjectUpdates/ProjectUpdate/ProjectUpdateList";
 
 function importAll(r) {
     let images = {};
@@ -146,14 +146,7 @@ class ProjectPageLayout extends React.Component {
         }
     }
 
-    removeUpdateCallback = (index) => {
-        //NOT WORKING AS STATE ISN'T BEING TRACKED
-        const { projectUpdates } = this.props; 
-        projectUpdates.slice(1, index);
-        this.setState({projectUpdates: projectUpdates})
-    }
-
-    renderProjectUpdates(tags, projectName) {
+    renderProjectUpdates(project) {
         const { projectUpdates } = this.props;
         if (projectUpdates === null || projectUpdates === undefined) {
             return (
@@ -161,31 +154,28 @@ class ProjectPageLayout extends React.Component {
                     <LoaderInlineCentered/>
                 </Grid>
             )
-        } else if(projectUpdates.length == 0) {
+        } else {
             return (
-                <Segment placeholder style={{marginRight: '1em'}}>
-                    <Header icon>
-                        No updates have been made for this project.
-                    </Header>
-                </Segment>
-            )
-        } 
-        else {
-            return (
-                <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
-                    {projectUpdates.map((update, index) => (
-                        <ProjectUpdate
-                            tags={tags}
-                            projectName={projectName}
-                            update={update}
-                            index={index}
-                            removeUpdateCallback={this.removeUpdateCallback}
-                        />
-                    ))};
-                 </Segment>
-
+                <ProjectUpdateList project={project} projectUpdates={projectUpdates} listType="projectUpdates"/>
             );
         }
+    }
+
+    renderProjectHighlights(project) {
+        const { projectUpdates } = this.props;
+        if (projectUpdates === null || projectUpdates === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else {
+            const highlights = projectUpdates.filter((update) => update.highlight); 
+            return (
+                <ProjectUpdateList project={project} projectUpdates={highlights} listType="projectHighlights"/>
+            );
+        }
+    
     }
 
     checkRender() {
@@ -205,11 +195,9 @@ class ProjectPageLayout extends React.Component {
                     
                 {createProjectUpdateModalOpen &&
                     <CreateProjectUpdateModal 
-                    projectGuid={project.guid}
-                    tags={project.tagList}
-                    projectName={project.name}
+                    project={project}
                     user={projectOwners[0]}
-                    taskOptions={project.taskList} 
+                    completedTaskIndex={-1} 
                     closeCallback={this.closeCreateProjectUpdateModal}/>
                 }
                 
@@ -256,25 +244,15 @@ class ProjectPageLayout extends React.Component {
                     </Menu>
 
                     {activeMenuItem === "Tasks" &&
-
-                        /*Tasks*/
-                        <ProjectTasks taskList={project.taskList} projectGuid={project.guid}/>
-
+                        <ProjectTasks project={project} projectOwners={projectOwners} projectGuid={project.guid}/>
                     }
 
                     {activeMenuItem === "Updates" &&
-                        /*Tasks*/
-                        this.renderProjectUpdates(project.tagList, project.name)
-
+                        this.renderProjectUpdates(project)
                     }
 
                     {activeMenuItem === "Highlights" &&
-
-                        /*Tasks*/
-
-                        <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
-                            Highlights
-                        </Segment>
+                        this.renderProjectHighlights(project)                        
                     }
 
                     {activeMenuItem === "Settings" &&
@@ -291,7 +269,7 @@ class ProjectPageLayout extends React.Component {
           <div>
             <TopNavBar/>
               {this.checkRender()}
-          <Footer/>
+            <Footer/>
         </div>
         );
   }

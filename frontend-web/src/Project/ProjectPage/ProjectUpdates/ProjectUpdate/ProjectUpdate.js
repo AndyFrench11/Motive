@@ -1,12 +1,12 @@
 import React from 'react'
 import {
-    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Checkbox
+    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
-import { deleteProjectUpdate } from "./actions";
+import { deleteProjectUpdate, updateProjectUpdateHighlight } from "./actions";
 
 class ProjectUpdate extends React.Component {
 
@@ -14,22 +14,39 @@ class ProjectUpdate extends React.Component {
         super(props);
 
         this.state = { 
-            updating: false
+            updatingContent: false,
+            deleteUpdateConfirmOpen: false,
+            highlight: this.props.update.highlight
         };
 
     }
 
     handleEditUpdateClicked = () => {
-        this.setState({updating: !this.state.updating});
+        this.setState({ updatingContent: !this.state.updatingContent });
+
     }
 
-    handleDeleteUpdateClicked = () => {
+    handleConfirmUpdateDeletion = () => {
         const { update } = this.props;
-        this.props.removeUpdateCallback(this.props.index)
-        // Do the backend call! And put up an are you sure modal!
+        this.setState({ deleteUpdateConfirmOpen: false });
+        this.props.deleteUpdateCallback(this.props.index)
+        this.props.deleteProjectUpdate(update.guid)
+    }
 
-        //this.props.deleteProjectUpdate(update.guid)
+    showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true })
 
+    handleCancelUpdateDeletion = () => this.setState({ deleteUpdateConfirmOpen: false })
+
+    updateContentStateCallback = () => {
+        this.setState({ updatingContent: false });
+    }
+
+    handleHighlightStatusChange = () => {
+        const { highlight } = this.state;
+        const { update } = this.props;
+        this.setState({ highlight: !highlight });
+        //Do backend call!
+        this.props.updateProjectUpdateHighlight(update.guid, !highlight)
 
     }
 
@@ -37,12 +54,20 @@ class ProjectUpdate extends React.Component {
     render() {
 
         const { update, projectName, tags } = this.props;
-        const { relatedPerson, relatedTask, content } = update;
+        const { relatedPerson, relatedTask, content, guid } = update;
+
+        const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
         const options = [
             { key: '1', text: 'Edit Update', icon: 'edit', onClick: this.handleEditUpdateClicked },
-            { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.handleDeleteUpdateClicked },
+            { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.showDeleteUpdateConfirm },
           ]
+
+        if(highlight) {
+            options.splice(1, 0, { key: '3', text: 'Unmark Update as Highlight', icon: 'heart', onClick: this.handleHighlightStatusChange });
+        } else {
+            options.splice(1, 0, { key: '3', text: 'Mark Update as Highlight', icon: 'heart', onClick: this.handleHighlightStatusChange });
+        }
 
         const trigger = (
             <span>
@@ -51,15 +76,32 @@ class ProjectUpdate extends React.Component {
             )
 
         return (
-            <Segment style={{'marginLeft': '15em', 'marginRight': '15em'}}>
+            <Segment style={{'marginLeft': '20em', 'marginRight': '20em', 'marginTop': '3em'}}>
+
+                <Confirm
+                    open={deleteUpdateConfirmOpen}
+                    content='Are you sure you want to delete this update?'
+                    header='Delete Update'
+                    cancelButton='No'
+                    confirmButton="Yes"
+                    onCancel={this.handleCancelUpdateDeletion}
+                    onConfirm={this.handleConfirmUpdateDeletion}
+                    />
+
                 <Grid columns='four' divided>
                     <Grid.Column width={2}>
+                        {highlight &&
+                            <Label floating color='red' circular icon="heart" size="massive"/>
+                            }   
                         <Image avatar src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
                     </Grid.Column>
                     <Grid.Column width={4}>
-                        <Header size='large'>Update from {relatedPerson.firstName}</Header>
+                        <Grid.Row>
+                            <Header size='large'>Update from {relatedPerson.firstName}</Header>
+                        </Grid.Row>
+                        
                     </Grid.Column>
-                    <Grid.Column>
+                    <Grid.Column width={5}>
                         <Grid.Row>
                             <Header size='large'>{projectName}</Header>    
                         </Grid.Row>
@@ -85,8 +127,7 @@ class ProjectUpdate extends React.Component {
                 <Divider/>
                 <Grid columns='2' divided>
                     <Grid.Column width={10} fluid>
-                        {relatedTask !== null && (
-
+                        {/* {relatedTask !== null && (
                             relatedTask.completed ? 
                                     <Grid.Row>
                                         <Segment>
@@ -113,15 +154,16 @@ class ProjectUpdate extends React.Component {
                                             </Grid>
                                         </Segment>
                                     </Grid.Row>
-                        )
-
-
-
-                        }
+                        )}
                         {relatedTask !== null &&
                             <Divider/>
-                        }
-                        <ProjectUpdateContent content={content} updating={this.state.updating}/>
+                        } */}
+
+                        <ProjectUpdateContent 
+                            updateGuid={guid}
+                            content={content} 
+                            updatingContent={updatingContent} 
+                            updateContentStateCallback={this.updateContentStateCallback}/>
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">
                         <Segment style={{overflow: 'auto', maxHeight: 300 }}>
@@ -214,6 +256,7 @@ class ProjectUpdate extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         deleteProjectUpdate: (updateGuid) => dispatch(deleteProjectUpdate(updateGuid)),
+        updateProjectUpdateHighlight: (updateGuid, newHighlightStatus) => dispatch(updateProjectUpdateHighlight(updateGuid, newHighlightStatus))
     };
 }
 

@@ -7,33 +7,17 @@ import {
 function homeController(state = {}, action) {
     switch (action.type) {
         case REQUEST_PROJECT_UPDATES_FOR_USER:
-        case RECEIVE_PROJECT_UPDATES_FOR_USER_RESPONSE:
-                retrieveProjectUpdatesForUser(state, action);
-        default:
-            return state
-    }
-}
-
-function retrieveProjectUpdatesForUser(
-    state = {
-        isUpdating: false,
-        updates: ""
-    },
-    action
-) {
-    switch (action.type) {
-        case REQUEST_PROJECT_UPDATES_FOR_USER:
-            return Object.assign({}, state, {
+            return {...state,
                 isUpdating: true,
-            });
+            };
         case RECEIVE_PROJECT_UPDATES_FOR_USER_RESPONSE:
-            return Object.assign({}, state, {
+            return {...state,
                 isUpdating: false,
-                updates: action.result,
+                result: action.result,
                 lastUpdated: action.receivedAt
-            });
+            };
         default:
-            return state
+            return state;
     }
 }
 

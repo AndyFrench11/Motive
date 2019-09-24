@@ -15,11 +15,79 @@ namespace backend_api.Database.ProjectUpdateRepository
         {
             _neo4jConnection = new neo4jConnection();
         }
-        
-        
-        public RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForUser(Guid userGuid)
+
+
+        public RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForPerson(Guid personGuid)
         {
-            throw new NotImplementedException();
+            try
+            {   
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    var returnedUpdates = session.ReadTransaction(tx => RetrieveUpdatesAssociatedToPerson(tx, personGuid));
+                    
+                    foreach (ProjectUpdate update in returnedUpdates)
+                    {
+                        //Retieve the project task associated to the update
+                        var returnedProjectTask = session.ReadTransaction(tx => RetrieveProjectTaskForGivenUpdate(tx, update.Guid));
+                        if (returnedProjectTask != null)
+                        {
+                            update.relatedTask = returnedProjectTask;
+                        }
+                        
+                        //Retrieve the person associated to the update
+                        var returnedPerson = session.ReadTransaction(tx => RetrievePersonForGivenUpdate(tx, update.Guid));
+                        update.relatedPerson = returnedPerson;
+                        
+                        //Retrieve the project associated to the update
+                        Project returnedProject =
+                            session.ReadTransaction(tx => RetrieveProjectForGivenUpdate(tx, update.Guid));
+                        update.relatedProject = returnedProject;
+
+                        //Retrieve the tags associated to the project
+                        var associatedTags =
+                            session.ReadTransaction(tx => RetrieveProjectTags(tx, returnedProject.Guid));
+                        update.relatedProject.tagList = associatedTags.ToList();
+                    }
+                    return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
+                }
+
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<IEnumerable<ProjectUpdate>>(true, e);
+            }
+        }
+        
+        private Project RetrieveProjectForGivenUpdate(ITransaction tx, Guid updateGuid)
+        {
+            var updateId = updateGuid.ToString();
+            var result = tx.Run("MATCH (p:Project) -- (pu:ProjectUpdate) WHERE pu.guid = $updateId RETURN p", new { updateId });
+
+            var record = result.SingleOrDefault();
+            if (record == null)
+            {
+                return null;
+            }
+            return new Project(record[0].As<INode>().Properties);
+            
+        }
+        
+        private List<ProjectUpdate> RetrieveUpdatesAssociatedToPerson(ITransaction tx, Guid personGuid)
+        {
+            var personId = personGuid.ToString();
+            var result = tx.Run("MATCH (pe:Person) -- (p:Project) -- (pu:ProjectUpdate) WHERE pe.guid = $personId RETURN pu", new { personId });
+            var records = result.Select(record => new ProjectUpdate(record[0].As<INode>().Properties)).ToList();
+            return records;
+        }
+        
+        private List<Tag> RetrieveProjectTags(ITransaction tx, Guid projectGuid)
+        {
+            var projectId = projectGuid.ToString();
+            var result = tx.Run("MATCH (project:Project) -- (tag:Tag) WHERE project.guid = $projectId RETURN tag", new { projectId });
+
+            var records = result.Select(record => new Tag(record[0].As<INode>().Properties)).ToList();
+
+            return records;
         }
 
         public RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForProject(Guid projectGuid)
@@ -126,8 +194,9 @@ namespace backend_api.Database.ProjectUpdateRepository
         {
             string projectUpdateContent = projectUpdate.content;
             string projectUpdateId = projectUpdate.Guid.ToString();
-            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, guid: $projectUpdateId})", 
-                new { projectUpdateContent, projectUpdateId });
+            bool highlight = projectUpdate.highlight;
+            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, highlight: $highlight, guid: $projectUpdateId})", 
+                new { projectUpdateContent, highlight, projectUpdateId });
         }
 
         private void CreateProjectUpdateToProjectRelationship(ITransaction tx, Guid projectUpdateGuid, Guid projectGuid)
@@ -172,12 +241,38 @@ namespace backend_api.Database.ProjectUpdateRepository
                 return new RepositoryReturn<bool>(true, e);
             }
         }
-        
+
+
         private void UpdateProjectUpdateNodeContent(ITransaction tx, Guid projectUpdateGuid, string content)
         {
             string updateId = projectUpdateGuid.ToString();
             tx.Run("MATCH (pu:ProjectUpdate) WHERE pu.guid = $updateId SET pu.content = $content", 
                 new { updateId, content});
+        }
+        
+        public RepositoryReturn<bool> EditHighlightStatus(Guid projectUpdateGuid, bool highlightStatus)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => UpdateProjectUpdateNodeHighlightStatus(tx, projectUpdateGuid, highlightStatus));
+
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+        private void UpdateProjectUpdateNodeHighlightStatus(ITransaction tx, Guid projectUpdateGuid, bool highlightStatus)
+        {
+            string updateId = projectUpdateGuid.ToString();
+            tx.Run("MATCH (pu:ProjectUpdate) WHERE pu.guid = $updateId SET pu.highlight = $highlightStatus", 
+                new { updateId, highlightStatus});
+            
         }
 
         public RepositoryReturn<bool> EditAssociatedTask(Guid projectUpdateGuid)

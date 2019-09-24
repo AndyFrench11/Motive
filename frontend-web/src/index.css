@@ -18,3 +18,12 @@ code {
 .ui.small.image.ProjectImage:hover {
   background-color: grey !important;
 }
+
+.ui.red.massive.circular.floating.label {
+  position: absolute;
+  z-index: 100;
+  top: -1em;
+  right: 100%;
+  left: 0%;
+  margin: 0 0 0 -1em!important;
+}

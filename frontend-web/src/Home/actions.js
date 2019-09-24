@@ -14,7 +14,7 @@ function requestProjectUpdatesForUser() {
 export function fetchProjectUpdatesForUser (userGuid) {
     return function (dispatch) {
         dispatch(requestProjectUpdatesForUser());
-        return axios.get(serverUrl + `/projectUpdate/${userGuid}/user`)
+        return axios.get(serverUrl + `/projectUpdate/${userGuid}/person`)
             .then(response => dispatch(receiveProjectUpdatesForUser(response)))
             .catch(error => {
                 console.log("The server is not running!");
@@ -26,6 +26,7 @@ export function fetchProjectUpdatesForUser (userGuid) {
 }
 
 function receiveProjectUpdatesForUser(response) {
+    console.log(response);
     if(response.status === 200) {
         return {
             type: RECEIVE_PROJECT_UPDATES_FOR_USER_RESPONSE,

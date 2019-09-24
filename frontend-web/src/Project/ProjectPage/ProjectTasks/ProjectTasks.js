@@ -6,6 +6,7 @@ import {connect} from "react-redux";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {postTask, deleteTask, updateTask, updateTaskOrder} from "./actions";
 import uuidv4 from 'uuid/v4';
+import CreateProjectUpdateModal from "../ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
 
 //Drag and Drop Properties
 // fake data generator
@@ -61,10 +62,12 @@ class ProjectTasks extends Component {
 
         this.state = {
             activeCreateTaskButton: false,
-            taskList: this.props.taskList,
+            taskList: this.props.project.taskList,
             taskInputVisible: false,
             currentInput: "",
-            items: getItems(10)
+            items: getItems(10),
+            createProjectUpdateModalOpen: false,
+            completedTaskIndex: -1
 
         };
 
@@ -162,9 +165,13 @@ class ProjectTasks extends Component {
         const completionStatus = taskList[listIndex].completed
         
         taskList[listIndex].completed = !completionStatus;
-        this.setState({taskList: taskList});
+        this.setState({taskList: taskList, completedTaskIndex: listIndex});
 
         this.props.updateTask(taskList[listIndex].guid, {completed: !completionStatus})
+
+        if(!completionStatus) {
+            this.showCreateProjectUpdateModal()
+        }
 
 
     };
@@ -216,15 +223,30 @@ class ProjectTasks extends Component {
         )
     }
 
+    showCreateProjectUpdateModal = () => {
+        this.setState({ createProjectUpdateModalOpen: true })
+    }   
+
+    closeCreateProjectUpdateModal = () => {
+        this.setState({ createProjectUpdateModalOpen: false })
+    }
+
     render() {
 
-        const { taskList, activeCreateTaskButton, taskInputVisible, selectedTaskIndex } = this.state;
+        const { activeCreateTaskButton, taskInputVisible, createProjectUpdateModalOpen } = this.state;
+        const { projectOwners, project } = this.props;
 
         return (
             <div>
                 <Segment style={{ marginLeft: '5em', marginRight: '5em', marginBottom: '5em'}}>
 
-
+                    {createProjectUpdateModalOpen &&
+                        <CreateProjectUpdateModal 
+                            project={project}
+                            user={projectOwners[0]}
+                            completedTaskIndex={this.state.completedTaskIndex} 
+                            closeCallback={this.closeCreateProjectUpdateModal}/>
+                    }
 
                     <DragDropContext onDragEnd={this.onDragEnd}>
                         <Droppable droppableId="droppable">

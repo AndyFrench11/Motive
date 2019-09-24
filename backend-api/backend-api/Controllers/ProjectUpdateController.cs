@@ -95,6 +95,35 @@ namespace backend_api.Controllers
 
         }
         
+        // Get all of the updates for a single project
+        [HttpGet("{personId}/person")]
+        public ActionResult<Project> GetAllUpdatesForPerson(string personId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(personId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<ProjectUpdate>> result = _projectUpdateRepository.GetAllForPerson(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200, result.ReturnValue);
+
+        }
+        
         // DELETE api/values/5
         [HttpDelete("{updateId}")]
         public ActionResult Delete(string updateId)
@@ -122,18 +151,16 @@ namespace backend_api.Controllers
 
             return StatusCode(200);
         }
-//        
         
         public class UpdateProjectUpdateObject
         {
-            public string content { get; set; }
-
-           
+            public string newContent { get; set; }
+            public bool newHighlightStatus { get; set; }
         }
         
         // PATCH api/values
-        [HttpPatch("{updateId}")]
-        public ActionResult Update([FromBody]UpdateProjectUpdateObject updateProjectUpdateObject, [FromHeader]string updateId)
+        [HttpPatch("{updateId}/content")]
+        public ActionResult UpdateContent(string updateId, [FromBody]UpdateProjectUpdateObject updateProjectUpdateObject)
         {
         
             //Check user is valid first
@@ -154,7 +181,41 @@ namespace backend_api.Controllers
             
             // TODO sanitise incoming project body
             RepositoryReturn<bool> result =
-                _projectUpdateRepository.EditContent(projectUpdateGuidToGet, updateProjectUpdateObject.content);
+                _projectUpdateRepository.EditContent(projectUpdateGuidToGet, updateProjectUpdateObject.newContent);
+                
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200);
+        }
+        
+        // PATCH api/values
+        [HttpPatch("{updateId}/highlight")]
+        public ActionResult UpdateHighlightStatus(string updateId, [FromBody]UpdateProjectUpdateObject updateProjectUpdateObject)
+        {
+        
+            //Check user is valid first
+            
+            Guid projectUpdateGuidToGet;
+            try
+            {
+                projectUpdateGuidToGet = Guid.Parse(updateId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+            
+            // TODO sanitise incoming project body
+            RepositoryReturn<bool> result =
+                _projectUpdateRepository.EditHighlightStatus(projectUpdateGuidToGet,
+                    updateProjectUpdateObject.newHighlightStatus);
                 
             if (result.IsError)
             {

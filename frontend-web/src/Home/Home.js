@@ -1,59 +1,16 @@
 import React, {Component} from 'react';
-import PersonImage from '../Images/stevie.jpg';
-import {
-    Button,
-    TransitionablePortal,
-    Modal,
-    Item,
-    Icon,
-    Label,
-    Container,
-    Segment,
-    Placeholder
-} from 'semantic-ui-react'
-import TopNavBar from '../Common/TopNavBar'
-import Footer from '../Common/Footer'
-import UpdateModal from "./UpdateModal";
-import _ from 'lodash'
+import { 
+    Grid, Segment, Header, Divider
+} from 'semantic-ui-react';
+import TopNavBar from '../Common/TopNavBar';
+import Footer from '../Common/Footer';
+import _ from 'lodash';
+import LoaderInlineCentered from "../Common/Loader";
 import axios from 'axios';
 import { Route } from 'react-router-dom';
-
-const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
-
-
-const paragraph =
-    <Placeholder>
-        <Placeholder.Paragraph>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-            <Placeholder.Line/>
-        </Placeholder.Paragraph>
-    </Placeholder>;
-
-
-const UpdateItem = props => (
-    <Item>
-        <Item.Image src={PersonImage}/>
-
-        <Item.Content>
-            <Item.Header as='a'>{props.title}</Item.Header>
-            <Item.Meta>
-                <span>Update by {props.author}</span>
-            </Item.Meta>
-            <Item.Description>
-                {paragraph}
-            </Item.Description>
-        </Item.Content>
-    </Item>
-
-);
+import {connect} from "react-redux";
+import { fetchProjectUpdatesForUser } from "./actions";
+import ProjectUpdate from "../Project/ProjectPage/ProjectUpdates/ProjectUpdate/ProjectUpdate";
 
 class Home extends Component {
     constructor(props) {
@@ -67,72 +24,82 @@ class Home extends Component {
     }
 
     componentDidMount() {
-      console.log(serverUrl)
-      axios.get(serverUrl + "/person")
-            .then(response =>
-              this.setState({
-                users: response.data
-              }
-            ))
-            .catch(error => {
-                console.log("The server is not running!");
-                console.log(error)
-            })
+        this.props.fetchProjectUpdatesForUser(this.props.currentUser.guid);
     }
 
-    userlist() {
-        console.log(this.state.users)
-      return this.state.users.map((item, key) =>
+    renderHomeFeed() {
+        const { projectUpdates } = this.props;
+        if (projectUpdates === null || projectUpdates === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else if(projectUpdates.length == 0) {
+            return (
+                <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
+                    <Header icon>
+                        You have not made any updates! Create a project to get started.
+                    </Header>
+                </Segment>
+            )
+        } 
+        else {
+            return (
+                <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
+                    {projectUpdates.map((update, index) => (
+                        <ProjectUpdate
+                            tags={update.relatedProject.tagList}
+                            projectName={update.relatedProject.name}
+                            update={update}
+                            index={index}
+                            removeUpdateCallback={this.removeUpdateCallback}
+                        />
+                    ))};
+                 </Segment>
 
-          <Route render={({ history }) => (
-            <button
-              type='button'
-              onClick={() => { history.push(`/profile/${item.guid}/`) }}
-            >
-              {item.firstName} {item.lastName}
-            </button>
-          )} />
-        )
+            );
+        }
     }
-
-    showModal = () => {
-        this.setState({ modalVisible: true })
-    };
-
-    closeModal = () => {
-        this.setState({
-            modalVisible: false
-        })
-
-    };
 
     render() {
 
         return (
             <div className='home'>
                 <TopNavBar/>
-                <h3 style={{marginTop: '5em'}}> All Users:</h3>
-                {this.userlist()}
-                <TransitionablePortal open={this.state.modalVisible} transition={{animation: 'fade up', duration: 500}}>
-                    <Modal open={true} onClose={this.closeModal} closeIcon>
-                        <Modal.Content>
-                            <UpdateModal/>
-                        </Modal.Content>
-                    </Modal>
-                </TransitionablePortal>
-                <Container>
-                    <Button style={{marginTop: '5em'}} onClick={this.showModal}>View Update</Button>
-                    <Item.Group divided>
-                        {_.times(8, i => (
-                            <UpdateItem author={"Stevie"} title={"Update One"}/>
-                        ))}
-                    </Item.Group>
-                </Container>
-
+                    <Header centered size='large' style={{ marginLeft:'6em', marginTop: '3em'}}>Welcome to the Home Feed! Here, you see updates from all of the projects you are contributing to. 🦍🦍🦍</Header>
+                    {this.renderHomeFeed()}
                 <Footer/>
             </div>
         );
     };
 }
 
-export default Home;
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchProjectUpdatesForUser: (userGuid) => dispatch(fetchProjectUpdatesForUser(userGuid))
+    };
+}
+
+const mapStateToProps = state => {
+    const { homeReducer } = state;
+    const { homeController } = homeReducer;
+    const { isUpdating, lastUpdated, result } = homeController;
+    return {
+        isUpdating: isUpdating,
+        projectUpdates: result,
+        lastUpdated: lastUpdated,
+        currentUser: state.authReducer.authController.currentUser
+    };
+};
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
+
+//    userlist() {
+//     console.log(this.state.users)
+//     return this.state.users.map((item, key) =>
+
+//       
+//     )
+// }
