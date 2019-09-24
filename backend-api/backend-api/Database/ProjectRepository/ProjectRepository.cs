@@ -465,9 +465,9 @@ namespace backend_api.Database.ProjectRepository
             var projectId = projectGuid.ToString();
             var newMemberId = newMemberGuid.ToString();
             
-            const string statement = "MATCH (project:Project), (newMember:Person)" +
-                                     "WHERE project.guid = $projectId" +
-                                     "AND newMember.guid = $newMemberId" + 
+            const string statement = "MATCH (project:Project), (newMember:Person) " +
+                                     "WHERE project.guid = $projectId " +
+                                     "AND newMember.guid = $newMemberId " + 
                                      "CREATE UNIQUE (newMember)-[:CONTRIBUTES_TO]->(project)";
             tx.Run(statement, new {projectId, newMemberId});
         }
@@ -477,9 +477,9 @@ namespace backend_api.Database.ProjectRepository
             var projectId = projectGuid.ToString();
             var memberId = memberGuid.ToString();
             
-            const string statement = "MATCH (member:Person)-[contributes:CONTRIBUTES_TO]-(project:Project)" +
-                                     "WHERE member.guid = $memberId" + 
-                                     "AND project.guid = $projectId" +
+            const string statement = "MATCH (member:Person)-[contributes:CONTRIBUTES_TO]-(project:Project) " +
+                                     "WHERE member.guid = $memberId " + 
+                                     "AND project.guid = $projectId " +
                                      "DELETE contributes";
             tx.Run(statement, new {memberId, projectId});
         }

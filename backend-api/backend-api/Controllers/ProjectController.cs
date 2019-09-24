@@ -1,19 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Threading.Tasks;
 using backend_api.Database;
 using backend_api.Database.PersonRepository;
 using backend_api.Database.ProjectRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Neo4j.Driver.V1;
-using Neo4jClient;
 
 
 namespace backend_api.Controllers
