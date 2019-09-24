@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using backend_api.Models;
 using Neo4j.Driver.V1;
 
@@ -48,7 +50,7 @@ namespace backend_api.Database.CommentRepository
             var commentId = comment.Guid.ToString();
 
             const string statement = "CREATE (comment:Comment {" + 
-                                     "message: $messageString " + 
+                                     "message: $messageString, " + 
                                      "guid: $commentId" + 
                                      "})";
             tx.Run(statement, new {messageString, commentId});
@@ -65,7 +67,6 @@ namespace backend_api.Database.CommentRepository
                                      "AND task.guid = $taskId " + 
                                      "CREATE UNIQUE (task)-[:HAS]->(comment)";
             tx.Run(statement, new {commentId, taskId});
-            
         }
 
         private void AddAuthorRelationship(ITransaction tx, Guid commentGuid, Guid authorGuid)
@@ -80,18 +81,40 @@ namespace backend_api.Database.CommentRepository
             tx.Run(statement, new {commentId, authorId});
         }
         
-        public RepositoryReturn<bool> GetAllForTask(Guid taskGuid)
+        public RepositoryReturn<IEnumerable<Comment>> GetAllForTask(Guid taskGuid)
         {
-            //TODO: Get all comments
-            return new RepositoryReturn<bool>(true);
+            try
+            {
+                using (_session)
+                {
+                    // Get all comments
+                    var foundComments = _session.ReadTransaction(tx => RetrieveTaskComments(tx, taskGuid));
+                    
+                    return new RepositoryReturn<IEnumerable<Comment>>(foundComments);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<IEnumerable<Comment>>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<IEnumerable<Comment>>(true, e);
+            }
         }
-        
-        public RepositoryReturn<bool> GetOne(Guid commentGuid)
+
+        private List<Comment> RetrieveTaskComments(ITransaction tx, Guid taskGuid)
         {
-            //TODO: get one comment
-            return new RepositoryReturn<bool>(true);
+            var taskId = taskGuid.ToString();
+
+            const string statement = "MATCH (task:ProjectTask) -- (comment:Comment) " + 
+                                     "WHERE task.guid = $taskId " + 
+                                     "RETURN comment";
+            var result = tx.Run(statement, new {taskId});
+            var comments = result.Select(record => new Comment(record[0].As<INode>().Properties)).ToList();
+            return comments;
         }
-        
+
         public RepositoryReturn<bool> Edit(Comment comment)
         {
             try
@@ -129,8 +152,35 @@ namespace backend_api.Database.CommentRepository
         
         public RepositoryReturn<bool> Delete(Guid commentGuid)
         {
-            //TODO: Delete comment
-            return new RepositoryReturn<bool>(true);
+            try
+            {
+                using (_session)
+                {
+                    // Update comment node
+                    _session.WriteTransaction(tx => RemoveCommentNode(tx, commentGuid));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+        private void RemoveCommentNode(ITransaction tx, Guid commentGuid)
+        {
+            var commentId = commentGuid.ToString();
+            
+            const string statement = "MATCH (comment:Comment) " + 
+                                     "WHERE comment.guid = $commentId " + 
+                                     "DETACH DELETE comment";
+            
+            tx.Run(statement, new {commentId});
         }
     }
 }

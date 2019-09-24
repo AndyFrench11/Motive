@@ -1,5 +1,5 @@
 ﻿using System;
-using backend_api.Database;
+using System.Collections.Generic;
 using backend_api.Database.CommentRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -19,21 +19,21 @@ namespace backend_api.Controllers
         // CREATE FOR TASK
         // POST api/comment/:taskId
         [HttpPost("{taskId}")]
-        public ActionResult Post(string taskId, [FromBody]Comment commentToCreate, [FromHeader]string loggedInUserId)
+        public ActionResult Post(string taskId, [FromBody]Comment commentToCreate, [FromHeader]string userId)
         {
-            //Check user is valid
+            // Check user is valid
             Guid authorGuid;
             try
             {
-                authorGuid = Guid.Parse(loggedInUserId);
+                authorGuid = Guid.Parse(userId);
             }
             catch (ArgumentNullException)
             {
-                return BadRequest();
+                return BadRequest("User id is null.");
             }
             catch (FormatException)
             {
-                return BadRequest();
+                return BadRequest("Invalid user id.");
             }
             
             // Check task is valid
@@ -44,11 +44,11 @@ namespace backend_api.Controllers
             }
             catch (ArgumentNullException)
             {
-                return BadRequest();
+                return BadRequest("Task id is null.");
             }
             catch (FormatException)
             {
-                return BadRequest();
+                return BadRequest("Invalid task id.");
             }
             
             // TODO
@@ -56,7 +56,7 @@ namespace backend_api.Controllers
             // task not found - NotFound()
             // Invalid comment content - BadRequest()
 
-            RepositoryReturn<bool> result = _commentRepository.Add(commentToCreate, authorGuid, taskGuid);
+            var result = _commentRepository.Add(commentToCreate, authorGuid, taskGuid);
             
             if (result.IsError)
             {
@@ -67,26 +67,72 @@ namespace backend_api.Controllers
         }
         
         // READ
-        // TODO
-        
-        // UPDATE
-        // PATCH api/comment
-        [HttpPatch]
-        public ActionResult Patch([FromBody]Comment commentToUpdate, [FromHeader]string loggedInUserId)
+        // GET api/comment/:taskId
+        [HttpGet("{taskId}")]
+        public ActionResult<List<Comment>> GetAll(string taskId, [FromHeader]string userId)
         {
-            //Check user is valid
-            Guid authorGuid;
+            // TODO
+            // Check auth/user - Unauthorised() and Forbidden() if no access to project
+            // Check task exists - NotFound()
+            
+            // User
+            Guid userGuid;
             try
             {
-                authorGuid = Guid.Parse(loggedInUserId);
+                userGuid = Guid.Parse(userId);
             }
             catch (ArgumentNullException)
             {
-                return BadRequest();
+                return BadRequest("User id is null.");
             }
             catch (FormatException)
             {
-                return BadRequest();
+                return BadRequest("Invalid user id.");
+            }
+            
+            // Task
+            Guid taskGuid;
+            try
+            {
+                taskGuid = Guid.Parse(taskId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("Task id is null.");
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Invalid task id.");
+            }
+            
+            var result = _commentRepository.GetAllForTask(taskGuid);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200, result.ReturnValue);
+        }
+
+        // UPDATE
+        // PATCH api/comment
+        [HttpPatch]
+        public ActionResult Patch([FromBody]Comment commentToUpdate, [FromHeader]string userId)
+        {
+            //Check user is valid
+            Guid userGuid;
+            try
+            {
+                userGuid = Guid.Parse(userId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("User id is null.");
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Invalid user id.");
             }
             
             //TODO 
@@ -94,7 +140,7 @@ namespace backend_api.Controllers
             // Check valid update message
             // User can access update comment i.e. they are the comment author - Forbidden()
             
-            RepositoryReturn<bool> result = _commentRepository.Edit(commentToUpdate);
+            var result = _commentRepository.Edit(commentToUpdate);
             
             if (result.IsError)
             {
@@ -105,6 +151,52 @@ namespace backend_api.Controllers
         }
         
         // DELETE
-        // TODO
+        [HttpDelete("{commentId}")]
+        public ActionResult Delete(string commentId, [FromHeader]string userId)
+        {
+            // TODO
+            // Check auth - Unauthorised()
+            // Check permissions - Forbidden()
+            // Check comment exists - NotFound()
+            
+            //Check user is valid
+            Guid userGuid;
+            try
+            {
+                userGuid = Guid.Parse(userId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("User id is null.");
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Invalid user id.");
+            }
+            
+            //Check comment is valid
+            Guid commentGuid;
+            try
+            {
+                commentGuid = Guid.Parse(commentId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("Comment id is null.");
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Invalid comment id.");
+            }
+            
+            var result = _commentRepository.Delete(commentGuid);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200);
+        }
     }
 }

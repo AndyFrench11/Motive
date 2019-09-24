@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace backend_api.Models
 {
     public class Comment : BaseEntity
     {
-        public string Message { get; }
+        public string Message { get; set; }
 
         public Comment()
         {
@@ -12,6 +13,7 @@ namespace backend_api.Models
 
         public Comment(IReadOnlyDictionary<string, object> props)
         {
+            this.Guid = Guid.Parse(props["guid"].ToString());
             this.Message = props["message"].ToString();
         }
     }
