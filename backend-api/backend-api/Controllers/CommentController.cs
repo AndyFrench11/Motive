@@ -16,10 +16,10 @@ namespace backend_api.Controllers
             _commentRepository = new CommentRepository();
         }
         
-        // CREATE FOR TASK
-        // POST api/comment/:taskId
-        [HttpPost("{taskId}")]
-        public ActionResult Post(string taskId, [FromBody]Comment commentToCreate, [FromHeader]string userId)
+        // CREATE FOR UPDATE
+        // POST api/comment/:updateId
+        [HttpPost("{updateId}")]
+        public ActionResult Post(string updateId, [FromBody]Comment commentToCreate, [FromHeader]string userId)
         {
             // Check user is valid
             Guid authorGuid;
@@ -37,18 +37,18 @@ namespace backend_api.Controllers
             }
             
             // Check task is valid
-            Guid taskGuid;
+            Guid updateGuid;
             try
             {
-                taskGuid = Guid.Parse(taskId);
+                updateGuid = Guid.Parse(updateId);
             }
             catch (ArgumentNullException)
             {
-                return BadRequest("Task id is null.");
+                return BadRequest("Update id is null.");
             }
             catch (FormatException)
             {
-                return BadRequest("Invalid task id.");
+                return BadRequest("Invalid update id.");
             }
             
             // TODO
@@ -56,7 +56,7 @@ namespace backend_api.Controllers
             // task not found - NotFound()
             // Invalid comment content - BadRequest()
 
-            var result = _commentRepository.Add(commentToCreate, authorGuid, taskGuid);
+            var result = _commentRepository.Add(commentToCreate, authorGuid, updateGuid);
             
             if (result.IsError)
             {
@@ -67,9 +67,9 @@ namespace backend_api.Controllers
         }
         
         // READ
-        // GET api/comment/:taskId
-        [HttpGet("{taskId}")]
-        public ActionResult<List<Comment>> GetAll(string taskId, [FromHeader]string userId)
+        // GET api/comment/:updateId
+        [HttpGet("{updateId}")]
+        public ActionResult<List<Comment>> GetAll(string updateId, [FromHeader]string userId)
         {
             // TODO
             // Check auth/user - Unauthorised() and Forbidden() if no access to project
@@ -91,10 +91,10 @@ namespace backend_api.Controllers
             }
             
             // Task
-            Guid taskGuid;
+            Guid updateGuid;
             try
             {
-                taskGuid = Guid.Parse(taskId);
+                updateGuid = Guid.Parse(updateId);
             }
             catch (ArgumentNullException)
             {
@@ -105,7 +105,7 @@ namespace backend_api.Controllers
                 return BadRequest("Invalid task id.");
             }
             
-            var result = _commentRepository.GetAllForTask(taskGuid);
+            var result = _commentRepository.GetAllForUpdate(updateGuid);
             
             if (result.IsError)
             {

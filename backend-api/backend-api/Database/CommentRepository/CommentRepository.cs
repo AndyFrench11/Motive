@@ -16,7 +16,7 @@ namespace backend_api.Database.CommentRepository
             _session = neo4JConnection.driver.Session();
         }
         
-        public RepositoryReturn<bool> Add(Comment comment, Guid authorGuid, Guid taskGuid)
+        public RepositoryReturn<bool> Add(Comment comment, Guid authorGuid, Guid updateGuid)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace backend_api.Database.CommentRepository
                     _session.WriteTransaction(tx => CreateCommentNode(tx, comment));
                     
                     // Add has relationship to task
-                    _session.WriteTransaction(tx => AddTaskRelationship(tx, comment.Guid, taskGuid));
+                    _session.WriteTransaction(tx => AddUpdateRelationship(tx, comment.Guid, updateGuid));
                     
                     // Add authored relationship
                     _session.WriteTransaction(tx => AddAuthorRelationship(tx, comment.Guid, authorGuid));
@@ -46,27 +46,29 @@ namespace backend_api.Database.CommentRepository
 
         private void CreateCommentNode(ITransaction tx, Comment comment)
         {
-            var messageString = comment.Message;
             var commentId = comment.Guid.ToString();
+            var messageString = comment.Message;
+            var authoredDate = comment.Authored;
 
             const string statement = "CREATE (comment:Comment {" + 
+                                     "guid: $commentId, " + 
                                      "message: $messageString, " + 
-                                     "guid: $commentId" + 
+                                     "authored: $authoredDate" +
                                      "})";
-            tx.Run(statement, new {messageString, commentId});
+            tx.Run(statement, new {messageString, commentId, authoredDate});
 
         }
 
-        private void AddTaskRelationship(ITransaction tx, Guid commentGuid, Guid taskGuid)
+        private void AddUpdateRelationship(ITransaction tx, Guid commentGuid, Guid updateGuid)
         {
             var commentId = commentGuid.ToString();
-            var taskId = taskGuid.ToString();
-            
-            const string statement = "MATCH (comment:Comment), (task:ProjectTask) " + 
+            var updateId = updateGuid.ToString();
+
+            const string statement = "MATCH (comment:Comment), (update:ProjectUpdate) " + 
                                      "WHERE comment.guid = $commentId " + 
-                                     "AND task.guid = $taskId " + 
-                                     "CREATE UNIQUE (task)-[:HAS]->(comment)";
-            tx.Run(statement, new {commentId, taskId});
+                                     "AND update.guid = $updateId " + 
+                                     "CREATE UNIQUE (update)-[:HAS]->(comment)";
+            tx.Run(statement, new {commentId, updateId});
         }
 
         private void AddAuthorRelationship(ITransaction tx, Guid commentGuid, Guid authorGuid)
@@ -81,14 +83,14 @@ namespace backend_api.Database.CommentRepository
             tx.Run(statement, new {commentId, authorId});
         }
         
-        public RepositoryReturn<IEnumerable<Comment>> GetAllForTask(Guid taskGuid)
+        public RepositoryReturn<IEnumerable<Comment>> GetAllForUpdate(Guid updateGuid)
         {
             try
             {
                 using (_session)
                 {
                     // Get all comments
-                    var foundComments = _session.ReadTransaction(tx => RetrieveTaskComments(tx, taskGuid));
+                    var foundComments = _session.ReadTransaction(tx => RetrieveUpdateComments(tx, updateGuid));
                     
                     return new RepositoryReturn<IEnumerable<Comment>>(foundComments);
                 }
@@ -103,14 +105,14 @@ namespace backend_api.Database.CommentRepository
             }
         }
 
-        private List<Comment> RetrieveTaskComments(ITransaction tx, Guid taskGuid)
+        private List<Comment> RetrieveUpdateComments(ITransaction tx, Guid updateGuid)
         {
-            var taskId = taskGuid.ToString();
+            var updateId = updateGuid.ToString();
 
-            const string statement = "MATCH (task:ProjectTask) -- (comment:Comment) " + 
-                                     "WHERE task.guid = $taskId " + 
+            const string statement = "MATCH (update:ProjectUpdate) -- (comment:Comment) " + 
+                                     "WHERE update.guid = updateId " + 
                                      "RETURN comment";
-            var result = tx.Run(statement, new {taskId});
+            var result = tx.Run(statement, new {updateId});
             var comments = result.Select(record => new Comment(record[0].As<INode>().Properties)).ToList();
             return comments;
         }
@@ -139,15 +141,14 @@ namespace backend_api.Database.CommentRepository
         
         private void UpdateCommentNode(ITransaction tx, Comment comment)
         {
-            var messageString = comment.Message;
             var commentId = comment.Guid.ToString();
-
+            var messageString = comment.Message;
+            
             const string statement = "MATCH (comment:Comment) " +
                                      "WHERE comment.guid = $commentId " +
                                      "SET comment.message = $messageString ";
             
             tx.Run(statement, new {messageString, commentId});
-
         }
         
         public RepositoryReturn<bool> Delete(Guid commentGuid)
