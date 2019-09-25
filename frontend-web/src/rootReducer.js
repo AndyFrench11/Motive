@@ -13,6 +13,7 @@ import projectSettingsReducer from "./Project/ProjectPage/ProjectSettings/reduce
 import projectDetailsReducer from "./Project/ProjectPage/ProjectDetails/reducers";
 import createProjectUpdateReducer from "./Project/ProjectPage/ProjectUpdates/CreateProjectUpdateModal/reducers";
 import projectUpdateReducer from "./Project/ProjectPage/ProjectUpdates/ProjectUpdate/reducers";
+import projectUpdateCommentReducer from "./Comment/reducers";
 import homeReducer from "./Home/reducers";
 
 import {USER_LOGOUT} from "./Common/Auth/actions";
@@ -29,6 +30,7 @@ const appReducer = combineReducers({
     projectSettingsReducer,
     projectDetailsReducer,
     createProjectUpdateReducer,
+    projectUpdateCommentReducer,
     projectUpdateReducer,
     homeReducer
 });

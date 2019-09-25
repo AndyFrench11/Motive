@@ -7,6 +7,8 @@ import uuidv4 from 'uuid/v4';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
 import { deleteProjectUpdate, updateProjectUpdateHighlight } from "./actions";
+import ProjectUpdateCommentList from "../../../../Comment/ProjectUpdateCommentList";
+import CommentList from "../../../../Comment/CommentList";
 
 class ProjectUpdate extends React.Component {
 
@@ -24,14 +26,14 @@ class ProjectUpdate extends React.Component {
     handleEditUpdateClicked = () => {
         this.setState({ updatingContent: !this.state.updatingContent });
 
-    }
+    };
 
     handleConfirmUpdateDeletion = () => {
         const { update } = this.props;
         this.setState({ deleteUpdateConfirmOpen: false });
         this.props.deleteUpdateCallback(this.props.index)
         this.props.deleteProjectUpdate(update.guid)
-    }
+    };
 
     showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true })
 
@@ -39,7 +41,7 @@ class ProjectUpdate extends React.Component {
 
     updateContentStateCallback = () => {
         this.setState({ updatingContent: false });
-    }
+    };
 
     handleHighlightStatusChange = () => {
         const { highlight } = this.state;
@@ -48,20 +50,23 @@ class ProjectUpdate extends React.Component {
         //Do backend call!
         this.props.updateProjectUpdateHighlight(update.guid, !highlight)
 
-    }
+    };
 
 
     render() {
 
         const { update, projectName, tags } = this.props;
-        const { relatedPerson, relatedTask, content, guid } = update;
+        const { relatedPerson, relatedTask, content, guid, comments } = update;
+
+        console.log("++==+++++++++++++++++++++++++++++");
+        console.log(comments);
 
         const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
         const options = [
             { key: '1', text: 'Edit Update', icon: 'edit', onClick: this.handleEditUpdateClicked },
             { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.showDeleteUpdateConfirm },
-          ]
+          ];
 
         if(highlight) {
             options.splice(1, 0, { key: '3', text: 'Unmark Update as Highlight', icon: 'heart', onClick: this.handleHighlightStatusChange });
@@ -73,7 +78,7 @@ class ProjectUpdate extends React.Component {
             <span>
                 <Icon name='ellipsis horizontal' floated='right' />
             </span>
-            )
+            );
 
         return (
             <Segment style={{'marginLeft': '20em', 'marginRight': '20em', 'marginTop': '3em'}}>
@@ -167,75 +172,13 @@ class ProjectUpdate extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">
                         <Segment style={{overflow: 'auto', maxHeight: 300 }}>
-                            <Comment.Group>
-                                <Header as='h3' dividing>
-                                Comments
-                                </Header>
-
-                                <Comment>
-                                <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />
-                                <Comment.Content>
-                                    <Comment.Author as='a'>Matt</Comment.Author>
-                                    <Comment.Metadata>
-                                    <div>Today at 5:42PM</div>
-                                    </Comment.Metadata>
-                                    <Comment.Text>How artistic!</Comment.Text>
-                                    <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                    </Comment.Actions>
-                                </Comment.Content>
-                                </Comment>
-
-                                <Comment>
-                                <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/elliot.jpg' />
-                                <Comment.Content>
-                                    <Comment.Author as='a'>Elliot Fu</Comment.Author>
-                                    <Comment.Metadata>
-                                    <div>Yesterday at 12:30AM</div>
-                                    </Comment.Metadata>
-                                    <Comment.Text>
-                                    <p>This has been very useful for my research. Thanks as well!</p>
-                                    </Comment.Text>
-                                    <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                    </Comment.Actions>
-                                </Comment.Content>
-                                <Comment.Group>
-                                    <Comment>
-                                    <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/jenny.jpg' />
-                                    <Comment.Content>
-                                        <Comment.Author as='a'>Jenny Hess</Comment.Author>
-                                        <Comment.Metadata>
-                                        <div>Just now</div>
-                                        </Comment.Metadata>
-                                        <Comment.Text>Elliot you are always so right :)</Comment.Text>
-                                        <Comment.Actions>
-                                        <Comment.Action>Reply</Comment.Action>
-                                        </Comment.Actions>
-                                    </Comment.Content>
-                                    </Comment>
-                                </Comment.Group>
-                                </Comment>
-
-                                <Comment>
-                                <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/joe.jpg' />
-                                <Comment.Content>
-                                    <Comment.Author as='a'>Joe Henderson</Comment.Author>
-                                    <Comment.Metadata>
-                                    <div>5 days ago</div>
-                                    </Comment.Metadata>
-                                    <Comment.Text>Dude, this is awesome. Thanks so much</Comment.Text>
-                                    <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                    </Comment.Actions>
-                                </Comment.Content>
-                                </Comment>
-
-                                <Form reply>
-                                <Form.TextArea />
-                                <Button content='Add Reply' labelPosition='left' icon='edit' primary />
-                                </Form>
-                            </Comment.Group>
+                            {/*<ProjectUpdateCommentList*/}
+                            {/*    updateGuid={update.guid}*/}
+                            {/*    userGuid={relatedPerson.guid}*/}
+                            {/*/>*/}
+                            <CommentList
+                                comments={comments}
+                            />
                         </Segment> 
                     </Grid.Column>
 
