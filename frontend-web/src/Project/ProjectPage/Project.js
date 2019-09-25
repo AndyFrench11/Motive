@@ -37,7 +37,9 @@ class ProjectPageLayout extends React.Component {
             activeMenuItem: "Updates",
             updatingProjectImage: false,
             selectedImageIndex: -1,
-            createProjectUpdateModalOpen: false
+            createProjectUpdateModalOpen: false,
+            localProjectUpdates: null
+            //Set the state equal to that once the props are found.
         };
     }
 
@@ -65,7 +67,13 @@ class ProjectPageLayout extends React.Component {
         this.setState({ createProjectUpdateModalOpen: true })
     }   
 
-    closeCreateProjectUpdateModal = () => {
+    closeCreateProjectUpdateModal = (update) => {
+        if(update !== undefined) {
+            const { projectUpdates } = this.state;
+            projectUpdates.push(update);
+            this.setState({projectUpdates: projectUpdates})
+        }
+        
         this.setState({ createProjectUpdateModalOpen: false })
     }
 
@@ -93,7 +101,7 @@ class ProjectPageLayout extends React.Component {
 
     renderProjectDetails(project) {
         return (
-            <Grid.Column width={9}>
+            <Grid.Column width={7}>
                 <ProjectName projectName={project.name} projectGuid={project.guid}/>
                 <ProjectDescription projectDescription={project.description} projectGuid={project.guid}/>
                 <ProjectTags tagList={project.tagList} projectGuid={project.guid}/>
@@ -109,7 +117,7 @@ class ProjectPageLayout extends React.Component {
         );
     }
 
-    renderProjectOwners() {
+    renderProjectOwnersAndTimeCreated(dateTimeCreated) {
         if (this.props.projectOwners === null || this.props.projectOwners === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -131,24 +139,36 @@ class ProjectPageLayout extends React.Component {
                 }
             }
             //Do something to check if the number of owners is greater than some threshold
-            return (
-                <Grid.Column width={3} floated='right'>
-                    <Grid.Row>
-                        {projectOwners.map((owner, index) => (
-                            <Image avatar floated='right' src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
-                        ))}
-                    </Grid.Row>
-                    <Grid.Row>
-                        <span>Owned by {ownerString}</span>
-                    </Grid.Row>
 
+            //Get Date Time
+            const dateTime = new Date(dateTimeCreated);
+            const formattedDateTime = dateTime.toLocaleDateString("en-NZ");
+
+            return (
+                <Grid.Column compact width={6} floated='right'>
+                    <Grid divided>
+                        <Grid.Row>
+                            <Grid.Column width={4}>
+                                <span>Owned by {ownerString}</span>
+                            </Grid.Column>
+                            <Grid.Column width={12}> 
+                                {projectOwners.map((owner, index) => (
+                                    <Image avatar src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size="tiny"/>
+                                ))}
+                            </Grid.Column>
+
+                        </Grid.Row>
+                        <Grid.Row>
+                            <p style={{fontSize: 16}}>Created on {formattedDateTime}</p>
+                        </Grid.Row>
+                    </Grid>
                 </Grid.Column>
             );
         }
     }
 
     renderProjectUpdates(project) {
-        const { projectUpdates } = this.props;
+        const { projectUpdates } = this.state;
         if (projectUpdates === null || projectUpdates === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -163,7 +183,7 @@ class ProjectPageLayout extends React.Component {
     }
 
     renderProjectHighlights(project) {
-        const { projectUpdates } = this.props;
+        const { projectUpdates } = this.state;
         if (projectUpdates === null || projectUpdates === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -213,10 +233,10 @@ class ProjectPageLayout extends React.Component {
                         projectGuid={project.guid}/>
                 }
 
-                <Grid container style={{ marginTop: '5em'}}>
+                <Grid style={{ marginTop: '5em', marginLeft: '5em', marginRight: '5em'}}>
                     {this.renderProjectImage(project.imageIndex)}
                     {this.renderProjectDetails(project)}
-                    {this.renderProjectOwners()}
+                    {this.renderProjectOwnersAndTimeCreated(project.dateTimeCreated)}
                 </Grid>
 
                 <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>

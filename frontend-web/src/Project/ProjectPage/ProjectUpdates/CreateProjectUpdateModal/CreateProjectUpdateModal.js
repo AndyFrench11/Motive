@@ -58,7 +58,11 @@ class CreateProjectUpdateModal extends React.Component {
         }
         
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
-        this.props.closeCallback()
+        console.log(update);
+        update["relatedPerson"] = this.props.user;
+        update["relatedTask"] = this.props.project.taskList.filter((task) => task.guid === selectedTaskGuid);
+        console.log(update);
+        this.props.closeCallback(update)
     }
 
     updateHighlightStatus = () => {

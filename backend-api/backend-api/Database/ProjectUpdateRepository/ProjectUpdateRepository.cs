@@ -195,7 +195,7 @@ namespace backend_api.Database.ProjectUpdateRepository
             string projectUpdateContent = projectUpdate.content;
             string projectUpdateId = projectUpdate.Guid.ToString();
             bool highlight = projectUpdate.highlight;
-            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, highlight: $highlight, guid: $projectUpdateId})", 
+            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, highlight: $highlight, dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), guid: $projectUpdateId})", 
                 new { projectUpdateContent, highlight, projectUpdateId });
         }
 

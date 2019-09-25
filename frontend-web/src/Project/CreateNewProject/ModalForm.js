@@ -103,7 +103,7 @@ class NewProjectForm extends Component {
                             </Button>
 
                         </List.Content>
-                        <Image avatar src='https://react.semantic-ui.com/images/avatar/small/helen.jpg' />
+                        <Icon name="tasks" size="small"/>
                         <List.Content>
                             {fields.get(index).name}
                         </List.Content>

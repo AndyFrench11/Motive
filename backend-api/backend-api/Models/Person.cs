@@ -38,7 +38,7 @@ namespace backend_api.Models
         }
 
         // Parses an existing person, using existing GUID
-        public Person(string firstName, string lastName, string email, string dateOfBirth, string password, string profileBio, string guid, string dateJoined)
+        public Person(string firstName, string lastName, string email, string dateOfBirth, string password, string profileBio, string guid, LocalDateTime dateJoined)
         {
             this.firstName = firstName;
             this.lastName = lastName;
@@ -46,7 +46,7 @@ namespace backend_api.Models
             this.password = password;
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
-            //this.dateJoined = dateJoined;
+            this.dateJoined = dateJoined;
             this.Guid = Guid.Parse(guid);
         }
 
@@ -71,17 +71,5 @@ namespace backend_api.Models
         }
         
 
-        //        public Person(Person parsedPerson)
-        //        {
-        //       
-        //            this.guid = Guid.NewGuid().ToString();
-        //            this.dateJoined = DateTime.Today.ToString("dd/MM/yy");
-        //            
-        //            this.firstName = parsedPerson.firstName;
-        //            this.lastName = parsedPerson.lastName;
-        //            this.email = parsedPerson.email;
-        //            this.dateOfBirth = parsedPerson.dateOfBirth;
-        //            this.profileBio = parsedPerson.profileBio;
-        //        }
     }
 }

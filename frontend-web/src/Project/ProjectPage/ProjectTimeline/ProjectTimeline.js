@@ -6,6 +6,7 @@ import {connect} from "react-redux";
 import "./ProjectTimeline.css";
 import TrophyImage from "../../ProjectImages/image16.png";
 import MatthewImage from "../../../Images/matthew_nuezrz.png";
+import Moment from 'moment';
 
 const colorMap = ['#eb4034', '#ebb734', '#a2eb34', '#34e5eb', '#346beb', '#9634eb', '#eb34e2', '#eb347a']
 
@@ -18,20 +19,15 @@ class ProjectTimeline extends React.Component {
         }
     }
 
-    renderLeftOverCircles(leftOverCircles) {
-    }
-
     render() {
 
         const { updates, tasks } = this.props;
 
         //Only get the five most recent updates
-        const mostRecentUpdates = updates.slice(-4);
-        console.log(mostRecentUpdates);
+        const mostRecentUpdates = updates.sort((a, b) => (a.dateTimeCreated > b.dateTimeCreated) ? 1 : ((b.dateTimeCreated > a.dateTimeCreated) ? -1 : 0)).slice(-4);
 
         //Only get the five left over top tasks that are not completed
         const upcomingTasks = tasks.filter((task) => !task.completed).slice(-4);
-        console.log(upcomingTasks)
 
         const leftOverCircles = 8 - (mostRecentUpdates.length + upcomingTasks.length)
         const extraCircle = leftOverCircles > 0;
@@ -43,6 +39,9 @@ class ProjectTimeline extends React.Component {
                 </Grid.Row>
                 {mostRecentUpdates.map((update, index) => {
                     const itemColor = colorMap[index];
+                    const dateTime = new Date(update.dateTimeCreated);
+                    const momentTime = Moment(dateTime).format("MMM Do"); 
+
                     return (
                         <Grid.Column className="timelineColumn">
                             <Grid>
@@ -109,7 +108,7 @@ class ProjectTimeline extends React.Component {
                                     </Grid.Column>
                                 </Grid.Row>
                                 <Grid.Row centered style={{'paddingTop': '0em'}}>
-                                    <p>24th May</p>
+                                    <p>{momentTime}</p>
                                 </Grid.Row>
                                 
                             </Grid>

@@ -7,6 +7,7 @@ import uuidv4 from 'uuid/v4';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
 import { deleteProjectUpdate, updateProjectUpdateHighlight } from "./actions";
+import Moment from 'moment';
 
 class ProjectUpdate extends React.Component {
 
@@ -54,7 +55,7 @@ class ProjectUpdate extends React.Component {
     render() {
 
         const { update, projectName, tags } = this.props;
-        const { relatedPerson, relatedTask, content, guid } = update;
+        const { relatedPerson, relatedTask, content, dateTimeCreated, guid } = update;
 
         const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
@@ -75,8 +76,11 @@ class ProjectUpdate extends React.Component {
             </span>
             )
 
+        const dateTime = new Date(dateTimeCreated);
+        const momentTime = Moment(dateTime).calendar();
+
         return (
-            <Segment style={{'marginLeft': '20em', 'marginRight': '20em', 'marginTop': '3em'}}>
+            <Segment style={{'width': '50em', 'marginTop': '3em', 'marginLeft': '2em'}}>
 
                 <Confirm
                     open={deleteUpdateConfirmOpen}
@@ -98,6 +102,9 @@ class ProjectUpdate extends React.Component {
                     <Grid.Column width={4}>
                         <Grid.Row>
                             <Header size='large'>Update from {relatedPerson.firstName}</Header>
+                        </Grid.Row>
+                        <Grid.Row style={{'marginTop': '1em'}}>
+                            <Header size='tiny'>{momentTime}</Header>
                         </Grid.Row>
                         
                     </Grid.Column>

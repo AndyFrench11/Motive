@@ -97,7 +97,8 @@ class UserProfile extends React.Component {
                 </Grid>
             )
         } else {
-            console.log(Date.parse(this.props.profile.profileContent.dateJoined))
+            const dateJoined = new Date(this.props.profile.profileContent.dateJoined);
+            const formattedDate = dateJoined.toLocaleDateString("en-NZ");
             return (
                 <div>
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -107,8 +108,8 @@ class UserProfile extends React.Component {
                         </Grid.Column>
                         <Grid.Column width={4}>
                             <Header as='h1'>{this.props.profile.profileContent.firstName} {this.props.profile.profileContent.lastName}</Header>
-                            {/* <p style={{fontSize: 16}}>Joined on {this.props.profile.profileContent.dateJoined}</p>
-                            <p style={{fontSize: 22}}><i>"{this.props.profile.profileContent.profileBio}"</i></p> */}
+                            <p style={{fontSize: 16}}>Joined on {formattedDate}</p>
+                            {/* <p style={{fontSize: 22}}><i>"{this.props.profile.profileContent.profileBio}"</i></p> */}
                             <div>
                                 <Button onClick={this.showModal}>Create Project</Button>
                             </div>

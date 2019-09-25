@@ -156,7 +156,7 @@ namespace backend_api.Database.PersonRepository
                    $"firstName: '{personToCreate.firstName}', " +
                    $"lastName: '{personToCreate.lastName}', " +
                    $"guid: '{personToCreate.Guid}', " +
-                   "dateJoined: localdatetime(), " +
+                   "dateJoined: localdatetime({ timezone: 'Pacific/Auckland' }), " +
                    $"dateOfBirth: '{personToCreate.dateOfBirth}', " +
                    $"email: '{personToCreate.email}', " +
                    $"profileBio: '{personToCreate.profileBio}'," +
