@@ -79,12 +79,15 @@ namespace backend_api.Controllers
             public string lastName { get; set; }
         
             public string email { get; set; }
+            
+            public string Guid { get; set; }
 
             public StrippedPerson(Person personToStrip)
             {
                 this.firstName = personToStrip.firstName;
                 this.lastName = personToStrip.lastName;
                 this.email = personToStrip.email;
+                this.Guid = personToStrip.Guid.ToString();
             }
         }
 
