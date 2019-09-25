@@ -7,6 +7,7 @@ using backend_api.Database;
 using backend_api.Database.PersonRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Neo4j.Driver.V1;
 
 namespace backend_api.Controllers
 {

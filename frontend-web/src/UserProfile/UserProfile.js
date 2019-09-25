@@ -61,18 +61,23 @@ class UserProfile extends React.Component {
         if(oldProps.values !== newProps.values) {
             const values = newProps.values;
             if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
-                && (values.hasOwnProperty('tags')) && (values.hasOwnProperty('taskList')) )) {
+                && (values.hasOwnProperty('tags')) && (values.tags.length > 0) && (values.hasOwnProperty('taskList')) && (values.taskList.length > 0) 
+                && (this.state.selectedImageIndex !== -1)  )) {
+
                 this.setState({
                     submitButtonDisabled: false
                 })
+
+            } else {
+
+                this.setState({
+                    submitButtonDisabled: true
+                })
+
             }
 
         }
     }
-
-    //Start Date validation
-    // && ((values.hasOwnProperty('startDateInput')) &&
-    //                 (/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/.test(values.startDateInput))))
 
     componentDidMount() {
         const { userguid } = this.props.match.params;
@@ -92,6 +97,7 @@ class UserProfile extends React.Component {
                 </Grid>
             )
         } else {
+            console.log(Date.parse(this.props.profile.profileContent.dateJoined))
             return (
                 <div>
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -100,12 +106,10 @@ class UserProfile extends React.Component {
                             <Image style={{'border-radius': 8}} src={SteveImage} size='small'/>
                         </Grid.Column>
                         <Grid.Column width={4}>
-                            <Header as='h1'>{this.props.profile.profileContent.firstName}</Header>
-                            <p style={{fontSize: 16}}>Joined on {this.props.profile.profileContent.dateJoined}</p>
-                            <p style={{fontSize: 22}}><i>"{this.props.profile.profileContent.profileBio}"</i></p>
+                            <Header as='h1'>{this.props.profile.profileContent.firstName} {this.props.profile.profileContent.lastName}</Header>
+                            {/* <p style={{fontSize: 16}}>Joined on {this.props.profile.profileContent.dateJoined}</p>
+                            <p style={{fontSize: 22}}><i>"{this.props.profile.profileContent.profileBio}"</i></p> */}
                             <div>
-                                <Button primary>Follow</Button>
-                                <Button secondary>Message</Button>
                                 <Button onClick={this.showModal}>Create Project</Button>
                             </div>
                         </Grid.Column>

@@ -24,22 +24,6 @@ const renderTextArea = ({ input, label, placeholder, meta: { touched, error, war
 
 );
 
-const renderTagInput = ({ input, meta: { touched, error, warning } }) => (
-    <Form.Field>
-        <div>
-            <Input
-                {...input}
-                icon='tags'
-                iconPosition='left'
-                placeholder="Enter tags"
-            >
-            </Input>
-            {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
-        </div>
-    </Form.Field>
-
-);
-
 const renderNameInput = ({ input, label, placeholder, meta: { touched, error, warning } }) => (
     <Form.Field>
         <div>
@@ -53,21 +37,6 @@ const renderNameInput = ({ input, label, placeholder, meta: { touched, error, wa
 
     </Form.Field>
 );
-
-const renderTaskInput = ({ input, meta: { touched, error, warning } }) => (
-    <Form.Field>
-        <div>
-        <Input
-            {...input}
-            placeholder='Add a new task...'
-            />
-        {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
-        </div>
-    </Form.Field>
-);
-
-
-
 
 const requiredDescription = value => value ? undefined :
     <Label pointing>
@@ -90,32 +59,40 @@ const requiredTasks = value => value ? undefined :
         Please enter a task
     </Label>;
 
-const requiredStartDate = value => value ? undefined :
-    <Label pointing>
-        Please enter a start date
-    </Label>;
-
-
 
 class NewProjectForm extends Component {
 
     constructor(props) {
         super(props);
 
-        const {
-            tagInputValue,
-            taskInputValue
-        } = props;
-
         this.state = {
             selectedImageIndex: this.props.selectedImageIndex,
+            tagInputValue: "",
+            taskInputValue: ""
         }
 
     }
 
     renderTaskList = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({name: this.props.taskInputValue, completed: false, orderIndex: -1})}>Add Task</Button>
+            <Button type="button" onClick={() => {
+                const { taskInputValue } = this.state;
+
+                let alreadyAdded = false;
+                
+                for(let i = 0; i < fields.length; i++) {
+                    if(fields.get(i).name === taskInputValue){
+                        alreadyAdded = true;
+                    }
+                }
+
+                if(taskInputValue !== "" && !alreadyAdded) {
+                    fields.push({name: this.state.taskInputValue, completed: false, orderIndex: -1})
+                    this.setState({taskInputValue: ""})
+                }
+                
+            }}>
+                Add Task</Button>
 
             <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle'>
                 {fields.map((task, index) =>
@@ -138,7 +115,24 @@ class NewProjectForm extends Component {
 
     renderTags = ({ fields }) => (
         <Form.Field>
-            <Button type="button" onClick={() => fields.push({name: this.props.tagInputValue})}>Add Tag</Button>
+            <Button type="button" onClick={() => {
+
+                const { tagInputValue } = this.state;
+
+                let alreadyAdded = false;
+                
+                for(let i = 0; i < fields.length; i++) {
+                    if(fields.get(i).name === tagInputValue){
+                        alreadyAdded = true;
+                    }
+                }
+
+                if(tagInputValue !== "" && !alreadyAdded) {
+                    fields.push({name: tagInputValue})
+                    this.setState({tagInputValue: ""})
+                }
+            }}>
+                Add Tag</Button>
 
             <Transition.Group as={List} duration={500} divided size='large' verticalAlign='middle' horizontal>
             {fields.map((task, index) =>
@@ -153,31 +147,6 @@ class NewProjectForm extends Component {
 
         </Form.Field>
     );
-
-    // renderStartDateInput = ({ input, placeholder, label, meta: { touched, error, warning } }) => {
-    //     let today = new Date();
-    //     let dd = today.getDate();
-    //     let mm = today.getMonth()+1; //As January is 0.
-    //     let yyyy = today.getFullYear();
-
-    //     if(dd<10) dd='0'+dd;
-    //     if(mm<10) mm='0'+mm;
-
-    //     return (
-    //         <Form.Field>
-    //             <div>
-    //                 <Input
-    //                     {...input}
-    //                     label={label}
-    //                     placeholder={dd+"/"+mm+"/"+yyyy}
-    //                 />
-
-    //                 {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
-    //             </div>
-    //         </Form.Field>
-    //     );
-    // };
-
 
     setSelectedImage = (event, {index}) => {
         this.setState({
@@ -203,6 +172,15 @@ class NewProjectForm extends Component {
             </Segment>
         )
     };
+
+
+    updateTagInputValue = (event, {value}) => {
+        this.setState({ tagInputValue: value });
+    }
+
+    updateTaskInputValue = (event, {value}) => {
+        this.setState({ taskInputValue: value });
+    }
     
     render() {
 
@@ -227,29 +205,18 @@ class NewProjectForm extends Component {
                             validate={requiredDescription}
                         />
 
-                        {/* <Field
-                            component={this.renderStartDateInput}
-                            name="startDateInput"
-                            id="startDateInput"
-                            label="Start Date"
-                            validate={requiredStartDate}
-                        /> */}
+                        <Message floating>You are limited to 500 characters.</Message>
 
-                        {/*<Field*/}
-                        {/*    component={renderEndDateInput}*/}
-                        {/*    name="endDateInput"*/}
-                        {/*    id="endDateInput"*/}
-                        {/*    label="End Date and Time"*/}
-                        {/*/>*/}
+                        <Input
+                            value={this.state.tagInputValue}
+                            icon='tags'
+                            iconPosition='left'
+                            placeholder="Enter tags"
+                            onChange={this.updateTagInputValue}
+                        >
+                        </Input>
 
-
-                        <Field
-                            component={renderTagInput}
-                            name="tagInput"
-                            id="tagInput"
-                            validate={requiredTags}
-
-                        />
+                        <Divider/>
 
                         <FieldArray name="tags" component={this.renderTags}/>
 
@@ -264,13 +231,15 @@ class NewProjectForm extends Component {
 
                         <Message floating>If you wish, you may add predefined tasks that outline the journey your project will take!</Message>
 
-                        <Field
-                            component={renderTaskInput}
-                            name="taskInput"
-                            id="taskInput"
-                            type="text"
-                            validate={requiredTasks}
+                        <Input
+                            value={this.state.taskInputValue}
+                            icon='tasks'
+                            iconPosition='left'
+                            placeholder="Add a new task..."
+                            onChange={this.updateTaskInputValue}
                         />
+
+                        <Divider/>
 
                         <FieldArray name="taskList" component={this.renderTaskList}/>
 
@@ -287,15 +256,15 @@ NewProjectForm = reduxForm({
 
 // Decorate with connect to read form values
 const selector = formValueSelector('newProject'); // <-- same as form name
-NewProjectForm = connect(state => {
-    // can select values individually
-    const tagInputValue = selector(state, 'tagInput');
-    const taskInputValue = selector(state, 'taskInput');
-    return {
-        tagInputValue,
-        taskInputValue
-    }
-})(NewProjectForm);
+// NewProjectForm = connect(state => {
+//     // can select values individually
+//     let tagInputValue = selector(state, 'tagInput');
+//     let taskInputValue = selector(state, 'taskInput');
+//     return {
+//         tagInputValue,
+//         taskInputValue
+//     }
+// })(NewProjectForm);
 
 export default NewProjectForm;
 

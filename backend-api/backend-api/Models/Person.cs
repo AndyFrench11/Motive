@@ -17,7 +17,7 @@ namespace backend_api.Models
         
         public string dateOfBirth { get; set; }
         
-        public string dateJoined { get; set; }
+        public LocalDateTime dateJoined { get; set; }
         
         public string profileBio { get; set; }
         
@@ -30,7 +30,7 @@ namespace backend_api.Models
             this.password = password;
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
-            this.dateJoined = DateTime.Today.ToString("dd/MM/yy");
+            //this.dateJoined = DateTime.Today.ToString("dd/MM/yy");
         }
 
         public Person()
@@ -46,7 +46,7 @@ namespace backend_api.Models
             this.password = password;
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
-            this.dateJoined = dateJoined;
+            //this.dateJoined = dateJoined;
             this.Guid = Guid.Parse(guid);
         }
 
@@ -59,7 +59,7 @@ namespace backend_api.Models
             this.password = props["password"].ToString();
             this.dateOfBirth = props["dateOfBirth"].ToString();
             this.profileBio = props["profileBio"].ToString();
-            this.dateJoined = props["dateJoined"].ToString();
+            this.dateJoined = new LocalDateTime(DateTime.Parse(props["dateJoined"].ToString()));
             this.Guid = Guid.Parse(props["guid"].ToString());
         }
 
