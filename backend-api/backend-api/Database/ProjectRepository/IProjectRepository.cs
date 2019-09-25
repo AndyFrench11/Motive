@@ -26,6 +26,9 @@ namespace backend_api.Database.ProjectRepository
         RepositoryReturn<bool> EditPhotoIndex(Guid projectGuid, int photoIndex);
         
         RepositoryReturn<bool> Delete(Guid projectGuid);
-
+        
+        RepositoryReturn<bool> AddProjectMember(Guid projectGuid, Guid newMemberGuid);
+        
+        RepositoryReturn<bool> RemoveProjectMember(Guid projectGuid, Guid newMemberGuid);
     }
 }

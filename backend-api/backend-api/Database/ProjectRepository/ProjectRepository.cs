@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using backend_api.Models;
 using Neo4j.Driver.V1;
+using Neo4jClient;
 
 namespace backend_api.Database.ProjectRepository
 {
@@ -10,25 +11,27 @@ namespace backend_api.Database.ProjectRepository
     {
         
         private readonly neo4jConnection _neo4jConnection;
+        private readonly ISession _session;
 
         public ProjectRepository()
         {
             _neo4jConnection = new neo4jConnection();
+            _session = _neo4jConnection.driver.Session();
         }
         
         public RepositoryReturn<IEnumerable<Project>> GetAllForUser(Guid personGuid)
         {
             try
             {   
-                using (var session = _neo4jConnection.driver.Session())
+                using (_session)
                 {
-                    var returnedProjects = session.ReadTransaction(tx => RetrieveUserProjects(tx, personGuid));
+                    var returnedProjects = _session.ReadTransaction(tx => RetrieveUserProjects(tx, personGuid));
                     
                     foreach (Project currentProject in returnedProjects)
                     {
-                        var returnedTags = session.ReadTransaction(tx => RetrieveProjectTags(tx, currentProject.Guid));
+                        var returnedTags = _session.ReadTransaction(tx => RetrieveProjectTags(tx, currentProject.Guid));
                         currentProject.tagList = returnedTags.ToList();
-                        var returnedTasks = session.ReadTransaction(tx => RetrieveProjectTasks(tx, currentProject.Guid));
+                        var returnedTasks = _session.ReadTransaction(tx => RetrieveProjectTasks(tx, currentProject.Guid));
                         currentProject.taskList = returnedTasks.ToList();
                     }
                     
@@ -389,6 +392,96 @@ namespace backend_api.Database.ProjectRepository
         {
             string projectId = projectGuid.ToString();
             tx.Run("MATCH (p:Project) WHERE p.guid = $projectId DETACH DELETE p", new { projectId });
+        }
+        
+        /**
+         * Add a relationship between a project and a given user.
+         */
+        public RepositoryReturn<bool> AddProjectMember(Guid projectGuid, Guid newMemberGuid)
+        {
+//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
+            try
+            {
+                using (_session)
+                {
+                    _session.WriteTransaction(tx => AddMemberRelationship(tx, projectGuid, newMemberGuid));
+                    return new RepositoryReturn<bool>(true);
+                }
+
+//                client.Connect();
+//                client.Cypher
+//                    .Match("(project:Project), (newOwner:Person)")
+//                    .Where((Person newMember) => newMember.Guid == newMemberGuid)
+//                    .AndWhere((Project project) => project.Guid == projectGuid)
+//                    .CreateUnique("(newOwner)-[:CONTRIBUTES_TO {type:ownerType}]->(project)")
+//                    .WithParam("ownerType", "type")
+//                    .ExecuteWithoutResults();
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+
+        /**
+         * Remove a relationship between a project and a given member.
+         */
+        public RepositoryReturn<bool> RemoveProjectMember(Guid projectGuid, Guid memberGuid)
+        {
+//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
+            try
+            {
+                using (_session)
+                {
+                    _session.WriteTransaction(tx => RemoveMemberRelationship(tx, projectGuid, memberGuid));
+                    return new RepositoryReturn<bool>(true);
+                }
+//                client.Connect();
+//                client.Cypher
+//                    .Match("(contributor:Person)-[contributes:CONTRIBUTES_TO]-(project:Project)")
+//                    .Where((Person contributor) => contributor.Guid == memberGuid)
+//                    .AndWhere((Project project) => project.Guid == projectGuid)
+//                    .Delete("contributes")
+//                    .ExecuteWithoutResults();
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+
+        private void AddMemberRelationship(ITransaction tx, Guid projectGuid, Guid newMemberGuid)
+        {
+            var projectId = projectGuid.ToString();
+            var newMemberId = newMemberGuid.ToString();
+            
+            const string statement = "MATCH (project:Project), (newMember:Person) " +
+                                     "WHERE project.guid = $projectId " +
+                                     "AND newMember.guid = $newMemberId " + 
+                                     "CREATE UNIQUE (newMember)-[:CONTRIBUTES_TO]->(project)";
+            tx.Run(statement, new {projectId, newMemberId});
+        }
+        
+        private void RemoveMemberRelationship(ITransaction tx, Guid projectGuid, Guid memberGuid)
+        {
+            var projectId = projectGuid.ToString();
+            var memberId = memberGuid.ToString();
+            
+            const string statement = "MATCH (member:Person)-[contributes:CONTRIBUTES_TO]-(project:Project) " +
+                                     "WHERE member.guid = $memberId " + 
+                                     "AND project.guid = $projectId " +
+                                     "DELETE contributes";
+            tx.Run(statement, new {memberId, projectId});
         }
     }
 }
