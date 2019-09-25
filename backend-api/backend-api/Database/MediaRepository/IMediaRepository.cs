@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 using backend_api.Models;
 
 namespace backend_api.Database.MediaRepository
@@ -9,9 +11,8 @@ namespace backend_api.Database.MediaRepository
 
         RepositoryReturn<MediaTracker> GetByGuid(Guid mediaGuid);
 
-        RepositoryReturn<bool> AddUserToMedia(Guid mediaGuid, Guid newUserGuid, string encryptedMediaKey);
-
-
+        RepositoryReturn<bool> AddUsersToMedia(Guid mediaGuid, IDictionary<Guid, string> newUserGuidsWithKey);
+        
         RepositoryReturn<MediaAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid);  
 
         RepositoryReturn<MediaTracker> Update(Guid mediaGuid, Guid userGuid);

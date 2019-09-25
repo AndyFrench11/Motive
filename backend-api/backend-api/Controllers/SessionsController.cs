@@ -51,7 +51,7 @@ namespace backend_api.Controllers
 
         public static bool CloseSession(string sessionId)
         {
-            if (LoggedInSessions[sessionId] == null)
+            if (!LoggedInSessions.TryGetValue(sessionId, out Session loggedInSession))
             {
                 return false;
             }
@@ -64,6 +64,7 @@ namespace backend_api.Controllers
         {
             if (LoggedInSessions.TryGetValue(sessionId, out Session loggedInSession))
             {
+                loggedInSession.expiry.AddMinutes(5);
                 return loggedInSession;
             }
 

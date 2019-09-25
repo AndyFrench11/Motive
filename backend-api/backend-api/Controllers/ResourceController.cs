@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using backend_api.Crypto;
 using backend_api.Database;
@@ -88,14 +89,16 @@ namespace backend_api.Controllers
             };
         }
         
-        // GET -> api/resource/giveAccessTo/?resourceGuid=...&email=...
+        // GET -> api/resource/giveAccessTo/?resourceGuid=...
+        //     with body: ['exampleemail1@test.com', 'exampleemail2@test.com'...]
         [HttpGet("giveAccessTo")]
-        public IActionResult GiveAccessTo([FromQuery] string resourceGuid, string email)
+        public IActionResult GiveAccessTo([FromQuery] string resourceGuid, [FromBody] List<string> emails)
         {
             string sessionId = Request.Cookies["sessionId"];
 
             Session userLoggedInSession = SessionsController.GetLoggedInSession(sessionId);
             
+            // Get the Media tracker relating to the required resource
             RepositoryReturn<MediaTracker> returnMediaTracker = _mediaRepository.GetByGuid(Guid.Parse(resourceGuid));
             
             if (returnMediaTracker.IsError)
@@ -109,7 +112,7 @@ namespace backend_api.Controllers
             }
 
             MediaTracker queriedMediaTracker = returnMediaTracker.ReturnValue;
-
+            
             RepositoryReturn<MediaAccessRelationship> returnMediaAccessRelationship = _mediaRepository.GetEncryptedMediaKey(queriedMediaTracker.Guid,
                 userLoggedInSession.userGuid);
             
@@ -137,20 +140,30 @@ namespace backend_api.Controllers
             string plainTextMediaKey =
                 rsaEngine.DecryptString(Convert.FromBase64String(returnMediaAccessRelationship.ReturnValue.EncryptedMediaKey), privateKey);
 
-            RepositoryReturn<Person> requestPerson = _personRepository.GetByEmail(email);
-            if (requestPerson.IsError)
+            // Go through each email, and fetch the user ID and public key
+            IDictionary<Guid, string> usersToGiveAccess = new Dictionary<Guid, string>();
+            foreach (string email in emails)
             {
-                return StatusCode(500, requestPerson.ErrorException.Message);
+                RepositoryReturn<Person> requestPerson = _personRepository.GetByEmail(email);
+                if (requestPerson.IsError)
+                {
+                    return StatusCode(500, requestPerson.ErrorException.Message);
+                }
+
+                Person currentPerson = requestPerson.ReturnValue;
+                
+                RSAParameters currentUserPublicKey =
+                    rsaEngine.ConvertStringToKey(currentPerson.publicKey);
+                
+                // Create the media key unique to the current user's public key
+                string currentUserEncryptedMediaKey = Convert.ToBase64String(rsaEngine.EncryptString(plainTextMediaKey, currentUserPublicKey));
+                
+                // Finally set the encrypted key to the user's GUID
+                usersToGiveAccess[currentPerson.Guid] = currentUserEncryptedMediaKey;
             }
-
-            RSAParameters newPersonPublicKey = rsaEngine.ConvertStringToKey(requestPerson.ReturnValue.publicKey);
             
-            // Encrypt the media key with the new persons public key
-            string encryptedMediaKey = Convert.ToBase64String(rsaEngine.EncryptString(plainTextMediaKey, newPersonPublicKey));
-
-            RepositoryReturn<bool> requestAddUserToMedia = _mediaRepository.AddUserToMedia(queriedMediaTracker.Guid,
-                requestPerson.ReturnValue.Guid,
-                encryptedMediaKey);
+            RepositoryReturn<bool> requestAddUserToMedia = _mediaRepository.AddUsersToMedia(queriedMediaTracker.Guid,
+                usersToGiveAccess);
             if (requestAddUserToMedia.IsError)
             {
                 return StatusCode(500, requestAddUserToMedia.ErrorException.Message);

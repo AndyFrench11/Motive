@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using backend_api.Models;
 using Neo4j.Driver.V1;
 
@@ -60,13 +62,16 @@ namespace backend_api.Database.MediaRepository
             );
         }
 
-        public RepositoryReturn<bool> AddUserToMedia(Guid mediaGuid, Guid newUserGuid, string encryptedMediaKey)
+        public RepositoryReturn<bool> AddUsersToMedia(Guid mediaGuid, IDictionary<Guid, string> newUserGuids)
         {
             try
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
-                    session.WriteTransaction(tx => LinkUserToMedia(tx, mediaGuid, newUserGuid, encryptedMediaKey, AccessLevel.Viewer));
+                    foreach (var userGuidToKey in newUserGuids)
+                    {
+                        session.WriteTransaction(tx => LinkUserToMedia(tx, mediaGuid, userGuidToKey.Key, userGuidToKey.Value, AccessLevel.Viewer));
+                    }
                     return new RepositoryReturn<bool>(true);
                 }
             }
