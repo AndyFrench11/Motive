@@ -31,13 +31,13 @@ class ProjectUpdate extends React.Component {
     handleConfirmUpdateDeletion = () => {
         const { update } = this.props;
         this.setState({ deleteUpdateConfirmOpen: false });
-        this.props.deleteUpdateCallback(this.props.index)
-        this.props.deleteProjectUpdate(update.guid)
+        this.props.deleteUpdateCallback(this.props.index);
+        this.props.deleteProjectUpdate(update.guid);
     };
 
-    showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true })
+    showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true });
 
-    handleCancelUpdateDeletion = () => this.setState({ deleteUpdateConfirmOpen: false })
+    handleCancelUpdateDeletion = () => this.setState({ deleteUpdateConfirmOpen: false });
 
     updateContentStateCallback = () => {
         this.setState({ updatingContent: false });
@@ -55,11 +55,8 @@ class ProjectUpdate extends React.Component {
 
     render() {
 
-        const { update, projectName, tags } = this.props;
+        const { update, projectName, tags, currentUser } = this.props;
         const { relatedPerson, relatedTask, content, guid, comments } = update;
-
-        console.log("++==+++++++++++++++++++++++++++++");
-        console.log(comments);
 
         const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
@@ -172,13 +169,13 @@ class ProjectUpdate extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">
                         <Segment style={{overflow: 'auto', maxHeight: 300 }}>
-                            {/*<ProjectUpdateCommentList*/}
-                            {/*    updateGuid={update.guid}*/}
-                            {/*    userGuid={relatedPerson.guid}*/}
-                            {/*/>*/}
-                            <CommentList
+                            <ProjectUpdateCommentList
                                 comments={comments}
+                                currentUser={currentUser}
                             />
+                            {/*<CommentList*/}
+                            {/*    comments={comments}*/}
+                            {/*/>*/}
                         </Segment> 
                     </Grid.Column>
 
@@ -211,6 +208,7 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 

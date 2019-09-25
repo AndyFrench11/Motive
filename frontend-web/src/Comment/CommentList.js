@@ -1,8 +1,6 @@
 import React from 'react'
 import {
-    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm
-} from 'semantic-ui-react'
-import {connect} from "react-redux";
+    Button, Form, Grid, Comment} from 'semantic-ui-react'
 import CommentItem from "./CommentItem";
 import LoaderInlineCentered from "../Common/Loader";
 
@@ -18,7 +16,7 @@ class CommentList extends React.Component {
     // }
 
     render() {
-        const { comments } = this.props;
+        const { comments, currentUser } = this.props;
 
         if (comments === null || comments === undefined) {
             return (
@@ -42,6 +40,8 @@ class CommentList extends React.Component {
                     {comments.map((comment) => (
                         <CommentItem
                             comment={comment}
+                            currentUser={currentUser}
+                            deleteCommentCallback={this.props.deleteCommentCallback}
                         />
                     ))}
                     <Form reply>

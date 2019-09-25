@@ -55,23 +55,23 @@ class ProjectPageLayout extends React.Component {
 
     showUpdateProjectPhotoModal = () => {
         this.setState({ updatingProjectImage: true })
-    }   
+    };
 
     closeUpdateProjectModal = () => {
         this.setState({ updatingProjectImage: false })
-    }
+    };
 
     showCreateProjectUpdateModal = () => {
         this.setState({ createProjectUpdateModalOpen: true })
-    }   
+    };
 
     closeCreateProjectUpdateModal = () => {
         this.setState({ createProjectUpdateModalOpen: false })
-    }
+    };
 
     updateSelectedImageIndex = (index) => {
         this.setState({ selectedImageIndex: index })
-    }
+    };
 
     renderProjectImage(imageIndex) {
         var photoList = Object.keys(images);

@@ -11,7 +11,7 @@ namespace backend_api.Models
         public ProjectTask relatedTask { get; set; }
         public Person relatedPerson { get; set; }
         public Project relatedProject { get; set; }
-        //public List<Tag> relatedTags { get; set; }
+        public List<Comment> comments { get; set; }
 
         public ProjectUpdate()
         {

@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import CommentList from "./CommentList";
-import {fetchComments} from "./actions";
+import {deleteComment} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
 
 class ProjectUpdateCommentList extends React.Component {
@@ -12,16 +12,28 @@ class ProjectUpdateCommentList extends React.Component {
         super(props);
 
         this.state = {
+            comments: this.props.comments
         };
     }
 
-    componentDidMount() {
-        const { updateGuid, userGuid } = this.props;
-        this.props.fetchComments(userGuid, updateGuid);
-    }
+    deleteCommentCallback = (comment) => {
+        const { currentUser } = this.props;
+        const { comments } = this.state;
+
+        // Delete comment request
+        this.props.deleteComment(currentUser.guid, comment.guid);
+
+        // Remove from state
+        let index = comments.indexOf(comment);
+        if (index !== -1) {
+            comments.splice(index, 1);
+            this.setState({comments: comments})
+        }
+    };
 
     render() {
-        const { isUpdating, comments } = this.props;
+        const { currentUser } = this.props;
+        const { comments } = this.state;
         if (comments === null || comments === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -32,6 +44,8 @@ class ProjectUpdateCommentList extends React.Component {
             return(
                 <CommentList
                     comments={comments}
+                    currentUser={currentUser}
+                    deleteCommentCallback={this.deleteCommentCallback}
                 />
             );
         }
@@ -40,17 +54,16 @@ class ProjectUpdateCommentList extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchComments: (userGuid, updateGuid) => dispatch(fetchComments(userGuid, updateGuid))
+        deleteComment: (userGuid, updateGuid) => dispatch(deleteComment(userGuid, updateGuid))
     };
 }
 
 const mapStateToProps = state => {
     const { projectUpdateCommentReducer } = state;
     const { commentController } = projectUpdateCommentReducer;
-    const { isRetrievingComments, comments  } = commentController;
+    const { result  } = commentController;
     return {
-        isUpdating: isRetrievingComments,
-        comments: comments
+        result: result
     };
 };
 

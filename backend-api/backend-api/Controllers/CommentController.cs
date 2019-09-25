@@ -90,7 +90,7 @@ namespace backend_api.Controllers
                 return BadRequest("Invalid user id.");
             }
             
-            // Task
+            // Update
             Guid updateGuid;
             try
             {
@@ -98,11 +98,11 @@ namespace backend_api.Controllers
             }
             catch (ArgumentNullException)
             {
-                return BadRequest("Task id is null.");
+                return BadRequest("Update id is null.");
             }
             catch (FormatException)
             {
-                return BadRequest("Invalid task id.");
+                return BadRequest("Invalid update id.");
             }
             
             var result = _commentRepository.GetAllForUpdate(updateGuid);

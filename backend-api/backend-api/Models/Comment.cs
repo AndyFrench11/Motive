@@ -7,6 +7,8 @@ namespace backend_api.Models
     {
         public string Message { get; set; }
         public DateTime Authored { get; set; }
+        
+        public Person Author { get; set; }
 
         public Comment()
         {

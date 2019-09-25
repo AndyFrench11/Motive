@@ -92,6 +92,13 @@ namespace backend_api.Database.CommentRepository
                     // Get all comments
                     var foundComments = _session.ReadTransaction(tx => RetrieveUpdateComments(tx, updateGuid));
                     
+                    // For each comment, find and add the author
+                    foreach (var comment in foundComments)
+                    {
+                        var author = _session.ReadTransaction(tx => RetrieveCommentAuthor(tx, comment.Guid));
+                        comment.Author = author;
+                    }
+                    
                     return new RepositoryReturn<IEnumerable<Comment>>(foundComments);
                 }
             }
@@ -110,11 +117,23 @@ namespace backend_api.Database.CommentRepository
             var updateId = updateGuid.ToString();
 
             const string statement = "MATCH (update:ProjectUpdate) -- (comment:Comment) " + 
-                                     "WHERE update.guid = updateId " + 
+                                     "WHERE update.guid = $updateId " + 
                                      "RETURN comment";
             var result = tx.Run(statement, new {updateId});
             var comments = result.Select(record => new Comment(record[0].As<INode>().Properties)).ToList();
             return comments;
+        }
+
+        private Person RetrieveCommentAuthor(ITransaction tx, Guid commentGuid)
+        {
+            var commentId = commentGuid.ToString();
+
+            const string statement = "MATCH (comment:Comment), (author:Person) " + 
+                                     "WHERE comment.guid = $commentId " + 
+                                     "RETURN author";
+            var result = tx.Run(statement, new {commentId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new Person(record[0].As<INode>().Properties);
         }
 
         public RepositoryReturn<bool> Edit(Comment comment)

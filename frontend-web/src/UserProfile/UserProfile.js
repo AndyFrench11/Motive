@@ -45,7 +45,7 @@ class UserProfile extends React.Component {
 
     updateSelectedImageIndex = (selectedImageIndex) => {
         this.setState({selectedImageIndex: selectedImageIndex})
-    }
+    };
 
     handleModalSubmit = () => {
         const { userguid } = this.props.match.params;

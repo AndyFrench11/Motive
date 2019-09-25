@@ -1,19 +1,16 @@
 import { combineReducers } from 'redux'
 import {
-    REQUEST_PROJECT_UPDATE_COMMENTS,
-    RECEIVE_PROJECT_UPDATE_COMMENTS
+    REQUEST_DELETE_PROJECT_UPDATE_COMMENT,
+    RECEIVE_DELETE_PROJECT_UPDATE_COMMENT
 } from './actions'
 
 function commentController(state = {}, action) {
     switch (action.type) {
-        case REQUEST_PROJECT_UPDATE_COMMENTS:
-            return {... state,
-                isRetrievingComments: true
-            };
-        case RECEIVE_PROJECT_UPDATE_COMMENTS:
+        case REQUEST_DELETE_PROJECT_UPDATE_COMMENT:
+            return state;
+        case RECEIVE_DELETE_PROJECT_UPDATE_COMMENT:
             return {...state,
-                isRetrievingComments: false,
-                comments: action.result
+                result: action.result
             };
         default:
             return state;
