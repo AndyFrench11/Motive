@@ -221,7 +221,7 @@ class ProjectPageLayout extends React.Component {
 
                 <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 
-                <ProjectTimeline updates={projectUpdates}/>
+                <ProjectTimeline updates={projectUpdates} tasks={project.taskList}/>
 
                 <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 

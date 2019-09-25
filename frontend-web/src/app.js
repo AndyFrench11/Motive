@@ -7,6 +7,8 @@ import UserProfile from "./UserProfile/UserProfile";
 import {Redirect, Route, Router, Switch} from "react-router-dom";
 import {connect} from "react-redux";
 import Project from "./Project/ProjectPage/Project";
+import VideoPlayer from "./Common/Media/VideoPlayer";
+import Uploader from "./Common/Uploader";
 
 const ProtectedRoute
     = ({ isAllowed, ...props }) =>
@@ -27,7 +29,8 @@ class App extends Component {
                     <Route exact path="/" component={Login} />
                     <Route exact path="/login" component={Login} />
                     <Route exact path="/signup" component={Signup} />
-
+                    <ProtectedRoute exact path="/philsvideo" component={VideoPlayer} isAllowed={isLoggedIn} />
+                    <ProtectedRoute exact path="/upload" component={Uploader} isAllowed={isLoggedIn} />
 
                     <ProtectedRoute exact path="/home" component={Home} isAllowed={isLoggedIn}/>
                     <ProtectedRoute exact path="/profile/:userguid" component={UserProfile} isAllowed={isLoggedIn}/>

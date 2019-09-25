@@ -406,5 +406,5 @@ ASALocalRun/
 
 .idea
 
-App.config
+/App.config
 !/backend-api/App.config

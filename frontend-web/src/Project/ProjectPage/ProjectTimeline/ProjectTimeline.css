@@ -71,3 +71,13 @@
 .ui.medium.header.popUpName {
   padding-top: 0.5em !important;
 }
+
+.large.circular.icon.emptyTimeLineIcon {
+  background-color: #dedede !important;
+}
+
+.three.wide.column.popUpTaskImage {
+  padding-left: 0em !important;
+  padding-right: 0em !important;
+}
+
