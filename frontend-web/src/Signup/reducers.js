@@ -15,7 +15,7 @@ const signUpInitialState = {
 function signUpController(state = signUpInitialState, action) {
     switch (action.type) {
         case RESET_SIGN_UP:
-            return state;
+            return signUpInitialState;
         case REQUEST_SIGN_UP:
             return {...state,
                 isPosting: true,
