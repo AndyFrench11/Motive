@@ -10,11 +10,6 @@ class CommentList extends React.Component {
         super(props);
     }
 
-    /// Methods go here
-    // handleDeleteComment = () => {
-    //
-    // }
-
     render() {
         const { comments, currentUser } = this.props;
 
@@ -44,10 +39,6 @@ class CommentList extends React.Component {
                             deleteCommentCallback={this.props.deleteCommentCallback}
                         />
                     ))}
-                    <Form reply>
-                        <Form.TextArea />
-                        <Button content='Add Reply' labelPosition='left' icon='edit' primary />
-                    </Form>
                 </Comment.Group>
             );
         }

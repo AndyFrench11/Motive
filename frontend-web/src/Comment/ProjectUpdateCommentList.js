@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm
+    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm, GridColumn
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import CommentList from "./CommentList";
@@ -15,6 +15,14 @@ class ProjectUpdateCommentList extends React.Component {
             comments: this.props.comments
         };
     }
+
+    readMessageString = () => {
+      return "new comment";
+    };
+
+    createComment = () => {
+        let message = this.readMessageString();
+    };
 
     deleteCommentCallback = (comment) => {
         const { currentUser } = this.props;
@@ -31,6 +39,22 @@ class ProjectUpdateCommentList extends React.Component {
         }
     };
 
+    addCommentForm = () => {
+        return (
+            <Form reply>
+                <Grid>
+                    <GridColumn width={12}>
+                        <TextArea rows={1} placeholder='Add a comment...' />
+                    </GridColumn>
+
+                    <GridColumn width={3}>
+                        <Button content='Add' primary />
+                    </GridColumn>
+                </Grid>
+            </Form>
+        );
+    };
+
     render() {
         const { currentUser } = this.props;
         const { comments } = this.state;
@@ -39,14 +63,29 @@ class ProjectUpdateCommentList extends React.Component {
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>
                 </Grid>
-            )
-        } else {
+            );
+        }
+        else if (comments.length === 0) {
+            return (
+                <Comment.Group>
+                    {/*<Form reply>*/}
+                    {/*    <Form.TextArea />*/}
+                    {/*    <Button content='Add Comment' labelPosition='left' icon='edit' primary />*/}
+                    {/*</Form>*/}
+                    {this.addCommentForm()}
+                </Comment.Group>
+            );
+        }
+        else {
             return(
-                <CommentList
-                    comments={comments}
-                    currentUser={currentUser}
-                    deleteCommentCallback={this.deleteCommentCallback}
-                />
+                <div>
+                    <CommentList
+                        comments={comments}
+                        currentUser={currentUser}
+                        deleteCommentCallback={this.deleteCommentCallback}
+                    />
+                    {this.addCommentForm()}
+                </div>
             );
         }
     }

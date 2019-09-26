@@ -59,7 +59,7 @@ class CommentItem extends React.Component {
         const momentTime = Moment(dateTime).calendar();
 
         return (
-            <Segment>
+            <div>
                 <Comment key={guid}>
                     <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />
                     <Comment.Content>
@@ -75,7 +75,7 @@ class CommentItem extends React.Component {
                     </Comment.Content>
                 </Comment>
                 {this.getConfirmDelete()}
-            </Segment>
+            </div>
         );
     }
 }
