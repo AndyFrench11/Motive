@@ -117,8 +117,9 @@ namespace backend_api.Database.CommentRepository
             var updateId = updateGuid.ToString();
 
             const string statement = "MATCH (update:ProjectUpdate) -- (comment:Comment) " + 
-                                     "WHERE update.guid = $updateId " + 
-                                     "RETURN comment";
+                                     "WHERE update.guid = $updateId " +
+                                     "RETURN comment " + 
+                                     "ORDER BY comment.authored";
             var result = tx.Run(statement, new {updateId});
             var comments = result.Select(record => new Comment(record[0].As<INode>().Properties)).ToList();
             return comments;
