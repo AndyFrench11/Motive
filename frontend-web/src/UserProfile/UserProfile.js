@@ -19,6 +19,14 @@ import NewProjectForm from "../Project/CreateNewProject/ModalForm";
 import {postProject} from "../Project/actions";
 import { Route } from 'react-router-dom';
 
+function importAll(r) {
+    let images = {};
+    r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+    return images;
+}
+
+const images = importAll(require.context('../Project/ProjectImages', false, /\.(png|jpe?g|svg)$/));
+
 
 class UserProfile extends React.Component {
 
@@ -88,6 +96,7 @@ class UserProfile extends React.Component {
 
     ProfileHeader() {
         if(typeof this.props.result !== 'undefined') {
+            //Causing issues
             this.props.history.push(`/project/${this.props.result}`)
         }
         else if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
@@ -121,7 +130,7 @@ class UserProfile extends React.Component {
                         <Modal open={true} onClose={this.closeModal} closeIcon>
                             <Modal.Header>Create a New Project</Modal.Header>
                             <Modal.Content>
-                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex}/>
+                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={false}/>
                             </Modal.Content>
                             <Modal.Actions>
                                 <Button
@@ -161,6 +170,7 @@ class UserProfile extends React.Component {
                     </div>
                 );
             } else {
+                var photoList = Object.keys(images);
 
                 return (
                     <div>
@@ -168,7 +178,7 @@ class UserProfile extends React.Component {
                             {this.props.projects.items.map((item, index) => (
                                 <Route render={({ history }) => (
                                     <Item key={index} item={item} onClick={() => { history.push(`/project/${item.guid}/`) }}>
-                                        <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
+                                        <Item.Image size='tiny' src={images[photoList[item.imageIndex]]} />
                                         <Item.Content>
                                             <Item.Header>{item.name}</Item.Header>
                                             <Item.Description>{item.description}</Item.Description>

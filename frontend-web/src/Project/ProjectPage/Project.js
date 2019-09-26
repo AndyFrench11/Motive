@@ -18,6 +18,7 @@ import UpdateProjectImageModal from "./ProjectDetails/UpdateProjectImageModal";
 import CreateProjectUpdateModal from "./ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
 import ProjectUpdateList from "./ProjectUpdates/ProjectUpdate/ProjectUpdateList";
 import ProjectTimeline from "./ProjectTimeline/ProjectTimeline";
+import SubProjectList from "./SubProjects/SubProjectList";
 
 function importAll(r) {
     let images = {};
@@ -229,6 +230,23 @@ class ProjectPageLayout extends React.Component {
         
     }
 
+    renderSubProjects(tags) {
+        //const { subProjects } = this.props;
+        const subProjects = [];
+        if (subProjects === null || subProjects === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else {
+
+            return (
+                <SubProjectList subProjects={subProjects} tags={tags}/>
+            );
+        }
+    }
+
     checkRender() {
 
         if (this.props.project === null || this.props.project === undefined) {
@@ -282,13 +300,18 @@ class ProjectPageLayout extends React.Component {
                         onClick={this.handleItemClick}
                     />
                     <Menu.Item
+                        name='Highlights'
+                        active={activeMenuItem === 'Highlights'}
+                        onClick={this.handleItemClick}
+                    />
+                    <Menu.Item
                         name='Tasks'
                         active={activeMenuItem === 'Tasks'}
                         onClick={this.handleItemClick}
                     />
                     <Menu.Item
-                        name='Highlights'
-                        active={activeMenuItem === 'Highlights'}
+                        name='Sub-Projects'
+                        active={activeMenuItem === 'Sub-Projects'}
                         onClick={this.handleItemClick}
                     />
                     <Menu.Item
@@ -308,6 +331,10 @@ class ProjectPageLayout extends React.Component {
 
                 {activeMenuItem === "Highlights" &&
                     this.renderProjectHighlights(project)                        
+                }
+
+                {activeMenuItem === "Sub-Projects" &&
+                    this.renderSubProjects(project.tagList)                        
                 }
 
                 {activeMenuItem === "Settings" &&
