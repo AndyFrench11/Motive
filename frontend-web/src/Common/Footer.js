@@ -6,35 +6,7 @@ class Footer extends React.Component {
         return (
             <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
                 <Container textAlign='center'>
-                    <Grid divided inverted stackable>
-                        <Grid.Column width={3}>
-                            <Header inverted as='h4' content='Group 1' />
-                            <List link inverted>
-                                <List.Item as='a'>Link One</List.Item>
-                            </List>
-                        </Grid.Column>
-                        <Grid.Column width={3}>
-                            <Header inverted as='h4' content='Group 2' />
-                            <List link inverted>
-                                <List.Item as='a'>Link One</List.Item>
-                            </List>
-                        </Grid.Column>
-                        <Grid.Column width={3}>
-                            <Header inverted as='h4' content='Group 3' />
-                            <List link inverted>
-                                <List.Item as='a'>Link One</List.Item>
-                            </List>
-                        </Grid.Column>
-                        <Grid.Column width={7}>
-                            <Header inverted as='h4' content='Footer Header' />
-                            <p>
-                                What's your Motive?
-                            </p>
-                        </Grid.Column>
-                    </Grid>
-
                     <Divider inverted section />
-                    <Image centered size='mini' src='/logo.png' />
                     <List horizontal inverted divided link size='small'>
                         <List.Item as='a' href='#'>
                             Site Map

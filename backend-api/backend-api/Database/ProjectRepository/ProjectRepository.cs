@@ -150,7 +150,8 @@ namespace backend_api.Database.ProjectRepository
             string projectDescription = project.description;
             string projectImageIndex = project.imageIndex.ToString();
             string projectGuid = project.Guid.ToString();
-            tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, imageIndex: $projectImageIndex, guid: $projectGuid})", new { projectName, projectDescription, projectImageIndex, projectGuid });
+            tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, imageIndex: $projectImageIndex, dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), guid: $projectGuid})", 
+                new { projectName, projectDescription, projectImageIndex, projectGuid });
         }
 
         private void CreateProjectRelationship(ITransaction tx, Project project, Guid userGuid)
@@ -194,7 +195,12 @@ namespace backend_api.Database.ProjectRepository
                 string taskGuid = task.Guid.ToString();
                 bool completed = task.completed;
                 int orderIndex = taskList.IndexOf(task);
-                tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, orderIndex: $orderIndex, guid: $taskGuid})", new { taskName, completed, orderIndex, taskGuid });
+                tx.Run("CREATE(pt:ProjectTask {name: $taskName, " +
+                       "completed: $completed, " +
+                       "orderIndex: $orderIndex, " +
+                       "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
+                       "guid: $taskGuid})", 
+                    new { taskName, completed, orderIndex, taskGuid });
             }
         }
 

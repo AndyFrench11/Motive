@@ -44,6 +44,9 @@ class ProjectUpdateList extends React.Component {
             )
         } 
         else {
+            //Sort the project updates based on time created
+            projectUpdates.sort((a, b) => (a.dateTimeCreated < b.dateTimeCreated) ? 1 : ((b.dateTimeCreated < a.dateTimeCreated) ? -1 : 0));
+
             return(
                 <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
                     {projectUpdates.map((update, index) => (
