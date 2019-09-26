@@ -67,12 +67,15 @@ class ProjectPageLayout extends React.Component {
         this.setState({ createProjectUpdateModalOpen: true })
     }   
 
-    closeCreateProjectUpdateModal = (update) => {
+    closeCreateProjectUpdateModal = (project, user, update) => {
         if(update !== undefined) {
-            const { projectUpdates } = this.state;
-            projectUpdates.push(update);
-            this.setState({projectUpdates: projectUpdates})
-        }
+            let localProjectUpdates = this.props.projectUpdates;
+            update["relatedPerson"] = user;
+            update["relatedProject"] = project;
+            update["relatedTask"] = project.taskList.filter((task) => task.guid === update.taskGuid);
+            localProjectUpdates.push(update);
+            this.setState({localProjectUpdates: localProjectUpdates})
+        }       
         
         this.setState({ createProjectUpdateModalOpen: false })
     }
@@ -168,7 +171,7 @@ class ProjectPageLayout extends React.Component {
     }
 
     renderProjectUpdates(project) {
-        const { projectUpdates } = this.state;
+        const { projectUpdates } = this.props;
         if (projectUpdates === null || projectUpdates === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
@@ -176,14 +179,18 @@ class ProjectPageLayout extends React.Component {
                 </Grid>
             )
         } else {
+            
+            const { localProjectUpdates } = this.state;
+            const updates = localProjectUpdates !== null ? localProjectUpdates : projectUpdates;
+
             return (
-                <ProjectUpdateList project={project} projectUpdates={projectUpdates} listType="projectUpdates"/>
+                <ProjectUpdateList project={project} projectUpdates={updates} listType="projectUpdates"/>
             );
         }
     }
 
     renderProjectHighlights(project) {
-        const { projectUpdates } = this.state;
+        const { projectUpdates } = this.props;
         if (projectUpdates === null || projectUpdates === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>

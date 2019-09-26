@@ -13,7 +13,7 @@ namespace backend_api.Models
         public Person relatedPerson { get; set; }
         public Project relatedProject { get; set; }
         //public List<Tag> relatedTags { get; set; }
-        public LocalDateTime dateTimeCreated { get; set; }
+        public string dateTimeCreated { get; set; }
 
         public ProjectUpdate()
         {
@@ -24,7 +24,7 @@ namespace backend_api.Models
         {
             this.content = props["content"].ToString();
             this.highlight = Boolean.Parse(props["highlight"].ToString());
-            this.dateTimeCreated = new LocalDateTime(DateTime.Parse(props["dateTimeCreated"].ToString()));
+            this.dateTimeCreated = (new LocalDateTime(DateTime.Parse(props["dateTimeCreated"].ToString()))).ToString();
             this.Guid = Guid.Parse(props["guid"].ToString());
         }
     }

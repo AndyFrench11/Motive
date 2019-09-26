@@ -4,6 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
+import dateFormat from 'dateformat';
 import { postProjectUpdate } from "./actions";
 import TrophyImage from '../../../ProjectImages/image16.png';
 
@@ -51,18 +52,20 @@ class CreateProjectUpdateModal extends React.Component {
 
     confirmNewUpdate = () => {
         const { contentInput, selectedTaskGuid, markedAsHighlight } = this.state;
-        let update = { content: contentInput, highlight: markedAsHighlight }
-        if(selectedTaskGuid !== "")
-        {
-            update["taskGuid"] = selectedTaskGuid;
+        const defaultTaskGuid = "00000000-0000-0000-0000-000000000000";
+        const currentDateTime = new Date();
+        var event = dateFormat(currentDateTime, "yyyy-mm-dd") + "T" +  dateFormat(currentDateTime, "HH:MM:ss") + ".667000000"
+        console.log(event);
+        let update = { 
+            content: contentInput, 
+            highlight: markedAsHighlight,
+            taskGuid: selectedTaskGuid !== "" ? selectedTaskGuid : defaultTaskGuid,
+            guid: uuidv4(),
+            dateTimeCreated: event
         }
-        
+    
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
-        console.log(update);
-        update["relatedPerson"] = this.props.user;
-        update["relatedTask"] = this.props.project.taskList.filter((task) => task.guid === selectedTaskGuid);
-        console.log(update);
-        this.props.closeCallback(update)
+        this.props.closeCallback(this.props.project, this.props.user, update)
     }
 
     updateHighlightStatus = () => {
