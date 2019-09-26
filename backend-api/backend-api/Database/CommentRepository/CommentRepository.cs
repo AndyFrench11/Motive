@@ -31,6 +31,10 @@ namespace backend_api.Database.CommentRepository
                     // Add authored relationship
                     _session.WriteTransaction(tx => AddAuthorRelationship(tx, comment.Guid, authorGuid));
                     
+                    // Add the author to the comment return
+                    var author = _session.ReadTransaction(tx => RetrieveCommentAuthor(tx, newComment.Guid));
+                    newComment.Author = author;
+                    
                     return new RepositoryReturn<Comment>(newComment);
                 }
             }
