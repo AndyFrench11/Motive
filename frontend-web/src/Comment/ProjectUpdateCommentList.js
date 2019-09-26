@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import CommentList from "./CommentList";
-import {deleteComment} from "./actions";
+import {deleteComment, createComment} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
 
 class ProjectUpdateCommentList extends React.Component {
@@ -12,16 +12,32 @@ class ProjectUpdateCommentList extends React.Component {
         super(props);
 
         this.state = {
-            comments: this.props.comments
+            comments: this.props.comments,
+            messageString: ''
         };
     }
 
-    readMessageString = () => {
-      return "new comment";
+    handleChange = (e, {name, value}) => {
+        this.setState({[name]: value})
     };
 
+    handleSubmit = () => {
+        // Create the comment
+        this.createComment();
+
+        // If successful, clear the text area
+        this.setState({messageString: ''})
+    };
+
+
     createComment = () => {
-        let message = this.readMessageString();
+        const { currentUser, update } = this.props;
+        const { messageString } = this.state;
+
+        // Create comment request
+        this.props.addComment(currentUser.guid, update.guid, messageString)
+            // Add to state
+            .then( () => this.setState(previous => ({comments: [...previous.comments, this.props.newComment]})));
     };
 
     deleteCommentCallback = (comment) => {
@@ -40,15 +56,24 @@ class ProjectUpdateCommentList extends React.Component {
     };
 
     addCommentForm = () => {
+        const { messageString } = this.state;
         return (
-            <Form reply>
+            <Form reply onSubmit={this.handleSubmit}>
                 <Grid>
                     <GridColumn width={12}>
-                        <TextArea rows={1} placeholder='Add a comment...' />
+                        <Form.TextArea
+                            name='messageString'
+                            value={messageString}
+                            rows={1}
+                            placeholder='Add a comment...'
+                            onChange={this.handleChange}
+                        />
                     </GridColumn>
 
                     <GridColumn width={3}>
-                        <Button content='Add' primary />
+                        <Form.Button
+                            content='Add'
+                            primary/>
                     </GridColumn>
                 </Grid>
             </Form>
@@ -68,10 +93,6 @@ class ProjectUpdateCommentList extends React.Component {
         else if (comments.length === 0) {
             return (
                 <Comment.Group>
-                    {/*<Form reply>*/}
-                    {/*    <Form.TextArea />*/}
-                    {/*    <Button content='Add Comment' labelPosition='left' icon='edit' primary />*/}
-                    {/*</Form>*/}
                     {this.addCommentForm()}
                 </Comment.Group>
             );
@@ -93,16 +114,18 @@ class ProjectUpdateCommentList extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        deleteComment: (userGuid, updateGuid) => dispatch(deleteComment(userGuid, updateGuid))
+        deleteComment: (userGuid, commentGuid) => dispatch(deleteComment(userGuid, commentGuid)),
+        addComment: (userGuid, updateGuid, messageString) => dispatch(createComment(userGuid, updateGuid, messageString))
     };
 }
 
 const mapStateToProps = state => {
     const { projectUpdateCommentReducer } = state;
     const { commentController } = projectUpdateCommentReducer;
-    const { result  } = commentController;
+    const { result, newComment  } = commentController;
     return {
-        result: result
+        result: result,
+        newComment: newComment
     };
 };
 

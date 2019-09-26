@@ -178,6 +178,7 @@ class ProjectUpdate extends React.Component {
                             <ProjectUpdateCommentList
                                 comments={comments}
                                 currentUser={currentUser}
+                                update={update}
                             />
                             {/*<CommentList*/}
                             {/*    comments={comments}*/}
