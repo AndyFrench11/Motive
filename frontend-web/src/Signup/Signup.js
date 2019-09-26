@@ -8,6 +8,7 @@ import {connect} from "react-redux";
 import WelcomeBanner from "../Common/WelcomeBanner";
 import validate from "../Common/FormValidation";
 import DateOfBirthPicker from "./dateOfBirthPicker";
+import generateHash from "../Common/Auth/hashGenerator";
 
 const Filter = require('bad-words');
 
@@ -80,6 +81,10 @@ class SignUp extends Component {
             this.setState({validationStatus: ValidationStatus.INVALID_PASSWORD});
             return;
         }
+
+        signUpDetails.password = generateHash(signUpDetails.password);
+
+        console.log(signUpDetails.password);
 
         this.setState({validationStatus: ValidationStatus.VALID});
         this.props.postSignUp(signUpDetails);
