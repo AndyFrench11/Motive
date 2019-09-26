@@ -8,7 +8,7 @@ import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
 import { deleteProjectUpdate, updateProjectUpdateHighlight } from "./actions";
 import ProjectUpdateCommentList from "../../../../Comment/ProjectUpdateCommentList";
-import CommentList from "../../../../Comment/CommentList";
+import Moment from 'moment';
 
 class ProjectUpdate extends React.Component {
 
@@ -56,7 +56,7 @@ class ProjectUpdate extends React.Component {
     render() {
 
         const { update, projectName, tags, currentUser } = this.props;
-        const { relatedPerson, relatedTask, content, guid, comments } = update;
+        const { relatedPerson, relatedTask, content, dateTimeCreated, guid, comments } = update;
 
         const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
@@ -77,8 +77,11 @@ class ProjectUpdate extends React.Component {
             </span>
             );
 
+        const dateTime = new Date(dateTimeCreated);
+        const momentTime = Moment(dateTime).calendar();
+
         return (
-            <Segment style={{'marginLeft': '20em', 'marginRight': '20em', 'marginTop': '3em'}}>
+            <Segment style={{'width': '50em', 'marginTop': '3em', 'marginLeft': '2em'}}>
 
                 <Confirm
                     open={deleteUpdateConfirmOpen}
@@ -101,7 +104,10 @@ class ProjectUpdate extends React.Component {
                         <Grid.Row>
                             <Header size='large'>Update from {relatedPerson.firstName}</Header>
                         </Grid.Row>
-                        
+                        <Grid.Row style={{'marginTop': '1em'}}>
+                            <Header size='tiny'>{momentTime}</Header>
+                        </Grid.Row>
+
                     </Grid.Column>
                     <Grid.Column width={5}>
                         <Grid.Row>
@@ -178,14 +184,9 @@ class ProjectUpdate extends React.Component {
                             {/*/>*/}
                         </Segment> 
                     </Grid.Column>
-
                 </Grid>
 
                 <Divider/>
-
-                <Progress percent={25} success style={{'marginTop': '1em'}}>
-                    INSERT TIMELINE HERE
-                    </Progress>
 
             </Segment>
 

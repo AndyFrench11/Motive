@@ -38,7 +38,12 @@ namespace backend_api.Database.ProjectTaskRepository
             string taskGuid = task.Guid.ToString();
             bool completed = task.completed;
             int orderIndex = task.orderIndex;
-            tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, orderIndex: $orderIndex, guid: $taskGuid})", new { taskName, completed, orderIndex, taskGuid });
+            tx.Run("CREATE(pt:ProjectTask {name: $taskName, " +
+                   "completed: $completed, " +
+                   "orderIndex: $orderIndex, " +
+                   "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
+                   "guid: $taskGuid})", 
+                new { taskName, completed, orderIndex, taskGuid });
         }
 
         private void CreateTaskRelationship(ITransaction tx, ProjectTask task, Guid projectGuid)
@@ -70,7 +75,20 @@ namespace backend_api.Database.ProjectTaskRepository
         {
             //Edit the task node based on completion status
             string projectTaskId = projectTaskGuid.ToString();
-            tx.Run("MATCH (a:ProjectTask) WHERE a.guid = $projectTaskId SET a.completed = $completed", new { projectTaskId, completed });
+            string query = "MATCH (a:ProjectTask) WHERE a.guid = $projectTaskId " +
+                           "SET a.completed = $completed";
+                           
+            if (completed)
+            {
+                query += ", a.dateTimeCompleted = localdatetime({ timezone: 'Pacific/Auckland' })";
+            }
+            else
+            {
+                query += ", a.dateTimeCompleted = NULL";
+            }
+            
+            tx.Run(query, 
+                new { projectTaskId, completed });
         }
 
         public RepositoryReturn<bool> Delete(Guid projectTaskGuid)

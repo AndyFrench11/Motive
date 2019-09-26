@@ -21,7 +21,7 @@ namespace backend_api.Models
         
         public string dateOfBirth { get; set; }
         
-        public string dateJoined { get; set; }
+        public LocalDateTime dateJoined { get; set; }
         
         public string profileBio { get; set; }
         
@@ -34,7 +34,7 @@ namespace backend_api.Models
             this.password = password;
             this.dateOfBirth = dateOfBirth;
             this.profileBio = profileBio;
-            this.dateJoined = DateTime.Today.ToString("dd/MM/yy");
+            //this.dateJoined = DateTime.Today.ToString("dd/MM/yy");
         }
 
         public Person()
@@ -42,7 +42,7 @@ namespace backend_api.Models
         }
 
         // Parses an existing person, using existing GUID
-        public Person(string firstName, string lastName, string email, string dateOfBirth, string password, string profileBio, string guid, string dateJoined)
+        public Person(string firstName, string lastName, string email, string dateOfBirth, string password, string profileBio, string guid, LocalDateTime dateJoined)
         {
             this.firstName = firstName;
             this.lastName = lastName;
@@ -65,7 +65,7 @@ namespace backend_api.Models
             this.publicKey = props["publicKey"].ToString();
             this.dateOfBirth = props["dateOfBirth"].ToString();
             this.profileBio = props["profileBio"].ToString();
-            this.dateJoined = props["dateJoined"].ToString();
+            this.dateJoined = new LocalDateTime(DateTime.Parse(props["dateJoined"].ToString()));
             this.Guid = Guid.Parse(props["guid"].ToString());
         }
 
@@ -77,17 +77,5 @@ namespace backend_api.Models
         }
         
 
-        //        public Person(Person parsedPerson)
-        //        {
-        //       
-        //            this.guid = Guid.NewGuid().ToString();
-        //            this.dateJoined = DateTime.Today.ToString("dd/MM/yy");
-        //            
-        //            this.firstName = parsedPerson.firstName;
-        //            this.lastName = parsedPerson.lastName;
-        //            this.email = parsedPerson.email;
-        //            this.dateOfBirth = parsedPerson.dateOfBirth;
-        //            this.profileBio = parsedPerson.profileBio;
-        //        }
     }
 }
