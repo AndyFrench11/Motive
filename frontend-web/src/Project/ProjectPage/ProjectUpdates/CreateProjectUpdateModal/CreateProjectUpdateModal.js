@@ -55,8 +55,7 @@ class CreateProjectUpdateModal extends React.Component {
         const defaultTaskGuid = "00000000-0000-0000-0000-000000000000";
         const currentDateTime = new Date();
         var event = dateFormat(currentDateTime, "yyyy-mm-dd") + "T" +  dateFormat(currentDateTime, "HH:MM:ss") + ".667000000"
-        console.log(event);
-        let update = { 
+        const update = { 
             content: contentInput, 
             highlight: markedAsHighlight,
             taskGuid: selectedTaskGuid !== "" ? selectedTaskGuid : defaultTaskGuid,
@@ -65,7 +64,8 @@ class CreateProjectUpdateModal extends React.Component {
         }
     
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
-        this.props.closeCallback(this.props.project, this.props.user, update)
+        // this.props.closeCallback(this.props.project, this.props.user, update)
+        this.props.closeCallback()
     }
 
     updateHighlightStatus = () => {

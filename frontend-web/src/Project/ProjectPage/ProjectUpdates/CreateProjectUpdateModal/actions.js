@@ -15,8 +15,6 @@ export function postProjectUpdate(projectGuid, userGuid, update) {
     return dispatch => {
         dispatch(requestNewProjectUpdate());
         //Take only the values needed for the request
-        console.log(update);
-
         return axios.post(serverUrl + `/projectUpdate`, update, {headers: {
                 'Content-Type': 'application/json',
                 'projectGuid': projectGuid,

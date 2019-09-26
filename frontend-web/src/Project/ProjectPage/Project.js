@@ -37,9 +37,7 @@ class ProjectPageLayout extends React.Component {
             activeMenuItem: "Updates",
             updatingProjectImage: false,
             selectedImageIndex: -1,
-            createProjectUpdateModalOpen: false,
-            localProjectUpdates: null
-            //Set the state equal to that once the props are found.
+            createProjectUpdateModalOpen: false
         };
     }
 
@@ -68,15 +66,25 @@ class ProjectPageLayout extends React.Component {
     }   
 
     closeCreateProjectUpdateModal = (project, user, update) => {
-        if(update !== undefined) {
-            let localProjectUpdates = this.props.projectUpdates;
-            update["relatedPerson"] = user;
-            update["relatedProject"] = project;
-            update["relatedTask"] = project.taskList.filter((task) => task.guid === update.taskGuid);
-            localProjectUpdates.push(update);
-            this.setState({localProjectUpdates: localProjectUpdates})
-        }       
-        
+        // if(update !== undefined) {
+        //     const { projectUpdates } = this.props;
+        //     const { localProjectUpdates } = this.state;
+        //     const updates = localProjectUpdates !== null ? localProjectUpdates : projectUpdates;
+
+        //     const relatedTask = project.taskList.filter((task) => task.guid === update.taskGuid);
+        //     const updateCopy = Object.assign({}, update, {
+        //         relatedPerson: user,
+        //         relatedProject: project
+        //     });
+        //     if(relatedTask === []) {
+        //         updateCopy['relatedTask'] = relatedTask
+        //     }
+        //     updates.push(updateCopy);
+
+        //     this.setState({localProjectUpdates: updates, createProjectUpdateModalOpen: false})
+        // } else {
+        //     this.setState({ createProjectUpdateModalOpen: false })
+        // }       
         this.setState({ createProjectUpdateModalOpen: false })
     }
 
@@ -180,8 +188,7 @@ class ProjectPageLayout extends React.Component {
             )
         } else {
             
-            const { localProjectUpdates } = this.state;
-            const updates = localProjectUpdates !== null ? localProjectUpdates : projectUpdates;
+            const updates = projectUpdates;
 
             return (
                 <ProjectUpdateList project={project} projectUpdates={updates} listType="projectUpdates"/>
@@ -206,6 +213,22 @@ class ProjectPageLayout extends React.Component {
     
     }
 
+    renderProjectTimeline(tasks) {
+        const { projectUpdates } = this.props;
+        if (projectUpdates === null || projectUpdates === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else {
+            return (
+                <ProjectTimeline updates={projectUpdates} tasks={tasks}/>
+            )
+        }
+        
+    }
+
     checkRender() {
 
         if (this.props.project === null || this.props.project === undefined) {
@@ -215,7 +238,7 @@ class ProjectPageLayout extends React.Component {
                 </Grid>
             )
         } else {
-            const { project, projectOwners, projectUpdates } = this.props;
+            const { project, projectOwners } = this.props;
             const { activeMenuItem, updatingProjectImage, createProjectUpdateModalOpen } = this.state;
 
             return (
@@ -248,7 +271,7 @@ class ProjectPageLayout extends React.Component {
 
                 <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 
-                <ProjectTimeline updates={projectUpdates} tasks={project.taskList}/>
+                {this.renderProjectTimeline(project.taskList)}
 
                 <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 

@@ -245,14 +245,9 @@ class ProjectUpdate extends React.Component {
                             </Comment.Group>
                         </Segment> 
                     </Grid.Column>
-
                 </Grid>
 
                 <Divider/>
-
-                <Progress percent={25} success style={{'marginTop': '1em'}}>
-                    INSERT TIMELINE HERE
-                    </Progress>
 
             </Segment>
 
