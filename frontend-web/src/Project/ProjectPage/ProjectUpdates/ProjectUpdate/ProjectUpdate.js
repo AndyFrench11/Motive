@@ -81,7 +81,7 @@ class ProjectUpdate extends React.Component {
         const momentTime = Moment(dateTime).calendar();
 
         return (
-            <Segment style={{'width': '50em', 'marginTop': '3em', 'marginLeft': '2em'}}>
+            <Segment style={{'width': '80em', 'marginTop': '3em', 'marginLeft': '2em'}}>
 
                 <Confirm
                     open={deleteUpdateConfirmOpen}

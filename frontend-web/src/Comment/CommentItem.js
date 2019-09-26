@@ -1,6 +1,7 @@
 import React from 'react'
 import {Comment, Confirm, Item, Segment} from 'semantic-ui-react'
 import { Route } from 'react-router-dom';
+import Moment from 'moment';
 
 class CommentItem extends React.Component {
     constructor(props) {
@@ -54,6 +55,9 @@ class CommentItem extends React.Component {
         const { comment } = this.props;
         const { guid, message, authored, author } = comment;
 
+        const dateTime = new Date(authored);
+        const momentTime = Moment(dateTime).calendar();
+
         return (
             <Segment>
                 <Comment key={guid}>
@@ -64,7 +68,7 @@ class CommentItem extends React.Component {
                             </Comment.Author>
                         )} />
                         <Comment.Metadata>
-                            <div>{authored}</div>
+                            <div>{momentTime}</div>
                         </Comment.Metadata>
                         <Comment.Text>{message}</Comment.Text>
                         {this.getActions()}
