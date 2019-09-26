@@ -63,7 +63,7 @@ namespace backend_api.Controllers
                 return StatusCode(500, result.ErrorException.Message);
             }
             
-            return StatusCode(201, commentToCreate.Guid);
+            return StatusCode(201, result.ReturnValue);
         }
         
         // READ

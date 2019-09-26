@@ -16,14 +16,14 @@ namespace backend_api.Database.CommentRepository
             _session = neo4JConnection.driver.Session();
         }
         
-        public RepositoryReturn<bool> Add(Comment comment, Guid authorGuid, Guid updateGuid)
+        public RepositoryReturn<Comment> Add(Comment comment, Guid authorGuid, Guid updateGuid)
         {
             try
             {
                 using (_session)
                 {
                     // Add comment node
-                    _session.WriteTransaction(tx => CreateCommentNode(tx, comment));
+                    var newComment = _session.WriteTransaction(tx => CreateCommentNode(tx, comment));
                     
                     // Add has relationship to task
                     _session.WriteTransaction(tx => AddUpdateRelationship(tx, comment.Guid, updateGuid));
@@ -31,20 +31,20 @@ namespace backend_api.Database.CommentRepository
                     // Add authored relationship
                     _session.WriteTransaction(tx => AddAuthorRelationship(tx, comment.Guid, authorGuid));
                     
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<Comment>(newComment);
                 }
             }
             catch (ServiceUnavailableException e)
             {
-                return new RepositoryReturn<bool>(true, e);
+                return new RepositoryReturn<Comment>(true, e);
             }
             catch (Exception e)
             {
-                return new RepositoryReturn<bool>(true, e);
+                return new RepositoryReturn<Comment>(true, e);
             }
         }
 
-        private void CreateCommentNode(ITransaction tx, Comment comment)
+        private Comment CreateCommentNode(ITransaction tx, Comment comment)
         {
             var commentId = comment.Guid.ToString();
             var messageString = comment.Message;
@@ -54,9 +54,11 @@ namespace backend_api.Database.CommentRepository
                                      "guid: $commentId, " + 
                                      "message: $messageString, " + 
                                      "authored: $authoredDate" +
-                                     "})";
-            tx.Run(statement, new {messageString, commentId, authoredDate});
-
+                                     "}) " + 
+                                     "RETURN comment";
+            var result = tx.Run(statement, new {messageString, commentId, authoredDate});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new Comment(record[0].As<INode>().Properties);
         }
 
         private void AddUpdateRelationship(ITransaction tx, Guid commentGuid, Guid updateGuid)

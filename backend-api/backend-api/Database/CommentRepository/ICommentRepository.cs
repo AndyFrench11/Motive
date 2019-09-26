@@ -6,7 +6,7 @@ namespace backend_api.Database.CommentRepository
 {
     public interface ICommentRepository
     {
-        RepositoryReturn<bool> Add(Comment comment, Guid authorGuid, Guid updateGuid);
+        RepositoryReturn<Comment> Add(Comment comment, Guid authorGuid, Guid updateGuid);
         
         RepositoryReturn<IEnumerable<Comment>> GetAllForUpdate(Guid updateGuid);
 
