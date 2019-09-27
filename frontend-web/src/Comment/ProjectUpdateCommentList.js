@@ -37,14 +37,11 @@ class ProjectUpdateCommentList extends React.Component {
         this.setState({[name]: value})
     };
 
-    handleSubmit = () => {
-        // Create the comment
-        this.createComment();
-
-        // If successful, clear the text area
-        this.setState({messageString: ''})
+    enter = (e) => {
+        if (e.key === 'Enter') {
+            this.createComment();
+        }
     };
-
 
     createComment = () => {
         const {currentUser, update} = this.props;
@@ -54,7 +51,9 @@ class ProjectUpdateCommentList extends React.Component {
         this.props.addComment(currentUser.guid, update.guid, messageString)
             .then(() => {
                 // Add to state
-                this.setState(previous => ({comments: [...previous.comments, this.props.newComment]}))
+                this.setState(previous => ({comments: [...previous.comments, this.props.newComment]}));
+                // If successful, clear the text area
+                this.setState({messageString: ''})
             });
     };
 
@@ -84,7 +83,7 @@ class ProjectUpdateCommentList extends React.Component {
     addCommentForm = () => {
         const {messageString} = this.state;
         return (
-            <Form reply onSubmit={this.handleSubmit}>
+            <Form reply onSubmit={this.createComment}>
                 <Grid>
                     <GridColumn width={12}>
                         <Form.TextArea
@@ -93,6 +92,7 @@ class ProjectUpdateCommentList extends React.Component {
                             rows={1}
                             placeholder='Add a comment...'
                             onChange={this.handleChange}
+                            onKeyDown={this.enter}
                         />
                     </GridColumn>
 

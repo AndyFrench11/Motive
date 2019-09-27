@@ -25,6 +25,12 @@ class CommentItem extends React.Component {
         this.setState({newMessage: value});
     };
 
+    enter = (e) => {
+        if (e.key === 'Enter') {
+            this.edit();
+        }
+    };
+
     edit = () => {
         const {comment, newMessage} = this.state;
 
@@ -73,6 +79,7 @@ class CommentItem extends React.Component {
                 <Input
                     size='small'
                     onChange={this.updateMessage}
+                    onKeyDown={this.enter}
                     action
                     defaultValue={message}
                 >
