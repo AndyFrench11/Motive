@@ -186,7 +186,35 @@ namespace backend_api.Features.TaskForum.Repository
 
         public RepositoryReturn<bool> Delete(Guid messageGuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (_session)
+                {
+                    // Update comment node
+                    _session.WriteTransaction(tx => RemoveMessageNode(tx, messageGuid));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveMessageNode(ITransaction tx, Guid messageGuid)
+        {
+            var messageId = messageGuid.ToString();
+            
+            const string statement = "MATCH (message:Message) " + 
+                                     "WHERE message.guid = $messageId " + 
+                                     "DETACH DELETE message";
+            
+            tx.Run(statement, new {messageId});
         }
     }
 }
