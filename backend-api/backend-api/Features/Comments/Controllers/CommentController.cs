@@ -77,7 +77,7 @@ namespace backend_api.Features.Comments.Controllers
         {
             // TODO
             // Check auth/user - Unauthorised() and Forbidden() if no access to project
-            // Check task exists - NotFound()
+            // Check update exists - NotFound()
             
             // User
             Guid userGuid;

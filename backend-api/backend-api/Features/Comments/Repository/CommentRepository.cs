@@ -62,6 +62,7 @@ namespace backend_api.Features.Comments.Repository
                                      "authored: $authoredDate" +
                                      "}) " + 
                                      "RETURN comment";
+            
             var result = tx.Run(statement, new {messageString, commentId, authoredDate});
             var record = result.SingleOrDefault();
             return record == null ? null : new Comment(record[0].As<INode>().Properties);
