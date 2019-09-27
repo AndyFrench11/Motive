@@ -25,7 +25,7 @@ namespace backend_api.Features.TaskForum.Controller
         {
             // TODO: Check valid auth and access
             
-            // Parse project guid and new member guid
+            // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (taskGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
@@ -56,7 +56,7 @@ namespace backend_api.Features.TaskForum.Controller
         [HttpGet("{taskId}")]
         public ActionResult<List<Channel>> GetAll(string taskId, [FromHeader]string userId)
         {
-            // Parse project guid and new member guid
+            // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (taskGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
@@ -84,7 +84,7 @@ namespace backend_api.Features.TaskForum.Controller
         {
             // TODO: Check User auth and access - Unauthorised() || Forbidden()
             
-            // Parse project guid and new member guid
+            // Parse channel guid and user guid
             var channelGuid = ValidationUtil.ParseGuid(channelId);
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (channelGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
@@ -112,6 +112,30 @@ namespace backend_api.Features.TaskForum.Controller
         }
 
         // DELETE
+        [HttpDelete("{channelId}")]
+        public ActionResult Delete(string channelId, [FromHeader]string userId)
+        {
+            // TODO
+            // Check auth - Unauthorised()
+            // Check permissions - Forbidden()
+            // Check task exists - NotFound()
+            
+            // Parse channel guid and user guid
+            var channelGuid = ValidationUtil.ParseGuid(channelId);
+            var userGuid = ValidationUtil.ParseGuid(userId);
+            if (channelGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
+            {
+                return BadRequest("Invalid guid.");
+            }
 
+            var result = _channelRepository.Delete(channelGuid);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200);
+        }
     }
 }
