@@ -116,10 +116,25 @@ namespace backend_api.Controllers
         }
 
         // UPDATE
-        // PATCH api/comment
-        [HttpPatch]
-        public ActionResult Patch([FromBody]Comment commentToUpdate, [FromHeader]string userId)
+        // PATCH api/comment/:commentId
+        [HttpPatch("{commentId}")]
+        public ActionResult Patch(string commentId, [FromBody]Comment commentToUpdate, [FromHeader]string userId)
         {
+            //Check comment is valid
+            Guid commentGuid;
+            try
+            {
+                commentGuid = Guid.Parse(commentId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("Comment id is null.");
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Invalid comment id.");
+            }
+            
             //Check user is valid
             Guid userGuid;
             try
@@ -134,6 +149,8 @@ namespace backend_api.Controllers
             {
                 return BadRequest("Invalid user id.");
             }
+
+            commentToUpdate.Guid = commentGuid;
             
             //TODO 
             // Check valid comment
