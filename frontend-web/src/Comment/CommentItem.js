@@ -34,14 +34,16 @@ class CommentItem extends React.Component {
     edit = () => {
         const {comment, newMessage} = this.state;
 
-        // Edit comment callback
-        this.props.editCommentCallback(newMessage, comment)
-        // Update state
-            .then(() => {
-                this.setState({editing: false});
-                comment.message = newMessage;
-                this.setState({comment: comment});
-            });
+        if (newMessage.trim().length !== 0) {
+            // Edit comment callback
+            this.props.editCommentCallback(newMessage, comment)
+            // Update state
+                .then(() => {
+                    this.setState({editing: false});
+                    comment.message = newMessage;
+                    this.setState({comment: comment});
+                });
+        }
     };
 
     cancelDelete = () => this.setState({confirmDeleteOpen: false});

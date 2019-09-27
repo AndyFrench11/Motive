@@ -1,21 +1,8 @@
 import React from 'react'
 import {
-    Button,
-    Modal,
-    Icon,
     Form,
-    TextArea,
-    Progress,
-    Divider,
-    Dropdown,
-    Input,
-    Image,
-    Segment,
     Grid,
-    Header,
-    Label,
     Comment,
-    Confirm,
     GridColumn
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
@@ -47,14 +34,17 @@ class ProjectUpdateCommentList extends React.Component {
         const {currentUser, update} = this.props;
         const {messageString} = this.state;
 
-        // Create comment request
-        this.props.addComment(currentUser.guid, update.guid, messageString)
-            .then(() => {
-                // Add to state
-                this.setState(previous => ({comments: [...previous.comments, this.props.newComment]}));
-                // If successful, clear the text area
-                this.setState({messageString: ''})
-            });
+        // Check messageString is not empty
+        if (messageString.trim().length !== 0) {
+            // Create comment request
+            this.props.addComment(currentUser.guid, update.guid, messageString)
+                .then(() => {
+                    // Add to state
+                    this.setState(previous => ({comments: [...previous.comments, this.props.newComment]}));
+                    // If successful, clear the text area
+                    this.setState({messageString: ''})
+                });
+        }
     };
 
     editCommentCallback = (newMessage, comment) => {

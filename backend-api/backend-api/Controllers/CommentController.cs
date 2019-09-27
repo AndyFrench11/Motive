@@ -51,10 +51,14 @@ namespace backend_api.Controllers
                 return BadRequest("Invalid update id.");
             }
             
-            // TODO
-            // user has access to task/project - Forbidden()
-            // task not found - NotFound()
-            // Invalid comment content - BadRequest()
+            // TODO: check user has access to task/project - Forbidden()
+            // TODO: task not found - NotFound()
+            
+            // Check valid comment message
+            if (string.IsNullOrEmpty(commentToCreate.Message.Trim()))
+            {
+                return StatusCode(400, "Comment cannot be empty.");
+            }
 
             var result = _commentRepository.Add(commentToCreate, authorGuid, updateGuid);
             
@@ -152,10 +156,15 @@ namespace backend_api.Controllers
 
             commentToUpdate.Guid = commentGuid;
             
-            //TODO 
-            // Check valid comment
-            // Check valid update message
-            // User can access update comment i.e. they are the comment author - Forbidden()
+            // TODO: Check valid comment
+            
+            // Check valid comment message
+            if (string.IsNullOrEmpty(commentToUpdate.Message.Trim()))
+            {
+                return StatusCode(400, "Comment cannot be empty.");
+            }
+            
+            // TODO: Check User can access update comment i.e. they are the comment author - Forbidden()
             
             var result = _commentRepository.Edit(commentToUpdate);
             
