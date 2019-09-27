@@ -1,10 +1,26 @@
 import React from 'react'
 import {
-    Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm, GridColumn
+    Button,
+    Modal,
+    Icon,
+    Form,
+    TextArea,
+    Progress,
+    Divider,
+    Dropdown,
+    Input,
+    Image,
+    Segment,
+    Grid,
+    Header,
+    Label,
+    Comment,
+    Confirm,
+    GridColumn
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import CommentList from "./CommentList";
-import {deleteComment, createComment} from "./actions";
+import {deleteComment, createComment, updateComment} from "./actions";
 import LoaderInlineCentered from "../Common/Loader";
 
 class ProjectUpdateCommentList extends React.Component {
@@ -31,32 +47,42 @@ class ProjectUpdateCommentList extends React.Component {
 
 
     createComment = () => {
-        const { currentUser, update } = this.props;
-        const { messageString } = this.state;
+        const {currentUser, update} = this.props;
+        const {messageString} = this.state;
 
         // Create comment request
         this.props.addComment(currentUser.guid, update.guid, messageString)
-            // Add to state
-            .then( () => this.setState(previous => ({comments: [...previous.comments, this.props.newComment]})));
+            .then(() => {
+                // Add to state
+                this.setState(previous => ({comments: [...previous.comments, this.props.newComment]}))
+            });
+    };
+
+    editCommentCallback = (newMessage, comment) => {
+        const {currentUser} = this.props;
+
+        // Edit comment request
+        return this.props.editComment(currentUser.guid, comment.guid, newMessage);
     };
 
     deleteCommentCallback = (comment) => {
-        const { currentUser } = this.props;
-        const { comments } = this.state;
+        const {currentUser} = this.props;
+        const {comments} = this.state;
 
         // Delete comment request
-        this.props.deleteComment(currentUser.guid, comment.guid);
-
-        // Remove from state
-        let index = comments.indexOf(comment);
-        if (index !== -1) {
-            comments.splice(index, 1);
-            this.setState({comments: comments})
-        }
+        this.props.deleteComment(currentUser.guid, comment.guid)
+            .then(() => {
+                // Remove from state
+                let index = comments.indexOf(comment);
+                if (index !== -1) {
+                    comments.splice(index, 1);
+                    this.setState({comments: comments})
+                }
+            });
     };
 
     addCommentForm = () => {
-        const { messageString } = this.state;
+        const {messageString} = this.state;
         return (
             <Form reply onSubmit={this.handleSubmit}>
                 <Grid>
@@ -81,29 +107,28 @@ class ProjectUpdateCommentList extends React.Component {
     };
 
     render() {
-        const { currentUser } = this.props;
-        const { comments } = this.state;
+        const {currentUser} = this.props;
+        const {comments} = this.state;
         if (comments === null || comments === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>
                 </Grid>
             );
-        }
-        else if (comments.length === 0) {
+        } else if (comments.length === 0) {
             return (
                 <Comment.Group>
                     {this.addCommentForm()}
                 </Comment.Group>
             );
-        }
-        else {
-            return(
+        } else {
+            return (
                 <div>
                     <CommentList
                         comments={comments}
                         currentUser={currentUser}
                         deleteCommentCallback={this.deleteCommentCallback}
+                        editCommentCallback={this.editCommentCallback}
                     />
                     {this.addCommentForm()}
                 </div>
@@ -114,15 +139,16 @@ class ProjectUpdateCommentList extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        deleteComment: (userGuid, commentGuid) => dispatch(deleteComment(userGuid, commentGuid)),
-        addComment: (userGuid, updateGuid, messageString) => dispatch(createComment(userGuid, updateGuid, messageString))
+        addComment: (userGuid, updateGuid, messageString) => dispatch(createComment(userGuid, updateGuid, messageString)),
+        editComment: (userGuid, commentGuid, messageString) => dispatch(updateComment(userGuid, commentGuid, messageString)),
+        deleteComment: (userGuid, commentGuid) => dispatch(deleteComment(userGuid, commentGuid))
     };
 }
 
 const mapStateToProps = state => {
-    const { projectUpdateCommentReducer } = state;
-    const { commentController } = projectUpdateCommentReducer;
-    const { result, newComment  } = commentController;
+    const {projectUpdateCommentReducer} = state;
+    const {commentController} = projectUpdateCommentReducer;
+    const {result, newComment} = commentController;
     return {
         result: result,
         newComment: newComment

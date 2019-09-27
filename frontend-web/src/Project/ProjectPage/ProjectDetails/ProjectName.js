@@ -19,7 +19,7 @@ class ProjectName extends React.Component {
 
     updateProjectNameInputValue = (event, {value}) => {
         this.setState({ projectNameInputValue: value });
-    }
+    };
 
     updateProjectName = () => {
         const { projectNameInputValue, projectName } = this.state;

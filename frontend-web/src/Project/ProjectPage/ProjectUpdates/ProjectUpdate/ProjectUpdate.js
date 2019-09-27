@@ -3,7 +3,6 @@ import {
     Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
-import uuidv4 from 'uuid/v4';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
 import { deleteProjectUpdate, updateProjectUpdateHighlight } from "./actions";
@@ -180,10 +179,7 @@ class ProjectUpdate extends React.Component {
                                 currentUser={currentUser}
                                 update={update}
                             />
-                            {/*<CommentList*/}
-                            {/*    comments={comments}*/}
-                            {/*/>*/}
-                        </Segment> 
+                        </Segment>
                     </Grid.Column>
                 </Grid>
 

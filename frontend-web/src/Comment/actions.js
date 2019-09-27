@@ -4,10 +4,12 @@ const OK = 200;
 const CREATED = 201;
 const INTERNAL_SERVER_ERROR = 500;
 
-export const REQUEST_DELETE_PROJECT_UPDATE_COMMENT = 'REQUEST_DELETE_PROJECT_UPDATE_COMMENT';
-export const RECEIVE_DELETE_PROJECT_UPDATE_COMMENT = 'RECEIVE_DELETE_PROJECT_UPDATE_COMMENT';
 export const REQUEST_CREATE_PROJECT_UPDATE_COMMENT = 'REQUEST_CREATE_PROJECT_UPDATE_COMMENT';
 export const RECEIVE_CREATE_PROJECT_UPDATE_COMMENT = 'RECEIVE_CREATE_PROJECT_UPDATE_COMMENT';
+export const REQUEST_UPDATE_PROJECT_UPDATE_COMMENT = 'REQUEST_UPDATE_PROJECT_UPDATE_COMMENT';
+export const RECEIVE_UPDATE_PROJECT_UPDATE_COMMENT = 'RECEIVE_UPDATE_PROJECT_UPDATE_COMMENT';
+export const REQUEST_DELETE_PROJECT_UPDATE_COMMENT = 'REQUEST_DELETE_PROJECT_UPDATE_COMMENT';
+export const RECEIVE_DELETE_PROJECT_UPDATE_COMMENT = 'RECEIVE_DELETE_PROJECT_UPDATE_COMMENT';
 
 const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
@@ -45,6 +47,43 @@ function receiveCreateComment(response) {
     }
     return {
         type: RECEIVE_CREATE_PROJECT_UPDATE_COMMENT,
+        receivedAt: Date.now()
+    }
+}
+
+function requestUpdateComment() {
+    return {
+        type: REQUEST_UPDATE_PROJECT_UPDATE_COMMENT
+    }
+}
+
+export function updateComment(userGuid, commentGuid, message) {
+    let body = {
+        message: message
+    };
+    return function (dispatch) {
+        dispatch(requestUpdateComment());
+        return axios.patch(serverUrl + '/comment/' + commentGuid, body, {
+            headers: {
+                'Content-Type': 'application/json',
+                'userId': userGuid
+            }
+        }).then(
+            response => dispatch(receiveUpdateComment(response)),
+            error => console.log("An error has occurred!!", error)
+        );
+    }
+}
+
+function receiveUpdateComment(response) {
+    if (response.status === OK) {
+        return {
+            type: RECEIVE_UPDATE_PROJECT_UPDATE_COMMENT,
+            receivedAt: Date.now()
+        }
+    }
+    return {
+        type: RECEIVE_UPDATE_PROJECT_UPDATE_COMMENT,
         receivedAt: Date.now()
     }
 }

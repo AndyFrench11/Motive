@@ -1,6 +1,7 @@
 import React from 'react'
 import {
-    Button, Form, Grid, Comment} from 'semantic-ui-react'
+    Button, Form, Grid, Comment
+} from 'semantic-ui-react'
 import CommentItem from "./CommentItem";
 import LoaderInlineCentered from "../Common/Loader";
 
@@ -11,7 +12,7 @@ class CommentList extends React.Component {
     }
 
     render() {
-        const { comments, currentUser } = this.props;
+        const {comments, currentUser} = this.props;
 
         if (comments === null || comments === undefined) {
             return (
@@ -19,13 +20,12 @@ class CommentList extends React.Component {
                     <LoaderInlineCentered/>
                 </Grid>
             );
-        }
-        else if (comments.length === 0) {
+        } else if (comments.length === 0) {
             return (
                 <Comment.Group>
                     <Form reply>
-                        <Form.TextArea />
-                        <Button content='Add Comment' labelPosition='left' icon='edit' primary />
+                        <Form.TextArea/>
+                        <Button content='Add Comment' labelPosition='left' icon='edit' primary/>
                     </Form>
                 </Comment.Group>
             )
@@ -37,6 +37,7 @@ class CommentList extends React.Component {
                             comment={comment}
                             currentUser={currentUser}
                             deleteCommentCallback={this.props.deleteCommentCallback}
+                            editCommentCallback={this.props.editCommentCallback}
                         />
                     ))}
                 </Comment.Group>
