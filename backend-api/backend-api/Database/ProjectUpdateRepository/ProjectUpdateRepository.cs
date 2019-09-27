@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using backend_api.Database.CommentRepository;
+using backend_api.Features.Comments.Repository;
 using backend_api.Models;
 using Neo4j.Driver.V1;
 
@@ -51,7 +50,7 @@ namespace backend_api.Database.ProjectUpdateRepository
                         update.relatedProject.tagList = associatedTags.ToList();
                         
                         //Retrieve all comments for the update
-                        ICommentRepository commentRepository = new CommentRepository.CommentRepository();
+                        ICommentRepository commentRepository = new CommentRepository();
                         var comments = 
                             session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
                         update.comments = comments.ReturnValue.ToList();
@@ -116,7 +115,7 @@ namespace backend_api.Database.ProjectUpdateRepository
                         update.relatedPerson = returnedPerson;
                         
                         //Retrieve all comments for the update
-                        ICommentRepository commentRepository = new CommentRepository.CommentRepository();
+                        ICommentRepository commentRepository = new CommentRepository();
                         var comments = 
                             session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
                         update.comments = comments.ReturnValue.ToList();

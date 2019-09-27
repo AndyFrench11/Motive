@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using backend_api.Models;
+using backend_api.Database;
+using backend_api.Features.Comments.Models;
 
-namespace backend_api.Database.CommentRepository
+namespace backend_api.Features.Comments.Repository
 {
     public interface ICommentRepository
     {

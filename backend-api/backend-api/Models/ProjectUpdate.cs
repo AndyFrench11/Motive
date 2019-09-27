@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using backend_api.Features.Comments.Models;
 using Neo4j.Driver.V1;
 
 namespace backend_api.Models

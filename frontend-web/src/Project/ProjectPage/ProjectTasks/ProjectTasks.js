@@ -208,10 +208,16 @@ class ProjectTasks extends Component {
 
                                     </Grid.Column>
                                     <Grid.Column width={1} floated='right' style={{marginRight:'2em'}}>
-                                        <Button index={index} icon onClick={this.deleteTask} basic circular negative
+                                        <Button index={index} onClick={this.deleteTask} basic circular negative
                                                 icon='delete'>
                                         </Button>
                                     </Grid.Column>
+
+                                    <Grid.Column width={1} floated='right' style={{marginRight:'2em'}}>
+                                        <Button index={index} basic icon='chevron right'>
+                                        </Button>
+                                    </Grid.Column>
+
                                 </Grid.Row>
                             </Grid>
 
@@ -225,11 +231,11 @@ class ProjectTasks extends Component {
 
     showCreateProjectUpdateModal = () => {
         this.setState({ createProjectUpdateModalOpen: true })
-    }   
+    };
 
     closeCreateProjectUpdateModal = () => {
         this.setState({ createProjectUpdateModalOpen: false })
-    }
+    };
 
     render() {
 
