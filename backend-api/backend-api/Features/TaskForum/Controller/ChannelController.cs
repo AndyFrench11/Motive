@@ -78,6 +78,38 @@ namespace backend_api.Features.TaskForum.Controller
         }
 
         // UPDATE
+        // PATCH api/channel/:channelId
+        [HttpPatch("{channelId}")]
+        public ActionResult Patch(string channelId, [FromBody]Channel channelToUpdate, [FromHeader]string userId)
+        {
+            // TODO: Check User auth and access - Unauthorised() || Forbidden()
+            
+            // Parse project guid and new member guid
+            var channelGuid = ValidationUtil.ParseGuid(channelId);
+            var userGuid = ValidationUtil.ParseGuid(userId);
+            if (channelGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
+            {
+                return BadRequest("Invalid guid.");
+            }
+            channelToUpdate.Guid = channelGuid;
+            
+            // TODO: Check channel exists
+            
+            // Check valid channel name
+            if (string.IsNullOrEmpty(channelToUpdate.Name.Trim()))
+            {
+                return StatusCode(400, "Channel name cannot be empty.");
+            }
+            
+            var result = _channelRepository.Edit(channelToUpdate);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200);
+        }
 
         // DELETE
 

@@ -118,7 +118,36 @@ namespace backend_api.Features.TaskForum.Repository
 
         public RepositoryReturn<bool> Edit(Channel channel)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (_session)
+                {
+                    // Update comment node
+                    _session.WriteTransaction(tx => UpdateChannelNode(tx, channel));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void UpdateChannelNode(ITransaction tx, Channel channel)
+        {
+            var channelId = channel.Guid.ToString();
+            var name = channel.Name;
+            
+            const string statement = "MATCH (channel:Channel) " +
+                                     "WHERE channel.guid = $channelId " +
+                                     "SET channel.name = $name ";
+            
+            tx.Run(statement, new {channelId, name});
         }
 
         public RepositoryReturn<bool> Delete(Guid channelGuid)
