@@ -109,12 +109,79 @@ namespace backend_api.Features.TaskForum.Repository
 
         public RepositoryReturn<IEnumerable<Message>> GetAllForChannel(Guid channelGuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (_session)
+                {
+                    // Get all messages
+                    var foundMessages = _session.ReadTransaction(tx => RetrieveChannelMessages(tx, channelGuid));
+                    
+                    // For each message, find and add the author
+                    foreach (var message in foundMessages)
+                    {
+                        var author = _session.ReadTransaction(tx => RetrieveMessageAuthor(tx, message.Guid));
+                        message.Author = author;
+                    }
+                    
+                    return new RepositoryReturn<IEnumerable<Message>>(foundMessages);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<IEnumerable<Message>>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<IEnumerable<Message>>(true, e);
+            }
+        }
+        
+        private List<Message> RetrieveChannelMessages(ITransaction tx, Guid channelGuid)
+        {
+            var channelId = channelGuid.ToString();
+
+            const string statement = "MATCH (channel:Channel) -- (message:Message) " + 
+                                     "WHERE channel.guid = $channelId " +
+                                     "RETURN message " + 
+                                     "ORDER BY message.sent";
+            
+            var result = tx.Run(statement, new {channelId});
+            var comments = result.Select(record => new Message(record[0].As<INode>().Properties)).ToList();
+            return comments;
         }
 
         public RepositoryReturn<bool> Edit(Message message)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (_session)
+                {
+                    // Update message node
+                    _session.WriteTransaction(tx => UpdateMessageNode(tx, message));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void UpdateMessageNode(ITransaction tx, Message message)
+        {
+            var messageId = message.Guid.ToString();
+            var text = message.Text;
+            
+            const string statement = "MATCH (message:Message) " +
+                                     "WHERE message.guid = $messageId " +
+                                     "SET message.text = $text ";
+            
+            tx.Run(statement, new {messageId, text});
         }
 
         public RepositoryReturn<bool> Delete(Guid messageGuid)
