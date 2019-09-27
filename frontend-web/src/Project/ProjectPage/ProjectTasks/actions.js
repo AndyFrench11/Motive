@@ -31,8 +31,6 @@ export function postTask(projectGuid, valuesJson) {
             guid: valuesJson.guid
         };
 
-        console.log(newTask);
-
         return axios.post(serverUrl + "/projectTask", newTask, {headers: {
                 'Content-Type': 'application/json',
                 'projectId': projectGuid

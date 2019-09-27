@@ -3,10 +3,10 @@ import {
     Button, Modal, Icon, Form, TextArea, Progress, Divider, Dropdown, Input, Image, Segment, Grid, Header, Label, Comment, Confirm
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
-import uuidv4 from 'uuid/v4';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import ProjectUpdateContent from './ProjectUpdateContent';
 import { deleteProjectUpdate, updateProjectUpdateHighlight } from "./actions";
+import ProjectUpdateCommentList from "../../../../Comment/ProjectUpdateCommentList";
 import Moment from 'moment';
 
 class ProjectUpdate extends React.Component {
@@ -25,22 +25,22 @@ class ProjectUpdate extends React.Component {
     handleEditUpdateClicked = () => {
         this.setState({ updatingContent: !this.state.updatingContent });
 
-    }
+    };
 
     handleConfirmUpdateDeletion = () => {
         const { update } = this.props;
         this.setState({ deleteUpdateConfirmOpen: false });
-        this.props.deleteUpdateCallback(this.props.index)
-        this.props.deleteProjectUpdate(update.guid)
-    }
+        this.props.deleteUpdateCallback(this.props.index);
+        this.props.deleteProjectUpdate(update.guid);
+    };
 
-    showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true })
+    showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true });
 
-    handleCancelUpdateDeletion = () => this.setState({ deleteUpdateConfirmOpen: false })
+    handleCancelUpdateDeletion = () => this.setState({ deleteUpdateConfirmOpen: false });
 
     updateContentStateCallback = () => {
         this.setState({ updatingContent: false });
-    }
+    };
 
     handleHighlightStatusChange = () => {
         const { highlight } = this.state;
@@ -49,20 +49,20 @@ class ProjectUpdate extends React.Component {
         //Do backend call!
         this.props.updateProjectUpdateHighlight(update.guid, !highlight)
 
-    }
+    };
 
 
     render() {
 
-        const { update, projectName, tags } = this.props;
-        const { relatedPerson, relatedTask, content, dateTimeCreated, guid } = update;
+        const { update, projectName, tags, currentUser } = this.props;
+        const { relatedPerson, relatedTask, content, dateTimeCreated, guid, comments } = update;
 
         const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
         const options = [
             { key: '1', text: 'Edit Update', icon: 'edit', onClick: this.handleEditUpdateClicked },
             { key: '2', text: 'Delete Update', icon: 'delete', onClick: this.showDeleteUpdateConfirm },
-          ]
+          ];
 
         if(highlight) {
             options.splice(1, 0, { key: '3', text: 'Unmark Update as Highlight', icon: 'heart', onClick: this.handleHighlightStatusChange });
@@ -74,13 +74,13 @@ class ProjectUpdate extends React.Component {
             <span>
                 <Icon name='ellipsis horizontal' floated='right' />
             </span>
-            )
+            );
 
         const dateTime = new Date(dateTimeCreated);
         const momentTime = Moment(dateTime).calendar();
 
         return (
-            <Segment style={{'width': '50em', 'marginTop': '3em', 'marginLeft': '2em'}}>
+            <Segment style={{'width': '80em', 'marginTop': '3em', 'marginLeft': '2em'}}>
 
                 <Confirm
                     open={deleteUpdateConfirmOpen}
@@ -106,7 +106,7 @@ class ProjectUpdate extends React.Component {
                         <Grid.Row style={{'marginTop': '1em'}}>
                             <Header size='tiny'>{momentTime}</Header>
                         </Grid.Row>
-                        
+
                     </Grid.Column>
                     <Grid.Column width={5}>
                         <Grid.Row>
@@ -174,76 +174,12 @@ class ProjectUpdate extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">
                         <Segment style={{overflow: 'auto', maxHeight: 300 }}>
-                            <Comment.Group>
-                                <Header as='h3' dividing>
-                                Comments
-                                </Header>
-
-                                <Comment>
-                                <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />
-                                <Comment.Content>
-                                    <Comment.Author as='a'>Matt</Comment.Author>
-                                    <Comment.Metadata>
-                                    <div>Today at 5:42PM</div>
-                                    </Comment.Metadata>
-                                    <Comment.Text>How artistic!</Comment.Text>
-                                    <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                    </Comment.Actions>
-                                </Comment.Content>
-                                </Comment>
-
-                                <Comment>
-                                <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/elliot.jpg' />
-                                <Comment.Content>
-                                    <Comment.Author as='a'>Elliot Fu</Comment.Author>
-                                    <Comment.Metadata>
-                                    <div>Yesterday at 12:30AM</div>
-                                    </Comment.Metadata>
-                                    <Comment.Text>
-                                    <p>This has been very useful for my research. Thanks as well!</p>
-                                    </Comment.Text>
-                                    <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                    </Comment.Actions>
-                                </Comment.Content>
-                                <Comment.Group>
-                                    <Comment>
-                                    <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/jenny.jpg' />
-                                    <Comment.Content>
-                                        <Comment.Author as='a'>Jenny Hess</Comment.Author>
-                                        <Comment.Metadata>
-                                        <div>Just now</div>
-                                        </Comment.Metadata>
-                                        <Comment.Text>Elliot you are always so right :)</Comment.Text>
-                                        <Comment.Actions>
-                                        <Comment.Action>Reply</Comment.Action>
-                                        </Comment.Actions>
-                                    </Comment.Content>
-                                    </Comment>
-                                </Comment.Group>
-                                </Comment>
-
-                                <Comment>
-                                <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/joe.jpg' />
-                                <Comment.Content>
-                                    <Comment.Author as='a'>Joe Henderson</Comment.Author>
-                                    <Comment.Metadata>
-                                    <div>5 days ago</div>
-                                    </Comment.Metadata>
-                                    <Comment.Text>Dude, this is awesome. Thanks so much</Comment.Text>
-                                    <Comment.Actions>
-                                    <Comment.Action>Reply</Comment.Action>
-                                    </Comment.Actions>
-                                </Comment.Content>
-                                </Comment>
-
-                                <Form reply>
-                                <Form.TextArea />
-                                <Button content='Add Reply' labelPosition='left' icon='edit' primary />
-                                </Form>
-                            </Comment.Group>
-                        </Segment> 
+                            <ProjectUpdateCommentList
+                                comments={comments}
+                                currentUser={currentUser}
+                                update={update}
+                            />
+                        </Segment>
                     </Grid.Column>
                 </Grid>
 
@@ -270,6 +206,7 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 

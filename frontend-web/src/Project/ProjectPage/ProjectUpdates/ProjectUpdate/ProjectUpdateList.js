@@ -21,7 +21,7 @@ class ProjectUpdateList extends React.Component {
         const { projectUpdates } = this.state;
         projectUpdates.splice(index, 1);
         this.setState({projectUpdates: projectUpdates})
-    }
+    };
 
     render() {
 
@@ -31,9 +31,9 @@ class ProjectUpdateList extends React.Component {
             "projectUpdates": "No updates have been made for this project.",  
             "projectHighlights": "No highlights have been made for this project.",
             "feedUpdates": "You have not made any updates! Create a project to get started.",
-        }
+        };
 
-        if(projectUpdates.length == 0) {
+        if(projectUpdates.length === 0) {
             
             return (
                 <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
@@ -55,6 +55,7 @@ class ProjectUpdateList extends React.Component {
                             projectName={project.name}
                             update={update}
                             index={index}
+                            comments={update.comments}
                             deleteUpdateCallback={this.deleteUpdateCallback}
                         />
                     ))}
