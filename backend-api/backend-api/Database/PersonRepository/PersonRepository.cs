@@ -50,15 +50,10 @@ namespace backend_api.Database.PersonRepository
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
-                    var returnedPeople = session.ReadTransaction(tx =>
-                    {
-                        string projectId = projectGuid.ToString();
-                        var result = tx.Run("MATCH (p:Project) -- (a:Person) WHERE p.guid = $projectId RETURN a", new { projectId });
-                        var records = result.Select(record => new Person(record[0].As<INode>().Properties)).ToList();
+                    var returnedProject = session.ReadTransaction(tx => RetrieveSingleUserProject(tx, projectGuid));
 
-                        return records;
-                    });
-
+                    var returnedPeople = session.ReadTransaction(tx => RetrieveUsersForProject(tx, projectGuid, returnedProject.parentProjectGuid));
+                        
                     return new RepositoryReturn<IEnumerable<Person>>(returnedPeople);
                 }
             }
@@ -66,6 +61,31 @@ namespace backend_api.Database.PersonRepository
             {
                 return new RepositoryReturn<IEnumerable<Person>>(true, e);
             }
+        }
+
+        private List<Person> RetrieveUsersForProject(ITransaction tx, Guid projectGuid, Guid parentProjectGuid)
+        {
+            var projectId = parentProjectGuid.ToString().Equals("00000000-0000-0000-0000-000000000000") ? 
+                projectGuid.ToString() 
+                : parentProjectGuid.ToString();
+            var result = tx.Run("MATCH (p:Project) -- (a:Person) WHERE p.guid = $projectId RETURN a", new { projectId });
+            var records = result.Select(record => new Person(record[0].As<INode>().Properties)).ToList();
+
+            return records;
+        }
+        
+        private Project RetrieveSingleUserProject(ITransaction tx, Guid projectGuid)
+        {
+            var projectId = projectGuid.ToString();
+            var result = tx.Run("MATCH (project:Project) WHERE project.guid = $projectId RETURN project", new { projectId });
+
+            var record = result.SingleOrDefault();
+            if (record == null)
+            {
+                return null;
+            }
+            return new Project(record[0].As<INode>().Properties);
+            
         }
 
         public RepositoryReturn<Person> GetByGuid(Guid personGuid)

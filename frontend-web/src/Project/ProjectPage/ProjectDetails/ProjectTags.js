@@ -50,12 +50,15 @@ class ProjectTags extends React.Component {
 
     render() {
         const { tagList, addingNewTag } = this.state;
+        const { isSubProject } = this.props;
         return (
             <Grid.Row style={ {marginTop: '1em'} }>
                 {tagList.map((tag, index) =>
                     <Label key={index} >
                         #{tagList[index].name}
-                        <Icon name='delete' index={index} onClick={this.removeTag}/>
+                        {!isSubProject && 
+                            <Icon name='delete' index={index} onClick={this.removeTag}/>
+                        }
                     </Label>
                 )}
                 {addingNewTag ?  
@@ -73,11 +76,13 @@ class ProjectTags extends React.Component {
 
                     </Input>
                     
-                    : 
-                    (tagList.length !== 0 ? 
-                        <Popup content='Add a tag to your project' trigger={<Button circular icon='add' size='mini' onClick={this.updateTagState}/> }/>
-                        :
-                        <Button icon='add' size='mini' onClick={this.updateTagState}>Add a new Tag!</Button>
+                    :
+                    (!isSubProject && 
+                        (tagList.length !== 0 ? 
+                            <Popup content='Add a tag to your project' trigger={<Button circular icon='add' size='mini' onClick={this.updateTagState}/> }/>
+                            :
+                            <Button icon='add' size='mini' onClick={this.updateTagState}>Add a new Tag!</Button>
+                        )
                     )
                 }
             </Grid.Row>

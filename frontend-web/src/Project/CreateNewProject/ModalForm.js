@@ -239,6 +239,12 @@ class NewProjectForm extends Component {
                             <FieldArray name="tags" component={this.renderTags}/>
                         }
 
+                        {isSubProject && 
+                            <Message floating>Tags are inherited from the Parent Project for Sub Projects.</Message>    
+                        }
+
+                        <Divider/>
+
                         {this.renderPhotos()}
 
                     </Segment>
