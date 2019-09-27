@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using backend_api.Database.CommentRepository;
-using backend_api.Models;
+using backend_api.Features.Comments.Models;
+using backend_api.Features.Comments.Repository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace backend_api.Controllers
+namespace backend_api.Features.Comments.Controllers
 {
     [Route("api/[controller]")]
     public class CommentController : Controller

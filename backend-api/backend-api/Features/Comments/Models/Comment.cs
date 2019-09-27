@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using backend_api.Models;
 
-namespace backend_api.Models
+namespace backend_api.Features.Comments.Models
 {
     public class Comment : BaseEntity
     {
