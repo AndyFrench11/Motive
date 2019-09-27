@@ -118,7 +118,7 @@ namespace backend_api.Features.TaskForum.Controller
             // TODO
             // Check auth - Unauthorised()
             // Check permissions - Forbidden()
-            // Check task exists - NotFound()
+            // Check channel exists - NotFound()
             
             // Parse channel guid and user guid
             var channelGuid = ValidationUtil.ParseGuid(channelId);
