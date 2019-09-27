@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using backend_api.Features.Comments.Models;
 using backend_api.Features.Comments.Repository;
+using backend_api.Util;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend_api.Features.Comments.Controllers
@@ -21,35 +22,14 @@ namespace backend_api.Features.Comments.Controllers
         [HttpPost("{updateId}")]
         public ActionResult Post(string updateId, [FromBody]Comment commentToCreate, [FromHeader]string userId)
         {
-            // Check user is valid
-            Guid authorGuid;
-            try
+            // Parse update guid and user guid
+            var updateGuid = ValidationUtil.ParseGuid(updateId);
+            var authorGuid = ValidationUtil.ParseGuid(userId);
+            if (updateGuid.Equals(Guid.Empty) || authorGuid.Equals(Guid.Empty))
             {
-                authorGuid = Guid.Parse(userId);
+                return BadRequest(Errors.InvalidGuid);
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("User id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid user id.");
-            }
-            
-            // Check task is valid
-            Guid updateGuid;
-            try
-            {
-                updateGuid = Guid.Parse(updateId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Update id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid update id.");
-            }
+
             
             // TODO: check user has access to task/project - Forbidden()
             // TODO: task not found - NotFound()
@@ -57,7 +37,7 @@ namespace backend_api.Features.Comments.Controllers
             // Check valid comment message
             if (string.IsNullOrEmpty(commentToCreate.Message.Trim()))
             {
-                return StatusCode(400, "Comment cannot be empty.");
+                return StatusCode(400, Errors.CommentEmpty);
             }
 
             var result = _commentRepository.Add(commentToCreate, authorGuid, updateGuid);
@@ -79,36 +59,14 @@ namespace backend_api.Features.Comments.Controllers
             // Check auth/user - Unauthorised() and Forbidden() if no access to project
             // Check update exists - NotFound()
             
-            // User
-            Guid userGuid;
-            try
+            // Parse update guid and user guid
+            var updateGuid = ValidationUtil.ParseGuid(updateId);
+            var authorGuid = ValidationUtil.ParseGuid(userId);
+            if (updateGuid.Equals(Guid.Empty) || authorGuid.Equals(Guid.Empty))
             {
-                userGuid = Guid.Parse(userId);
+                return BadRequest(Errors.InvalidGuid);
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("User id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid user id.");
-            }
-            
-            // Update
-            Guid updateGuid;
-            try
-            {
-                updateGuid = Guid.Parse(updateId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Update id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid update id.");
-            }
-            
+
             var result = _commentRepository.GetAllForUpdate(updateGuid);
             
             if (result.IsError)
@@ -124,34 +82,12 @@ namespace backend_api.Features.Comments.Controllers
         [HttpPatch("{commentId}")]
         public ActionResult Patch(string commentId, [FromBody]Comment commentToUpdate, [FromHeader]string userId)
         {
-            //Check comment is valid
-            Guid commentGuid;
-            try
+            // Parse comment guid and user guid
+            var commentGuid = ValidationUtil.ParseGuid(commentId);
+            var userGuid = ValidationUtil.ParseGuid(userId);
+            if (commentGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                commentGuid = Guid.Parse(commentId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Comment id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid comment id.");
-            }
-            
-            //Check user is valid
-            Guid userGuid;
-            try
-            {
-                userGuid = Guid.Parse(userId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("User id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid user id.");
+                return BadRequest(Errors.InvalidGuid);
             }
 
             commentToUpdate.Guid = commentGuid;
@@ -161,7 +97,7 @@ namespace backend_api.Features.Comments.Controllers
             // Check valid comment message
             if (string.IsNullOrEmpty(commentToUpdate.Message.Trim()))
             {
-                return StatusCode(400, "Comment cannot be empty.");
+                return StatusCode(400, Errors.CommentEmpty);
             }
             
             // TODO: Check User can access update comment i.e. they are the comment author - Forbidden()
@@ -185,36 +121,14 @@ namespace backend_api.Features.Comments.Controllers
             // Check permissions - Forbidden()
             // Check comment exists - NotFound()
             
-            //Check user is valid
-            Guid userGuid;
-            try
+            // Parse comment guid and user guid
+            var commentGuid = ValidationUtil.ParseGuid(commentId);
+            var userGuid = ValidationUtil.ParseGuid(userId);
+            if (commentGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                userGuid = Guid.Parse(userId);
+                return BadRequest(Errors.InvalidGuid);
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("User id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid user id.");
-            }
-            
-            //Check comment is valid
-            Guid commentGuid;
-            try
-            {
-                commentGuid = Guid.Parse(commentId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Comment id is null.");
-            }
-            catch (FormatException)
-            {
-                return BadRequest("Invalid comment id.");
-            }
-            
+
             var result = _commentRepository.Delete(commentGuid);
             
             if (result.IsError)

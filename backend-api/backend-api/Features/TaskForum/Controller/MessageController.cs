@@ -29,7 +29,7 @@ namespace backend_api.Features.TaskForum.Controller
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (channelGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
             
             // TODO check channel exists
@@ -37,7 +37,7 @@ namespace backend_api.Features.TaskForum.Controller
             // Check valid message
             if (string.IsNullOrEmpty(messageToCreate.Text.Trim()))
             {
-                return StatusCode(400, "Message cannot be empty.");
+                return StatusCode(400, Errors.MessageEmpty);
             }
             
             var result = _messageRepository.Add(messageToCreate, userGuid, channelGuid);
@@ -60,7 +60,7 @@ namespace backend_api.Features.TaskForum.Controller
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (channelGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
             // TODO
             // Check auth/user - Unauthorised() and Forbidden() if no access to project
@@ -88,7 +88,7 @@ namespace backend_api.Features.TaskForum.Controller
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (messageGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
             messageToUpdate.Guid = messageGuid;
             
@@ -97,7 +97,7 @@ namespace backend_api.Features.TaskForum.Controller
             // Check valid channel name
             if (string.IsNullOrEmpty(messageToUpdate.Text.Trim()))
             {
-                return StatusCode(400, "Message cannot be empty.");
+                return StatusCode(400, Errors.MessageEmpty);
             }
             
             var result = _messageRepository.Edit(messageToUpdate);
@@ -119,12 +119,12 @@ namespace backend_api.Features.TaskForum.Controller
             // Check permissions - Forbidden()
             // Check message exists - NotFound()
             
-            // Parse channel guid and user guid
+            // Parse message guid and user guid
             var messageGuid = ValidationUtil.ParseGuid(messageId);
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (messageGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
 
             var result = _messageRepository.Delete(messageGuid);

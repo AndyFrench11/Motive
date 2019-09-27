@@ -30,7 +30,7 @@ namespace backend_api.Features.TaskForum.Controller
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (taskGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
             
             // TODO check task exists
@@ -38,7 +38,7 @@ namespace backend_api.Features.TaskForum.Controller
             // Check valid channel name
             if (string.IsNullOrEmpty(channelToCreate.Name.Trim()))
             {
-                return StatusCode(400, "Discussion Channel name cannot be empty.");
+                return StatusCode(400, Errors.ChannelNameEmpty);
             }
             
             var result = _channelRepository.Add(channelToCreate, taskGuid);
@@ -61,7 +61,7 @@ namespace backend_api.Features.TaskForum.Controller
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (taskGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
             // TODO
             // Check auth/user - Unauthorised() and Forbidden() if no access to project
@@ -89,7 +89,7 @@ namespace backend_api.Features.TaskForum.Controller
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (channelGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
             channelToUpdate.Guid = channelGuid;
             
@@ -98,7 +98,7 @@ namespace backend_api.Features.TaskForum.Controller
             // Check valid channel name
             if (string.IsNullOrEmpty(channelToUpdate.Name.Trim()))
             {
-                return StatusCode(400, "Channel name cannot be empty.");
+                return StatusCode(400, Errors.ChannelNameEmpty);
             }
             
             var result = _channelRepository.Edit(channelToUpdate);
@@ -125,7 +125,7 @@ namespace backend_api.Features.TaskForum.Controller
             var userGuid = ValidationUtil.ParseGuid(userId);
             if (channelGuid.Equals(Guid.Empty) || userGuid.Equals(Guid.Empty))
             {
-                return BadRequest("Invalid guid.");
+                return BadRequest(Errors.InvalidGuid);
             }
 
             var result = _channelRepository.Delete(channelGuid);
