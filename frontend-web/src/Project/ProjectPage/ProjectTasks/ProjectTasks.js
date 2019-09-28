@@ -203,7 +203,7 @@ class ProjectTasks extends Component {
         const {showForumIcon} = this.state;
         // TODO: Only return if group project and logged in user is in the project
 
-        // TODO: Only display for given task when forum is open, hide otherwise
+        // TODO: Only display button for given task when forum is open, hide otherwise
 
         return (
             <Grid.Column width={1} floated='right' style={{marginRight: '2em'}}>
@@ -286,7 +286,7 @@ class ProjectTasks extends Component {
                                     icon='plus'>
                             </Button>
                         </Grid.Column>
-                        <Grid.Column width={4}>
+                        <Grid.Column width={12}>
                             <Transition visible={taskInputVisible} animation='fade up' duration={400}>
                                 <Input value={this.state.currentInput} placeholder="Enter task name..."
                                        onChange={this.updateCurrentInput}/>
@@ -303,7 +303,7 @@ class ProjectTasks extends Component {
         const {showForum, forumTask} = this.state;
         if (showForum) {
             return (
-                <Grid.Column width={10}>
+                <Grid.Column width={12}>
                     <TaskForum
                         task={forumTask}
                     />
@@ -315,7 +315,7 @@ class ProjectTasks extends Component {
     render() {
         const {createProjectUpdateModalOpen, showForum} = this.state;
         const {projectOwners, project} = this.props;
-        let taskWidth = showForum ? 6 : 9;
+        let taskWidth = showForum ? 4 : 9;
 
         return (
             <Segment style={{marginLeft: '5em', marginRight: '5em', marginBottom: '5em'}}>

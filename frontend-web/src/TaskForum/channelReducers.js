@@ -17,7 +17,7 @@ function channelController(state = {}, action) {
         case RECEIVE_CREATE_CHANNEL:
             return {
                 ...state,
-                newMessage: action.message
+                newChannel: action.newChannel
             };
         case REQUEST_GET_ALL_CHANNELS:
             return state;

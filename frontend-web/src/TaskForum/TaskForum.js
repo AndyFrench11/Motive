@@ -23,7 +23,6 @@ class TaskForum extends React.Component {
 
     componentDidMount() {
         const {currentUser, task} = this.props;
-        console.log(task);
         // Get all channels
         this.props.getChannels(currentUser.guid, task.guid).then(() => {
             // this.setState({selectedChannel: this.state.channels[0]})
@@ -31,11 +30,46 @@ class TaskForum extends React.Component {
         });
     }
 
+    addChannelCallback = (channelName) => {
+        const {currentUser, task} = this.props;
+        // Create channel
+        this.props.addChannel(currentUser.guid, task.guid, channelName).then(()=> {
+           // Add to state
+           this.setState(previous => ({channels: [...previous.channels, this.props.newChannel]}));
+        });
+    };
+
+    editChannelCallback = (channel, newName) => {
+        const {currentUser} = this.props;
+        // Edit channel request
+        return this.props.editChannel(currentUser.guid, channel.guid, newName);
+
+    };
+
+    deleteChannelCallback = (channel) => {
+        const {currentUser} = this.props;
+        const {channels} = this.state;
+
+        // Delete channel request
+        this.props.deleteChannel(currentUser.guid, channel.guid)
+            .then(() => {
+                // Remove from state
+                let index = channels.indexOf(channel);
+                if (index !== -1) {
+                    channels.splice(index, 1);
+                    this.setState({channels: channels})
+                }
+            });
+    };
+
     channels() {
         const {channels} = this.state;
         return (
             <ChannelList
                 channels={channels}
+                addChannelCallback={this.addChannelCallback}
+                deleteChannelCallback={this.deleteChannelCallback}
+                editChannelCallback={this.editChannelCallback}
             />
         )
     }
@@ -111,10 +145,10 @@ class TaskForum extends React.Component {
                     </Grid.Row>
 
                     <Grid.Row>
-                        <Grid.Column width={4}>
+                        <Grid.Column width={5}>
                             {this.channels()}
                         </Grid.Column>
-                        <Grid.Column width={12}>
+                        <Grid.Column width={11}>
                             {this.messages()}
                         </Grid.Column>
                     </Grid.Row>
