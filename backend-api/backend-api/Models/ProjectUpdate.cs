@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using backend_api.Features.Comments.Models;
 using Neo4j.Driver.V1;
 
 namespace backend_api.Models
@@ -12,6 +13,7 @@ namespace backend_api.Models
         public ProjectTask relatedTask { get; set; }
         public Person relatedPerson { get; set; }
         public Project relatedProject { get; set; }
+        public List<Comment> comments { get; set; }
         //public List<Tag> relatedTags { get; set; }
         public string dateTimeCreated { get; set; }
 

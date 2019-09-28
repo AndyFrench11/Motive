@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using backend_api.Features.Comments.Repository;
 using backend_api.Models;
 using Neo4j.Driver.V1;
 
@@ -27,7 +28,7 @@ namespace backend_api.Database.ProjectUpdateRepository
                     
                     foreach (ProjectUpdate update in returnedUpdates)
                     {
-                        //Retieve the project task associated to the update
+                        //Retrieve the project task associated to the update
                         var returnedProjectTask = session.ReadTransaction(tx => RetrieveProjectTaskForGivenUpdate(tx, update.Guid));
                         if (returnedProjectTask != null)
                         {
@@ -47,6 +48,12 @@ namespace backend_api.Database.ProjectUpdateRepository
                         var associatedTags =
                             session.ReadTransaction(tx => RetrieveProjectTags(tx, returnedProject.Guid));
                         update.relatedProject.tagList = associatedTags.ToList();
+                        
+                        //Retrieve all comments for the update
+                        ICommentRepository commentRepository = new CommentRepository();
+                        var comments = 
+                            session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
+                        update.comments = comments.ReturnValue.ToList();
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }
@@ -106,6 +113,12 @@ namespace backend_api.Database.ProjectUpdateRepository
                         }
                         var returnedPerson = session.ReadTransaction(tx => RetrievePersonForGivenUpdate(tx, update.Guid));
                         update.relatedPerson = returnedPerson;
+                        
+                        //Retrieve all comments for the update
+                        ICommentRepository commentRepository = new CommentRepository();
+                        var comments = 
+                            session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
+                        update.comments = comments.ReturnValue.ToList();
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }

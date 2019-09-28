@@ -18,7 +18,7 @@ import Login from "./Login/Login";
 import {createStore} from "redux";
 import rootReducer from "./rootReducer";
 import StateLoader from "./stateLoader";
-import Redirect from "react-router-dom/es/Redirect";
+import { Redirect } from "react-router-dom";
 import AppRouter from "./app";
 
 const stateLoader = new StateLoader();
