@@ -184,6 +184,8 @@ class NewProjectForm extends Component {
     
     render() {
 
+        const { isSubProject, tags } = this.props;
+
         return (
             <Fragment>
                 <Form>
@@ -207,18 +209,41 @@ class NewProjectForm extends Component {
 
                         <Message floating>You are limited to 500 characters.</Message>
 
-                        <Input
-                            value={this.state.tagInputValue}
-                            icon='tags'
-                            iconPosition='left'
-                            placeholder="Enter tags"
-                            onChange={this.updateTagInputValue}
-                        >
-                        </Input>
+                        {!isSubProject && 
+
+                            <Input
+                                value={this.state.tagInputValue}
+                                icon='tags'
+                                iconPosition='left'
+                                placeholder="Enter tags"
+                                onChange={this.updateTagInputValue}
+                            >
+                            </Input>
+
+                        }
 
                         <Divider/>
+                        
+                        {isSubProject ? 
 
-                        <FieldArray name="tags" component={this.renderTags}/>
+                            <Segment>
+                                <Label attached='top left'>Tags</Label>
+                                {tags.map((tag, index) =>
+                                    <Label>
+                                        #{tag.name}
+                                    </Label>
+                
+                                )}
+                            </Segment>
+                            :
+                            <FieldArray name="tags" component={this.renderTags}/>
+                        }
+
+                        {isSubProject && 
+                            <Message floating>Tags are inherited from the Parent Project for Sub Projects.</Message>    
+                        }
+
+                        <Divider/>
 
                         {this.renderPhotos()}
 
@@ -256,15 +281,6 @@ NewProjectForm = reduxForm({
 
 // Decorate with connect to read form values
 const selector = formValueSelector('newProject'); // <-- same as form name
-// NewProjectForm = connect(state => {
-//     // can select values individually
-//     let tagInputValue = selector(state, 'tagInput');
-//     let taskInputValue = selector(state, 'taskInput');
-//     return {
-//         tagInputValue,
-//         taskInputValue
-//     }
-// })(NewProjectForm);
 
 export default NewProjectForm;
 

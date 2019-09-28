@@ -133,8 +133,18 @@ namespace backend_api.Database.ProjectUpdateRepository
         private List<ProjectUpdate> RetrieveUpdatesForSingleProject(ITransaction tx, Guid projectGuid)
         {
             var projectId = projectGuid.ToString();
-            var result = tx.Run("MATCH (pu:ProjectUpdate) -- (p:Project) WHERE p.guid = $projectId RETURN pu", new { projectId });
+            
+            //Works for non sub project
+//            var query = "MATCH (pu:ProjectUpdate),(parent:Project),(child:Project) " +
+//                        "WHERE (pu) -- (parent) OR (pu) -- (child) -[:IS_SUBPROJECT_OF]-> (parent) " +
+//                        "AND parent.guid = $projectId " +
+//                        "RETURN DISTINCT pu";
+
+            var query = "MATCH (pu:ProjectUpdate) -- (parent:Project) " +
+                        "WHERE parent.guid = $projectId RETURN pu";
+            var result = tx.Run(query, new { projectId });
             var records = result.Select(record => new ProjectUpdate(record[0].As<INode>().Properties)).ToList();
+            //records = records.Distinct().ToList();
             return records;
         }
 
