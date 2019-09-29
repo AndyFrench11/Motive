@@ -18,15 +18,18 @@ class ChannelMessageList extends React.Component {
 
         this.state = {
             messages: this.props.messages,
-            messageText: ''
+            messageText: '',
+            loading: true
         };
     }
 
     componentDidMount() {
         const {currentUser, channel} = this.props;
         // Fetch all messages
+        this.setState({loading: true});
         this.props.getMessges(currentUser.guid, channel.guid).then(() => {
             this.setState({messages: this.props.messages});
+            this.setState({loading: false});
         });
     };
 
@@ -36,8 +39,10 @@ class ChannelMessageList extends React.Component {
 
         if (previousChannel !== channel) {
             // Fetch all messages
+            this.setState({loading: true});
             this.props.getMessges(currentUser.guid, channel.guid).then(() => {
                 this.setState({messages: this.props.messages});
+                this.setState({loading: false});
             });
         }
     };
@@ -128,9 +133,9 @@ class ChannelMessageList extends React.Component {
     }
 
     render() {
-        const {currentUser, channel} = this.props;
-        const {messages} = this.state;
-        if (messages === null || messages === undefined) {
+        const {currentUser} = this.props;
+        const {messages, loading} = this.state;
+        if (loading || messages === null || messages === undefined) {
             return (
                 <Segment>
                     {this.channelHeader()}
