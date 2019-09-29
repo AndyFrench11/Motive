@@ -16,6 +16,7 @@ import projectUpdateReducer from "./Project/ProjectPage/ProjectUpdates/ProjectUp
 import projectUpdateCommentReducer from "./Comment/reducers";
 import homeReducer from "./Home/reducers";
 import channelReducer from "./TaskForum/channelReducers";
+import subProjectReducer from "./Project/ProjectPage/SubProjects/reducers";
 
 import {USER_LOGOUT} from "./Common/Auth/actions";
 
@@ -34,7 +35,8 @@ const appReducer = combineReducers({
     projectUpdateCommentReducer,
     projectUpdateReducer,
     homeReducer,
-    channelReducer
+    channelReducer,
+    subProjectReducer
 });
 
 const rootReducer = (state, action) => {

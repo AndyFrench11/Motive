@@ -3,7 +3,7 @@ import {
     Grid,
     Header,
     Image, List,
-    Button, Item, Modal, TransitionablePortal, Segment
+    Button, Item, Modal, TransitionablePortal, Segment, Divider
 } from 'semantic-ui-react'
 
 import TopNavBar from '../Common/TopNavBar'
@@ -18,6 +18,15 @@ import LoaderInlineCentered from "../Common/Loader";
 import NewProjectForm from "../Project/CreateNewProject/ModalForm";
 import {postProject} from "../Project/actions";
 import { Route } from 'react-router-dom';
+import UserProjectList from "./UserProjectList";
+
+function importAll(r) {
+    let images = {};
+    r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+    return images;
+}
+
+const images = importAll(require.context('../Project/ProjectImages', false, /\.(png|jpe?g|svg)$/));
 
 
 class UserProfile extends React.Component {
@@ -25,58 +34,8 @@ class UserProfile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalVisible: false,
-            submitButtonDisabled: true,
-            selectedImageIndex: -1
+
         };
-    }
-
-    showModal = () => {
-        this.setState({
-            modalVisible: true
-        });
-    };
-
-    closeModal = () => {
-        this.setState({
-            modalVisible: false
-        });
-    };
-
-    updateSelectedImageIndex = (selectedImageIndex) => {
-        this.setState({selectedImageIndex: selectedImageIndex})
-    };
-
-    handleModalSubmit = () => {
-        const { userguid } = this.props.match.params;
-        this.props.postProject(userguid, this.props.values, this.state.selectedImageIndex);
-        this.setState({
-            modalVisible: false
-        });
-
-    };
-
-    componentDidUpdate(oldProps) {
-        const newProps = this.props;
-        if(oldProps.values !== newProps.values) {
-            const values = newProps.values;
-            if((typeof values !== 'undefined') && ((values.hasOwnProperty('projectNameInput')) && (values.hasOwnProperty('descriptionInput'))
-                && (values.hasOwnProperty('tags')) && (values.tags.length > 0) && (values.hasOwnProperty('taskList')) && (values.taskList.length > 0) 
-                && (this.state.selectedImageIndex !== -1)  )) {
-
-                this.setState({
-                    submitButtonDisabled: false
-                })
-
-            } else {
-
-                this.setState({
-                    submitButtonDisabled: true
-                })
-
-            }
-
-        }
     }
 
     componentDidMount() {
@@ -85,12 +44,15 @@ class UserProfile extends React.Component {
         this.props.fetchProjects(userguid);
     }
 
+    // if(typeof this.props.result !== 'undefined') {
+    //     //Causing issues
+    //     //this.props.history.push(`/project/${this.props.result}`)
+    // }
+    // else 
 
     ProfileHeader() {
-        if(typeof this.props.result !== 'undefined') {
-            this.props.history.push(`/project/${this.props.result}`)
-        }
-        else if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
+        
+        if (this.props.profile.profileContent === null || this.props.profile.profileContent === undefined) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>
@@ -100,7 +62,6 @@ class UserProfile extends React.Component {
             const dateJoined = new Date(this.props.profile.profileContent.dateJoined);
             const formattedDate = dateJoined.toLocaleDateString("en-NZ");
             return (
-                <div>
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <Grid.Row columns={2}>
                         <Grid.Column width={2}>
@@ -110,32 +71,9 @@ class UserProfile extends React.Component {
                             <Header as='h1'>{this.props.profile.profileContent.firstName} {this.props.profile.profileContent.lastName}</Header>
                             <p style={{fontSize: 16}}>Joined on {formattedDate}</p>
                             {/* <p style={{fontSize: 22}}><i>"{this.props.profile.profileContent.profileBio}"</i></p> */}
-                            <div>
-                                <Button onClick={this.showModal}>Create Project</Button>
-                            </div>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
-                    <TransitionablePortal open={this.state.modalVisible}
-                                          transition={{animation: 'fade up', duration: 500}}>
-                        <Modal open={true} onClose={this.closeModal} closeIcon>
-                            <Modal.Header>Create a New Project</Modal.Header>
-                            <Modal.Content>
-                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex}/>
-                            </Modal.Content>
-                            <Modal.Actions>
-                                <Button
-                                    positive
-                                    icon='checkmark'
-                                    labelPosition='right'
-                                    content="All good to go!"
-                                    onClick={this.handleModalSubmit}
-                                    disabled={this.state.submitButtonDisabled}
-                                />
-                            </Modal.Actions>
-                        </Modal>
-                    </TransitionablePortal>
-                </div>
             )
         }
     }
@@ -150,36 +88,11 @@ class UserProfile extends React.Component {
             )
         } else {
             const { userguid } = this.props.match.params;
-            if(this.props.projects.items.length == 0){
-                return(
-                    <div>
-                          <Segment placeholder style={{marginRight: '1em'}}>
-                            <Header icon>
-                                No projects have been created.
-                            </Header>
-                        </Segment>
-                    </div>
-                );
-            } else {
 
-                return (
-                    <div>
-                        <Item.Group link>
-                            {this.props.projects.items.map((item, index) => (
-                                <Route render={({ history }) => (
-                                    <Item key={index} item={item} onClick={() => { history.push(`/project/${item.guid}/`) }}>
-                                        <Item.Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
-                                        <Item.Content>
-                                            <Item.Header>{item.name}</Item.Header>
-                                            <Item.Description>{item.description}</Item.Description>
-                                        </Item.Content>
-                                    </Item>
-                                )} />
-                            ))}
-                        </Item.Group>
-                    </div>
-                );
-            }
+            return (
+                <UserProjectList projects={this.props.projects.items} userGuid={userguid}/>
+            )
+
         }
     }
 
@@ -189,12 +102,10 @@ class UserProfile extends React.Component {
                 <TopNavBar/>
                 {this.ProfileHeader()}
                 <Grid divided='vertically' style={{ marginTop: '5em' }} centered>
-                    <Grid.Row columns={2} divided >
-                        <Grid.Column centered >
-                            <Header as='h2' style={{ 'text-align': 'center' }}>Highlights</Header>
-                        </Grid.Column>
+                    <Grid.Row columns={1} divided >
                         <Grid.Column centered>
                             <Header as='h2' style={{ 'text-align': 'center' }}>Projects</Header>
+                            <Divider/>
                             {this.ProjectList()}
                         </Grid.Column>
                     </Grid.Row>
@@ -211,8 +122,7 @@ class UserProfile extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         fetchProjects: (guid) => dispatch(fetchProjects(guid)),
-        fetchProfile: (guid) => dispatch(fetchProfile(guid)),
-        postProject: (guid, values, imageIndex) => dispatch(postProject(guid, values, imageIndex))
+        fetchProfile: (guid) => dispatch(fetchProfile(guid))
     };
 }
 

@@ -50,6 +50,7 @@ function retrieveProject(
 ) {
     switch (action.type) {
         case REQUEST_SINGLE_PROJECT:
+            console.log(state);
             return Object.assign({}, state, {
                 isRetrieving: true,
             });
@@ -90,5 +91,4 @@ function projectOwnersController(state = {}, action) {
     }
 }
 
-// TODO tidy up the project state using a combinerReducer
 export {projectOwnersController, createProjectController, projectController}

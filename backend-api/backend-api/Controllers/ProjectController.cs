@@ -54,6 +54,64 @@ namespace backend_api.Controllers
             
             return StatusCode(200, result.ReturnValue);
         }
+        
+        // Get all of the owners of a single project
+        [HttpGet("{projectId}/owners")]
+        public ActionResult<Project> GetProjectOwners(string projectId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<Person>> result = _personRepository.GetAllForProject(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200, result.ReturnValue);
+
+        }
+        
+        // Get all of the owners of a single project
+        [HttpGet("{projectId}/subprojects")]
+        public ActionResult<Project> GetSubProjects(string projectId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<Project>> result = _projectRepository.GetSubProjects(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+            
+            return StatusCode(200, result.ReturnValue);
+
+        }
 
         // GET api/values/5
         [HttpGet("{projectId}")]
@@ -143,6 +201,36 @@ namespace backend_api.Controllers
             
             // TODO sanitise incoming project body
             RepositoryReturn<bool> result = _projectRepository.AddTag(projectGuidToGet, tagToCreate);
+            
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(201);
+        }
+        
+        // POST api/values
+        [HttpPost("{projectId}/subproject")]
+        public ActionResult PostNewSubProject(string projectId, [FromBody]Project subProjectToCreate)
+        {
+            
+            //Check user is valid first
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<bool> result = _projectRepository.AddSubProject(projectGuidToGet, subProjectToCreate);
             
             if (result.IsError)
             {
@@ -290,35 +378,6 @@ namespace backend_api.Controllers
             }
 
             return StatusCode(200);
-        }
-        
-        // Get all of the owners of a single project
-        [HttpGet("{projectId}/owners")]
-        public ActionResult<Project> GetProjectOwners(string projectId)
-        {
-
-            Guid guidToGet;
-            try
-            {
-                guidToGet = Guid.Parse(projectId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
-            catch (FormatException)
-            {
-                return BadRequest();
-            }
-
-            RepositoryReturn<IEnumerable<Person>> result = _personRepository.GetAllForProject(guidToGet);
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(200, result.ReturnValue);
-
         }
         
         // DELETE api/values/5

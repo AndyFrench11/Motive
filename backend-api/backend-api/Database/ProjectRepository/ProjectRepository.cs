@@ -29,7 +29,7 @@ namespace backend_api.Database.ProjectRepository
                     
                     foreach (Project currentProject in returnedProjects)
                     {
-                        var returnedTags = _session.ReadTransaction(tx => RetrieveProjectTags(tx, currentProject.Guid));
+                        var returnedTags = _session.ReadTransaction(tx => RetrieveProjectTags(tx, currentProject.Guid, currentProject.parentProjectGuid));
                         currentProject.tagList = returnedTags.ToList();
                         var returnedTasks = _session.ReadTransaction(tx => RetrieveProjectTasks(tx, currentProject.Guid));
                         currentProject.taskList = returnedTasks.ToList();
@@ -43,8 +43,6 @@ namespace backend_api.Database.ProjectRepository
             {
                 return new RepositoryReturn<IEnumerable<Project>>(true, e);
             }
-            
-       
         }
 
         private List<Project> RetrieveUserProjects(ITransaction tx, Guid personGuid)
@@ -71,10 +69,18 @@ namespace backend_api.Database.ProjectRepository
             
         }
 
-        private List<Tag> RetrieveProjectTags(ITransaction tx, Guid projectGuid)
+        private List<Tag> RetrieveProjectTags(ITransaction tx, Guid projectGuid, Guid parentProjectGuid)
         {
-            var projectId = projectGuid.ToString();
-            var result = tx.Run("MATCH (project:Project) -- (tag:Tag) WHERE project.guid = $projectId RETURN tag", new { projectId });
+            //If the project is a subproject then get the tags from its parent
+            var projectId = parentProjectGuid.ToString().Equals("00000000-0000-0000-0000-000000000000") ? 
+                projectGuid.ToString() 
+                : parentProjectGuid.ToString();
+            
+            var query = "MATCH (project:Project) -- (tag:Tag) WHERE project.guid = $projectId RETURN tag";
+            
+            var result = tx.Run(query, 
+                new { projectId });
+            
 
             var records = result.Select(record => new Tag(record[0].As<INode>().Properties)).ToList();
 
@@ -105,7 +111,7 @@ namespace backend_api.Database.ProjectRepository
                         return new RepositoryReturn<Project>(true, new ArgumentNullException());
                     }
 
-                    var returnedTags = session.ReadTransaction(tx => RetrieveProjectTags(tx, projectGuid));
+                    var returnedTags = session.ReadTransaction(tx => RetrieveProjectTags(tx, projectGuid, returnedProject.parentProjectGuid));
                     returnedProject.tagList = returnedTags.ToList();
                     var returnedTasks = session.ReadTransaction(tx => RetrieveProjectTasks(tx, projectGuid));
                     returnedProject.taskList = returnedTasks.ToList();
@@ -150,7 +156,11 @@ namespace backend_api.Database.ProjectRepository
             string projectDescription = project.description;
             string projectImageIndex = project.imageIndex.ToString();
             string projectGuid = project.Guid.ToString();
-            tx.Run("CREATE(p:Project {name: $projectName, description: $projectDescription, imageIndex: $projectImageIndex, dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), guid: $projectGuid})", 
+            tx.Run("CREATE(p:Project {name: $projectName, " +
+                   "description: $projectDescription, " +
+                   "imageIndex: $projectImageIndex, " +
+                   "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
+                   "guid: $projectGuid})", 
                 new { projectName, projectDescription, projectImageIndex, projectGuid });
         }
 
@@ -376,6 +386,14 @@ namespace backend_api.Database.ProjectRepository
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
+                    var subProjects = session.ReadTransaction(tx => RetrieveSubProjects(tx, projectGuid));
+                    foreach (Project subProject in subProjects)
+                    {
+                        session.WriteTransaction(tx => RemoveProjectUpdates(tx, subProject.Guid));
+                        session.WriteTransaction(tx => RemoveProjectTasks(tx, subProject.Guid));
+                        session.WriteTransaction(tx => RemoveProjectNode(tx, subProject.Guid));
+                    }
+                    session.WriteTransaction(tx => RemoveProjectUpdates(tx, projectGuid));
                     session.WriteTransaction(tx => RemoveProjectTasks(tx, projectGuid));
                     session.WriteTransaction(tx => RemoveProjectNode(tx, projectGuid));
 
@@ -386,6 +404,12 @@ namespace backend_api.Database.ProjectRepository
             {
                 return new RepositoryReturn<bool>(true, e);
             }
+        }
+        
+        private void RemoveProjectUpdates(ITransaction tx, Guid projectGuid)
+        {
+            string projectId = projectGuid.ToString();
+            tx.Run("MATCH (p:Project) -- (pu:ProjectUpdate) WHERE p.guid = $projectId DETACH DELETE pu", new { projectId });
         }
         
         private void RemoveProjectTasks(ITransaction tx, Guid projectGuid)
@@ -488,6 +512,82 @@ namespace backend_api.Database.ProjectRepository
                                      "AND project.guid = $projectId " +
                                      "DELETE contributes";
             tx.Run(statement, new {memberId, projectId});
+        }
+        
+        public RepositoryReturn<bool> AddSubProject(Guid parentProjectGuid, Project newSubProject)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    session.WriteTransaction(tx => CreateSubProjectNode(tx, newSubProject, parentProjectGuid));
+                    session.WriteTransaction(tx => CreateProjectToSubProjectRelationship(tx, newSubProject, parentProjectGuid));
+
+                    session.WriteTransaction(tx => CreateTaskNodes(tx, newSubProject.taskList));
+                    session.WriteTransaction(tx => CreateTaskRelationships(tx, newSubProject.taskList, newSubProject.Guid));
+                    return new RepositoryReturn<bool>(true);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+        private void CreateSubProjectNode(ITransaction tx, Project subProject, Guid parentProjectGuid)
+        {
+            string projectName = subProject.name;
+            string projectDescription = subProject.description;
+            string projectImageIndex = subProject.imageIndex.ToString();
+            string projectGuid = subProject.Guid.ToString();
+            string parentProjectId = parentProjectGuid.ToString();
+            tx.Run("CREATE(p:Project {name: $projectName, " +
+                   "description: $projectDescription, " +
+                   "imageIndex: $projectImageIndex, " +
+                   "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
+                   "parentProjectGuid: $parentProjectId, " +
+                   "guid: $projectGuid})", 
+                new { projectName, projectDescription, projectImageIndex, parentProjectId, projectGuid });
+        }
+
+        private void CreateProjectToSubProjectRelationship(ITransaction tx, Project subProject, Guid parentProjectGuid)
+        {
+            //Create the relationship to the project
+            string parentProjectId = parentProjectGuid.ToString();
+            string childProjectId = subProject.Guid.ToString();
+            tx.Run("MATCH (parent:Project),(child:Project) " +
+                   "WHERE parent.guid = $parentProjectId AND child.guid = $childProjectId " +
+                   "CREATE (child)-[:IS_SUBPROJECT_OF]->(parent)", 
+                new { parentProjectId, childProjectId });
+        }
+        
+        public RepositoryReturn<IEnumerable<Project>> GetSubProjects(Guid parentProjectGuid)
+        {
+            try
+            {   
+                using (_session)
+                {
+                    var returnedSubProjects = _session.ReadTransaction(tx => RetrieveSubProjects(tx, parentProjectGuid));
+                    
+                    return new RepositoryReturn<IEnumerable<Project>>(returnedSubProjects);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<IEnumerable<Project>>(true, e);
+            }
+        }
+        
+        private List<Project> RetrieveSubProjects(ITransaction tx, Guid parentProjectGuid)
+        {
+            var parentProjectId = parentProjectGuid.ToString();
+            var result = tx.Run("MATCH (child:Project) -[:IS_SUBPROJECT_OF]-> (parent:Project) " +
+                                "WHERE parent.guid = $parentProjectId RETURN child", 
+                new { parentProjectId });
+
+            var records = result.Select(record => new Project(record[0].As<INode>().Properties)).ToList();
+
+            return records;
         }
     }
 }

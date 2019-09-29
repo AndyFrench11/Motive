@@ -24,7 +24,10 @@ namespace backend_api.Models
             this.completed = (bool)(props["completed"]);
             this.orderIndex = Int32.Parse(props["orderIndex"].ToString());
             this.dateTimeCreated = new LocalDateTime(DateTime.Parse(props["dateTimeCreated"].ToString()));
-            this.dateTimeCompleted = new LocalDateTime(DateTime.Parse(props["dateTimeCreated"]?.ToString()));
+            if (props.ContainsKey("dateTimeCompleted").Equals(true))
+            {
+                this.dateTimeCompleted = new LocalDateTime(DateTime.Parse(props["dateTimeCompleted"].ToString()));    
+            }
             this.Guid = Guid.Parse(props["guid"].ToString());
         }
     }
