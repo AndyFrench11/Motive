@@ -18,16 +18,19 @@ class TaskForum extends React.Component {
 
         this.state = {
             selectedChannel: null,
-            channels: this.props.channels
+            channels: this.props.channels,
+            loadingChannels: true
         };
     }
 
     componentDidMount() {
         const {currentUser, task} = this.props;
         // Get all channels
+        this.setState({loadingChannels: true});
         this.props.getChannels(currentUser.guid, task.guid).then(() => {
             // this.setState({selectedChannel: this.state.channels[0]})
-            this.setState({channels: this.props.channels})
+            this.setState({channels: this.props.channels});
+            this.setState({loadingChannels: false});
         });
     }
 
@@ -69,10 +72,11 @@ class TaskForum extends React.Component {
     };
 
     channels() {
-        const {channels} = this.state;
+        const {channels, loadingChannels} = this.state;
         return (
             <ChannelList
                 channels={channels}
+                loadingChannels={loadingChannels}
                 addChannelCallback={this.addChannelCallback}
                 deleteChannelCallback={this.deleteChannelCallback}
                 editChannelCallback={this.editChannelCallback}

@@ -80,9 +80,9 @@ class ChannelList extends React.Component {
     }
 
     render() {
-        const {channels} = this.props;
+        const {channels, loadingChannels} = this.props;
 
-        if (channels === null || channels === undefined) {
+        if (loadingChannels || channels === null || channels === undefined) {
             return (
                 <div>
                     <Header as='h4'>Discussion Channels</Header>
