@@ -24,6 +24,7 @@ class ChannelItem extends React.Component {
     };
 
     handleChange = (e, {name, value}) => {
+
         this.setState({[name]: value})
     };
 
@@ -86,6 +87,7 @@ class ChannelItem extends React.Component {
                     onKeyDown={this.enter}
                     action
                     defaultValue={name}
+                    name='newName'
                 >
                     <input/>
                     <Button icon='check' onClick={this.edit} size='medium'/>
