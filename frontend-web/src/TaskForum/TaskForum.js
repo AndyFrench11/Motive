@@ -52,7 +52,7 @@ class TaskForum extends React.Component {
 
     deleteChannelCallback = (channel) => {
         const {currentUser} = this.props;
-        const {channels} = this.state;
+        const {channels, selectedChannel} = this.state;
 
         // Delete channel request
         this.props.deleteChannel(currentUser.guid, channel.guid)
@@ -62,6 +62,10 @@ class TaskForum extends React.Component {
                 if (index !== -1) {
                     channels.splice(index, 1);
                     this.setState({channels: channels})
+                }
+                // If the deleted channel is the selected channel, set the selected channel to null
+                if (selectedChannel === channel) {
+                    this.setState({selectedChannel: null});
                 }
             });
     };
@@ -94,51 +98,6 @@ class TaskForum extends React.Component {
                 </Header>
             )
         } else {
-
-            {/*<Comment.Group>*/}
-            {/*    <Comment>*/}
-            {/*        <Comment.Avatar as='a' src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />*/}
-            {/*        <Comment.Content>*/}
-            {/*            <Comment.Author>Joe Henderson</Comment.Author>*/}
-            {/*            <Comment.Metadata>*/}
-            {/*                <div>1 day ago</div>*/}
-            {/*            </Comment.Metadata>*/}
-            {/*            <Comment.Text>*/}
-            {/*                <p>*/}
-            {/*                    The hours, minutes and seconds stand as visible reminders that your*/}
-            {/*                    effort put them all there.*/}
-            {/*                </p>*/}
-            {/*                <p>*/}
-            {/*                    Preserve until your next run, when the watch lets you see how*/}
-            {/*                    Impermanent your efforts are.*/}
-            {/*                </p>*/}
-            {/*            </Comment.Text>*/}
-            {/*            <Comment.Actions>*/}
-            {/*                <Comment.Action>Reply</Comment.Action>*/}
-            {/*            </Comment.Actions>*/}
-            {/*        </Comment.Content>*/}
-            {/*    </Comment>*/}
-
-            {/*    <Comment>*/}
-            {/*        <Comment.Avatar as='a' src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />*/}
-            {/*        <Comment.Content>*/}
-            {/*            <Comment.Author>Christian Rocha</Comment.Author>*/}
-            {/*            <Comment.Metadata>*/}
-            {/*                <div>2 days ago</div>*/}
-            {/*            </Comment.Metadata>*/}
-            {/*            <Comment.Text>I re-tweeted this.</Comment.Text>*/}
-            {/*            <Comment.Actions>*/}
-            {/*                <Comment.Action>Reply</Comment.Action>*/}
-            {/*            </Comment.Actions>*/}
-            {/*        </Comment.Content>*/}
-            {/*    </Comment>*/}
-            {/*    <Form reply>*/}
-            {/*        <Form.TextArea />*/}
-            {/*        <Button content='Add Comment' labelPosition='left' icon='edit' primary />*/}
-            {/*    </Form>*/}
-            {/*</Comment.Group>*/}
-
-
             return (
                 <ChannelMessageList
                     channel={this.state.selectedChannel}/>
