@@ -2,6 +2,8 @@ import {combineReducers} from 'redux'
 import {
     REQUEST_CREATE_CHANNEL_MESSAGE,
     RECEIVE_CREATE_CHANNEL_MESSAGE,
+    REQUEST_GET_ALL_MESSAGES,
+    RECEIVE_GET_ALL_MESSAGES,
     REQUEST_UPDATE_CHANNEL_MESSAGE,
     RECEIVE_UPDATE_CHANNEL_MESSAGE,
     REQUEST_DELETE_CHANNEL_MESSAGE,
@@ -16,6 +18,13 @@ function messageController(state = {}, action) {
             return {
                 ...state,
                 newMessage: action.message
+            };
+        case REQUEST_GET_ALL_MESSAGES:
+            return state;
+        case RECEIVE_GET_ALL_MESSAGES:
+            return {
+                ...state,
+                messages: action.messages
             };
         case REQUEST_UPDATE_CHANNEL_MESSAGE:
             return state;

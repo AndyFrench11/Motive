@@ -6,6 +6,8 @@ const INTERNAL_SERVER_ERROR = 500;
 
 export const REQUEST_CREATE_CHANNEL_MESSAGE = 'REQUEST_CREATE_CHANNEL_MESSAGE';
 export const RECEIVE_CREATE_CHANNEL_MESSAGE = 'RECEIVE_CREATE_CHANNEL_MESSAGE';
+export const REQUEST_GET_ALL_MESSAGES = 'REQUEST_GET_ALL_MESSAGES';
+export const RECEIVE_GET_ALL_MESSAGES = 'RECEIVE_GET_ALL_MESSAGES';
 export const REQUEST_UPDATE_CHANNEL_MESSAGE = 'REQUEST_UPDATE_CHANNEL_MESSAGE';
 export const RECEIVE_UPDATE_CHANNEL_MESSAGE = 'RECEIVE_UPDATE_CHANNEL_MESSAGE';
 export const REQUEST_DELETE_CHANNEL_MESSAGE = 'REQUEST_DELETE_CHANNEL_MESSAGE';
@@ -84,6 +86,36 @@ function receiveUpdateMessage(response) {
     }
     return {
         type: RECEIVE_UPDATE_CHANNEL_MESSAGE,
+        receivedAt: Date.now()
+    }
+}
+
+function requestGetAllMessages() {
+    return {
+        type: REQUEST_GET_ALL_MESSAGES
+    }
+}
+
+export function getAllMessages(userGuid, channelGuid) {
+    return function (dispatch) {
+        dispatch(requestGetAllMessages());
+        return fetch(serverUrl + '/message/' + channelGuid, {
+            headers: {
+                'userId': userGuid
+            }
+        }).then(
+            response => response.json(),
+            error => console.log("An error has occurred!!", error)
+        ).then(
+            json => dispatch(receiveGetAllMessages(json))
+        )
+    }
+}
+
+function receiveGetAllMessages(json) {
+    return {
+        type: RECEIVE_GET_ALL_MESSAGES,
+        messages: json,
         receivedAt: Date.now()
     }
 }

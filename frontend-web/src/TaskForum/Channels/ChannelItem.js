@@ -2,8 +2,8 @@ import React from 'react'
 import {Button, Segment, Confirm, Input, Header, Grid} from 'semantic-ui-react'
 import {Route} from 'react-router-dom';
 import Moment from 'moment';
-import CardText from "reactstrap/es/CardText";
 import ButtonGroup from "react-bootstrap/es/ButtonGroup";
+import "./ChannelStyle.css";
 
 class ChannelItem extends React.Component {
 
@@ -13,7 +13,8 @@ class ChannelItem extends React.Component {
             channel: this.props.channel,
             editing: false,
             newName: '',
-            confirmDeleteOpen: false
+            confirmDeleteOpen: false,
+            channelSelectedClass: ''
         }
     }
 
@@ -95,13 +96,19 @@ class ChannelItem extends React.Component {
             );
         } else {
             return (
-                <Header as='h5'
-                        onClick={this.startEdit}>
+                <Header as='h5'>
                     {channel.name}
                 </Header>
             );
         }
-    }
+    };
+
+    clickedChannel = () => {
+        const {channel} = this.state;
+        // TODO: remove old state ?
+        this.setState({channelSelectedClass: 'channel-selected'});
+        this.props.selectChannelCallback(channel);
+    };
 
     render() {
         const {channel} = this.state;
@@ -110,7 +117,10 @@ class ChannelItem extends React.Component {
         const momentTime = Moment(dateTime).calendar();
 
         return (
-            <Segment>
+            <Segment
+                onClick={this.clickedChannel}
+                className={'channel-change-on-hover '}
+            >
                 <Grid>
                     <Grid.Column width={12}>
                         {this.getChannelText()}

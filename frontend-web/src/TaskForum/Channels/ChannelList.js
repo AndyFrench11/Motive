@@ -115,6 +115,7 @@ class ChannelList extends React.Component {
                                 channel={channel}
                                 deleteChannelCallback={this.props.deleteChannelCallback}
                                 editChannelCallback={this.props.editChannelCallback}
+                                selectChannelCallback={this.props.selectChannelCallback}
                             />
                         ))}
                     </List>

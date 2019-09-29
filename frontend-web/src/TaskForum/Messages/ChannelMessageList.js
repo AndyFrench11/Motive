@@ -8,7 +8,7 @@ import {
     Segment
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
-import {deleteMessage, createMessage, updateMessage} from "./messageActions";
+import {deleteMessage, createMessage, updateMessage, getAllMessages} from "./messageActions";
 import LoaderInlineCentered from "../../Common/Loader";
 import MessageList from "./MessageList";
 
@@ -21,6 +21,26 @@ class ChannelMessageList extends React.Component {
             messageText: ''
         };
     }
+
+    componentDidMount() {
+        const {currentUser, channel} = this.props;
+        // Fetch all messages
+        this.props.getMessges(currentUser.guid, channel.guid).then(() => {
+            this.setState({messages: this.props.messages});
+        });
+    };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        let previousChannel = prevProps.channel;
+        const {currentUser, channel} = this.props;
+
+        if (previousChannel !== channel) {
+            // Fetch all messages
+            this.props.getMessges(currentUser.guid, channel.guid).then(() => {
+                this.setState({messages: this.props.messages});
+            });
+        }
+    };
 
     handleChange = (e, {name, value}) => {
         this.setState({[name]: value})
@@ -148,6 +168,7 @@ class ChannelMessageList extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         addMessage: (userGuid, channelGuid, messageText) => dispatch(createMessage(userGuid, channelGuid, messageText)),
+        getMessges: (userGuid, channelGuid) => dispatch(getAllMessages(userGuid, channelGuid)),
         editMessage: (userGuid, messageGuid, messageText) => dispatch(updateMessage(userGuid, messageGuid, messageText)),
         deleteMessage: (userGuid, messageGuid) => dispatch(deleteMessage(userGuid, messageGuid))
     };
@@ -156,10 +177,12 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
     const {channelMessageReducer} = state;
     const {messageController} = channelMessageReducer;
-    const {result, newMessage} = messageController;
+    const {result, newMessage, messages} = messageController;
     return {
         result: result,
-        newMessage: newMessage
+        newMessage: newMessage,
+        messages: messages,
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 

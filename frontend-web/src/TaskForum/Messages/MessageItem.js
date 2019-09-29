@@ -206,13 +206,13 @@ class MessageItem extends React.Component {
         if (currentUser.guid === message.author.guid) {
             return (
                 <div>
-                    {this.rightAlignedMessage}
+                    {this.rightAlignedMessage()}
                 </div>
         );
         } else {
             return (
                 <div>
-                    {this.leftAlignedMessage}
+                    {this.leftAlignedMessage()}
                 </div>
             );
         }

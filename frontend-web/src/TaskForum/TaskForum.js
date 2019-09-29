@@ -5,6 +5,7 @@ import {
 import {connect} from "react-redux";
 import {createChannel, updateChannel, deleteChannel, getAllChannels} from "./channelActions";
 import ChannelList from "./Channels/ChannelList";
+import ChannelMessageList from "./Messages/ChannelMessageList";
 
 const getHeaderStyle = () => ({
     padding: 12
@@ -62,6 +63,11 @@ class TaskForum extends React.Component {
             });
     };
 
+    selectChannelCallback = (channel) => {
+        this.setState({selectedChannel: channel});
+        console.log(channel.name);
+    };
+
     channels() {
         const {channels} = this.state;
         return (
@@ -70,6 +76,7 @@ class TaskForum extends React.Component {
                 addChannelCallback={this.addChannelCallback}
                 deleteChannelCallback={this.deleteChannelCallback}
                 editChannelCallback={this.editChannelCallback}
+                selectChannelCallback={this.selectChannelCallback}
             />
         )
     }
@@ -83,50 +90,55 @@ class TaskForum extends React.Component {
                 </Header>
             )
         } else {
-            return (
-                <Comment.Group>
-                    <Comment>
-                        <Comment.Avatar as='a' src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />
-                        <Comment.Content>
-                            <Comment.Author>Joe Henderson</Comment.Author>
-                            <Comment.Metadata>
-                                <div>1 day ago</div>
-                            </Comment.Metadata>
-                            <Comment.Text>
-                                <p>
-                                    The hours, minutes and seconds stand as visible reminders that your
-                                    effort put them all there.
-                                </p>
-                                <p>
-                                    Preserve until your next run, when the watch lets you see how
-                                    Impermanent your efforts are.
-                                </p>
-                            </Comment.Text>
-                            <Comment.Actions>
-                                <Comment.Action>Reply</Comment.Action>
-                            </Comment.Actions>
-                        </Comment.Content>
-                    </Comment>
 
-                    <Comment>
-                        <Comment.Avatar as='a' src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />
-                        <Comment.Content>
-                            <Comment.Author>Christian Rocha</Comment.Author>
-                            <Comment.Metadata>
-                                <div>2 days ago</div>
-                            </Comment.Metadata>
-                            <Comment.Text>I re-tweeted this.</Comment.Text>
-                            <Comment.Actions>
-                                <Comment.Action>Reply</Comment.Action>
-                            </Comment.Actions>
-                        </Comment.Content>
-                    </Comment>
-                    <Form reply>
-                        <Form.TextArea />
-                        <Button content='Add Comment' labelPosition='left' icon='edit' primary />
-                    </Form>
-                </Comment.Group>
-            )
+            {/*<Comment.Group>*/}
+            {/*    <Comment>*/}
+            {/*        <Comment.Avatar as='a' src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />*/}
+            {/*        <Comment.Content>*/}
+            {/*            <Comment.Author>Joe Henderson</Comment.Author>*/}
+            {/*            <Comment.Metadata>*/}
+            {/*                <div>1 day ago</div>*/}
+            {/*            </Comment.Metadata>*/}
+            {/*            <Comment.Text>*/}
+            {/*                <p>*/}
+            {/*                    The hours, minutes and seconds stand as visible reminders that your*/}
+            {/*                    effort put them all there.*/}
+            {/*                </p>*/}
+            {/*                <p>*/}
+            {/*                    Preserve until your next run, when the watch lets you see how*/}
+            {/*                    Impermanent your efforts are.*/}
+            {/*                </p>*/}
+            {/*            </Comment.Text>*/}
+            {/*            <Comment.Actions>*/}
+            {/*                <Comment.Action>Reply</Comment.Action>*/}
+            {/*            </Comment.Actions>*/}
+            {/*        </Comment.Content>*/}
+            {/*    </Comment>*/}
+
+            {/*    <Comment>*/}
+            {/*        <Comment.Avatar as='a' src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />*/}
+            {/*        <Comment.Content>*/}
+            {/*            <Comment.Author>Christian Rocha</Comment.Author>*/}
+            {/*            <Comment.Metadata>*/}
+            {/*                <div>2 days ago</div>*/}
+            {/*            </Comment.Metadata>*/}
+            {/*            <Comment.Text>I re-tweeted this.</Comment.Text>*/}
+            {/*            <Comment.Actions>*/}
+            {/*                <Comment.Action>Reply</Comment.Action>*/}
+            {/*            </Comment.Actions>*/}
+            {/*        </Comment.Content>*/}
+            {/*    </Comment>*/}
+            {/*    <Form reply>*/}
+            {/*        <Form.TextArea />*/}
+            {/*        <Button content='Add Comment' labelPosition='left' icon='edit' primary />*/}
+            {/*    </Form>*/}
+            {/*</Comment.Group>*/}
+
+
+            return (
+                <ChannelMessageList
+                    channel={this.state.selectedChannel}/>
+            );
         }
     }
 

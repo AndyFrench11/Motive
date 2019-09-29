@@ -33,6 +33,7 @@ class MessageList extends React.Component {
                 <Comment.Group minimal>
                     {messages.map((message) => (
                         <MessageItem
+                            key={message.guid}
                             message={message}
                             currentUser={currentUser}
                             deleteMessageCallback={this.props.deleteMessageCallback}
