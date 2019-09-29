@@ -13,7 +13,7 @@ namespace backend_api.Database.MediaRepository
 
         RepositoryReturn<bool> AddUsersToMedia(Guid mediaGuid, IDictionary<Guid, string> newUserGuidsWithKey);
         
-        RepositoryReturn<MediaAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid);  
+        RepositoryReturn<ProjectAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid);  
 
         RepositoryReturn<MediaTracker> Update(Guid mediaGuid, Guid userGuid);
 

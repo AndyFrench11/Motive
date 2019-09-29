@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import ReactPlayer from "react-player";
 
+const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
+
 class VideoPlayer extends Component {
     constructor(props) {
         super(props);
-
-        this.fetchVideo("https://localhost:8081/api/upload?resourceGuid=" + "65ef7095-0062-4fc9-a660-e7791f54c79e");
-
         this.state = {
             videoUrl: "",
             isPlaying: false
-        }
+        };
+
+        console.log(this.props.guid)
     }
 
     readResponseAsBlob = (response) => {
@@ -32,6 +33,11 @@ class VideoPlayer extends Component {
             .then(this.showVideo)
             .catch(this.processError)
     };
+
+    componentDidMount() {
+        const { guid } = this.props.match.params;
+        this.fetchVideo(serverURL + "/resource/secure?resourceGuid=" + guid);
+    }
 
     render() {
         return (

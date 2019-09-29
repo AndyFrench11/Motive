@@ -51,11 +51,12 @@ export function postProject(guid, valuesJson, imageIndex) {
             imageIndex
         };
 
-        return axios.post(serverUrl + "/project", newProject, {headers: {
-                'Content-Type': 'application/json',
-                'userId': guid
-            }
-        })
+        return axios.post(serverUrl + "/project", newProject, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true
+            })
             .then(response => dispatch(receiveNewProjectResponse(response)))
             .catch(error =>  {
                 console.log("The server is not running!");

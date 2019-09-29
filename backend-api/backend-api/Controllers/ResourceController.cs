@@ -54,7 +54,7 @@ namespace backend_api.Controllers
 
             MediaTracker queriedMediaTracker = returnMediaTracker.ReturnValue;
 
-            RepositoryReturn<MediaAccessRelationship> returnMediaAccessRelationship = _mediaRepository.GetEncryptedMediaKey(queriedMediaTracker.Guid,
+            RepositoryReturn<ProjectAccessRelationship> returnMediaAccessRelationship = _mediaRepository.GetEncryptedMediaKey(queriedMediaTracker.Guid,
                 userLoggedInSession.userGuid);
             
             if (returnMediaAccessRelationship.IsError)
@@ -113,7 +113,7 @@ namespace backend_api.Controllers
 
             MediaTracker queriedMediaTracker = returnMediaTracker.ReturnValue;
             
-            RepositoryReturn<MediaAccessRelationship> returnMediaAccessRelationship = _mediaRepository.GetEncryptedMediaKey(queriedMediaTracker.Guid,
+            RepositoryReturn<ProjectAccessRelationship> returnMediaAccessRelationship = _mediaRepository.GetEncryptedMediaKey(queriedMediaTracker.Guid,
                 userLoggedInSession.userGuid);
             
             if (returnMediaAccessRelationship.IsError)

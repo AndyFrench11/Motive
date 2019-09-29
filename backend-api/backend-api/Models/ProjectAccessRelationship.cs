@@ -4,19 +4,19 @@ using Neo4j.Driver.V1;
 
 namespace backend_api.Models
 {
-    public class MediaAccessRelationship
+    public class ProjectAccessRelationship
     {
         public AccessLevel AccessLevel { get; }
         public string EncryptedMediaKey { get; }
 
-        public MediaAccessRelationship(string accessLevel, string encryptedMediaKey)
+        public ProjectAccessRelationship(string accessLevel, string encryptedMediaKey)
         {
             Enum.TryParse(accessLevel, out AccessLevel foundLevel);
             this.AccessLevel = foundLevel;
             this.EncryptedMediaKey = encryptedMediaKey;
         }
 
-        public MediaAccessRelationship(IRelationship fetchedRelationship)
+        public ProjectAccessRelationship(IRelationship fetchedRelationship)
         {
             Enum.TryParse(fetchedRelationship.Type, out AccessLevel foundLevel);
             this.AccessLevel = foundLevel;

@@ -78,11 +78,6 @@ export default class DateOfBirthPicker extends React.Component {
                         max={2020}
                     />
                 </Form.Group>
-                {/*<Message*/}
-                {/*    error*/}
-                {/*    header='Invalid Date Of Birth'*/}
-                {/*    content='Please enter a valid DOB.'*/}
-                {/*/>*/}
             </Form>
         )
     }

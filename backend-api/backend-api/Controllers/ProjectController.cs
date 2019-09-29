@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using backend_api.Crypto;
 using backend_api.Database;
 using backend_api.Database.PersonRepository;
 using backend_api.Database.ProjectRepository;
@@ -89,29 +91,32 @@ namespace backend_api.Controllers
 
         }
 
-        // POST api/values
+        // POST api/project 
         [HttpPost]
-        public ActionResult Post([FromBody]Project projectToCreate, [FromHeader]string userId)
+        [ValidSessionRequired]
+        public ActionResult Post([FromBody] Project projectToCreate)
         {
+            string sessionId = Request.Cookies["sessionId"];
+            Session userLoggedInSession = SessionsController.GetLoggedInSession(sessionId);
+
+            // Create a new project password (only decryptable to the owner at the moment)
+            string newProjectPasswordPlainText = Convert.ToBase64String(CryptoHelpers.GetRandomBytes(16));
             
-            //Check user is valid first
-            Guid userGuidToGet;
-            try
+            // Get the user's public key
+            RepositoryReturn<Person> fetchAccount = _personRepository.GetByGuid(userLoggedInSession.userGuid);
+            if (fetchAccount.IsError)
             {
-                userGuidToGet = Guid.Parse(userId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
-            catch (FormatException)
-            {
-                return BadRequest();
+                return StatusCode(500, fetchAccount.ErrorException.Message);
             }
             
-            // TODO sanitise incoming project body
-            RepositoryReturn<bool> result = _projectRepository.Add(projectToCreate, userGuidToGet);
-            
+            RSAEngine rsaEngine = new RSAEngine();
+            RSAParameters userPublicKey = rsaEngine.ConvertStringToKey(fetchAccount.ReturnValue.publicKey);
+
+            // Encrypt the password with the user's public key (therefore only accessible to their private key)
+            string ownerEncryptedPassword = Convert.ToBase64String(rsaEngine.EncryptString(newProjectPasswordPlainText, userPublicKey));
+
+            RepositoryReturn<bool> result = _projectRepository.Add(projectToCreate, userLoggedInSession.userGuid, ownerEncryptedPassword);
+
             if (result.IsError)
             {
                 return StatusCode(500, result.ErrorException.Message);
@@ -120,7 +125,7 @@ namespace backend_api.Controllers
             return StatusCode(201, projectToCreate.Guid);
         }
         
-        // POST api/values
+        // POST api/project/{projectId}/tags
         [HttpPost("{projectId}/tags")]
         public ActionResult PostNewTag(string projectId, [FromBody]Tag tagToCreate)
         {
@@ -151,8 +156,9 @@ namespace backend_api.Controllers
             return StatusCode(201);
         }
         
-        // PATCH api/values
+        // PATCH api/project/{projectId}/tasks
         [HttpPatch("{projectId}/tasks")]
+        [ValidSessionRequired]
         public ActionResult UpdateTasks(string projectId, [FromBody]List<ProjectTask> projectTaskList)
         {
         
@@ -194,6 +200,7 @@ namespace backend_api.Controllers
         
         // PATCH api/values
         [HttpPatch("{projectId}/name")]
+        [ValidSessionRequired]
         public ActionResult UpdateName(string projectId, [FromBody]UpdateProjectObject updateProjectNameObject)
         {
         
@@ -227,6 +234,7 @@ namespace backend_api.Controllers
         
         // PATCH api/values
         [HttpPatch("{projectId}/description")]
+        [ValidSessionRequired]
         public ActionResult UpdateDescription(string projectId, [FromBody]UpdateProjectObject updateProjectDescriptionObject)
         {
         
@@ -260,6 +268,7 @@ namespace backend_api.Controllers
         
         // PATCH api/values
         [HttpPatch("{projectId}/imageIndex")]
+        [ValidSessionRequired]
         public ActionResult UpdateImageIndex(string projectId, [FromBody]UpdateProjectObject updateProjectImageIndexObject)
         {
         
@@ -322,6 +331,7 @@ namespace backend_api.Controllers
         
         // DELETE api/values/5
         [HttpDelete("{projectId}")]
+        [ValidSessionRequired]
         public ActionResult Delete(string projectId)
         {
             Guid projectGuidToGet;
@@ -351,6 +361,7 @@ namespace backend_api.Controllers
         
         // DELETE api/values/5
         [HttpDelete("{projectId}/tags")]
+        [ValidSessionRequired]
         public ActionResult Delete(string projectId, [FromHeader]string tagName)
         {
             Guid projectGuidToGet;
@@ -406,33 +417,80 @@ namespace backend_api.Controllers
         /**
          * Completes action to add a new member to a given project.
          *
-         * PATCH api/project/:projectId/add/:newMemberId
+         * PATCH api/project/:projectId/giveAccessTo 
          */
-        [HttpPatch("{projectId}/add/{newMemberId}")]
-        public ActionResult AddNewMember(string projectId, string newMemberId)
+        [HttpPatch("{projectId}/giveAccessTo")]
+        [ValidSessionRequired]
+        public ActionResult AddNewMember(string projectId, [FromBody] List<string> emails)
         {
-            // Parse project guid and new member guid
-            var projectGuid = ParseGuid(projectId);
-            var newMemberGuid = ParseGuid(newMemberId);
-            if (projectGuid.Equals(Guid.Empty) || newMemberGuid.Equals(Guid.Empty))
+            string sessionId = Request.Cookies["sessionId"];
+            Session userLoggedInSession = SessionsController.GetLoggedInSession(sessionId);
+
+            Guid projectGuid = ParseGuid(projectId);
+            if (projectGuid == Guid.Empty)
+                return StatusCode(400, "Invalid parse project GUID");
+            
+            //TODO check if emails legit
+            
+            // Get the link between the requesting user and the specified project (they may not own it)
+            RepositoryReturn<ProjectAccessRelationship> returnProjectAccessRelationship = 
+                _projectRepository.GetUserAccessToProject(projectGuid, userLoggedInSession.userGuid);
+            
+            if (returnProjectAccessRelationship.IsError)
             {
-                return BadRequest("Invalid guid.");
+                // Failed to get relationship
+                return StatusCode(500, returnProjectAccessRelationship.ErrorException.Message);
             }
             
-            // TODO
-            // Check user is logged in - Unauthorised()
-            // Check logged in user owns the project - Forbidden()
-            // Check new member exists - NotFound()
-            // Check project exists - NotFound()
-
-            // Add member
-            var result = _projectRepository.AddProjectMember(projectGuid, newMemberGuid);
-            if (result.IsError)
+            if (returnProjectAccessRelationship.ReturnValue == null)
             {
-                return StatusCode(500, result.ErrorException.Message);
+                // Supposed owner has no relationship to this project
+                return StatusCode(404, "You do not have access to this resource");
             }
 
-            return StatusCode(200, "Successfully added user.");
+            if (returnProjectAccessRelationship.ReturnValue.AccessLevel != AccessLevel.Owner)
+            {
+                // Supposed owner does not have a valid access level to edit access to this project
+                return StatusCode(401, "You do not have correct access privileges to this resource");
+            }
+            
+            RSAEngine rsaEngine = new RSAEngine();
+            // Get the user's private key to fetch the project decryption key
+            RSAParameters privateKey = rsaEngine.ConvertStringToKey(userLoggedInSession.privateKey);
+
+            string plaintextProjectKey =
+                rsaEngine.DecryptString(Convert.FromBase64String(returnProjectAccessRelationship.ReturnValue.EncryptedMediaKey), privateKey);
+
+            // Go through each email, and fetch the user ID and public key
+            IDictionary<Guid, Tuple<AccessLevel, string>> usersToGiveAccess = new Dictionary<Guid, Tuple<AccessLevel, string>>();
+            foreach (string email in emails)
+            {
+                RepositoryReturn<Person> requestPerson = _personRepository.GetByEmail(email);
+                if (requestPerson.IsError)
+                {
+                    return StatusCode(500, requestPerson.ErrorException.Message);
+                }
+
+                Person currentPerson = requestPerson.ReturnValue;
+                
+                RSAParameters currentUserPublicKey =
+                    rsaEngine.ConvertStringToKey(currentPerson.publicKey);
+                
+                // Create the media key unique to the current user's public key
+                string currentUserEncryptedMediaKey = Convert.ToBase64String(rsaEngine.EncryptString(plaintextProjectKey, currentUserPublicKey));
+                
+                // Finally set the encrypted key to the user's GUID
+                usersToGiveAccess[currentPerson.Guid] = new Tuple<AccessLevel, string>(AccessLevel.Viewer, currentUserEncryptedMediaKey);
+            }
+            
+            RepositoryReturn<bool> requestAddUserToMedia = _projectRepository.AddProjectMembers(projectGuid,
+                usersToGiveAccess);
+            if (requestAddUserToMedia.IsError)
+            {
+                return StatusCode(500, requestAddUserToMedia.ErrorException.Message);
+            }
+
+            return Ok();
         }
         
         /**
@@ -444,27 +502,28 @@ namespace backend_api.Controllers
         public ActionResult RemoveMember(string projectId, string memberId)
         {
             // Parse project guid and new member guid
-            var projectGuid = ParseGuid(projectId);
-            var newMemberGuid = ParseGuid(memberId);
-            if (projectGuid.Equals(Guid.Empty) || newMemberGuid.Equals(Guid.Empty))
-            {
-                return BadRequest("Invalid guid.");
-            }
-            
-            // TODO
-            // Check user is logged in - Unauthorised()
-            // Check logged in user owns the project - Forbidden()
-            // Check new member exists - NotFound()
-            // Check project exists - NotFound()
-
-            // Add member
-            var result = _projectRepository.RemoveProjectMember(projectGuid, newMemberGuid);
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-
-            return StatusCode(200, "Successfully removed user.");
+//            var projectGuid = ParseGuid(projectId);
+//            var newMemberGuid = ParseGuid(memberId);
+//            if (projectGuid.Equals(Guid.Empty) || newMemberGuid.Equals(Guid.Empty))
+//            {
+//                return BadRequest("Invalid guid.");
+//            }
+//            
+//            // TODO
+//            // Check user is logged in - Unauthorised()
+//            // Check logged in user owns the project - Forbidden()
+//            // Check new member exists - NotFound()
+//            // Check project exists - NotFound()
+//
+//            // Add member
+//            var result = _projectRepository.RemoveProjectMember(projectGuid, newMemberGuid);
+//            if (result.IsError)
+//            {
+//                return StatusCode(500, result.ErrorException.Message);
+//            }
+//
+//            return StatusCode(200, "Successfully removed user.");
+            throw new NotImplementedException("Not implemented yet");
         }
 
     }

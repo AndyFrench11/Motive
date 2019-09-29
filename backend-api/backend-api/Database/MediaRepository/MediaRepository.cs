@@ -114,7 +114,7 @@ namespace backend_api.Database.MediaRepository
             }
         }
 
-        public RepositoryReturn<MediaAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid)
+        public RepositoryReturn<ProjectAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid)
         {
             try
             {
@@ -127,21 +127,21 @@ namespace backend_api.Database.MediaRepository
                             $"MATCH (person:Person {{ guid: '{userGuid}' }})-[r]->(m:Media {{ guid : '{mediaGuid}'}})\nRETURN r");
 
                         var record = result.SingleOrDefault();
-                        return new MediaAccessRelationship(record?[0].As<IRelationship>());
+                        return new ProjectAccessRelationship(record?[0].As<IRelationship>());
                     });
                     switch (returnedMediaAccessRelationship)
                     {
                         case null:
-                            return new RepositoryReturn<MediaAccessRelationship>(null);
+                            return new RepositoryReturn<ProjectAccessRelationship>(null);
                         default:
-                            return new RepositoryReturn<MediaAccessRelationship>(returnedMediaAccessRelationship);
+                            return new RepositoryReturn<ProjectAccessRelationship>(returnedMediaAccessRelationship);
                     }
                 }
             }
 
             catch (Neo4jException e)
             {
-                return new RepositoryReturn<MediaAccessRelationship>(true, e);
+                return new RepositoryReturn<ProjectAccessRelationship>(true, e);
             }
         }
 

@@ -27,18 +27,17 @@ namespace backend_api.Controllers
         // POST -> api/upload
         [HttpPost]
         [DisableRequestSizeLimit]
-        public IActionResult ReceiveFileFromClient([FromForm] IFormFile file)
+        public IActionResult ReceiveFileFromClient([FromForm] IFormFile filepond)
         {
             string sessionId = Request.Cookies["sessionId"];
-
             Session userLoggedInSession = SessionsController.GetLoggedInSession(sessionId);
 
-            var stream = file.OpenReadStream();
+            var stream = filepond.OpenReadStream();
             
             AESEngine aesEngine = new AESEngine();
             
             // Generate object to track this upload (and create relationships to users) in the DB
-            MediaTracker newFileTracker = new MediaTracker(Path.GetExtension(file.FileName), file.ContentType);
+            MediaTracker newFileTracker = new MediaTracker(Path.GetExtension(filepond.FileName), filepond.ContentType);
             
             // Create a new file password (only decryptable to the owner at upload)
             string newFilePasswordPlainText = Convert.ToBase64String(CryptoHelpers.GetRandomBytes(16));

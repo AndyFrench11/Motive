@@ -6,6 +6,7 @@ import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
 import { postProjectUpdate } from "./actions";
 import TrophyImage from '../../../ProjectImages/image16.png';
+import Uploader from "../../../../Common/Uploader";
 
 class CreateProjectUpdateModal extends React.Component {
 
@@ -43,7 +44,7 @@ class CreateProjectUpdateModal extends React.Component {
 
     updateContentInput = (event, {value}) => {
         this.setState({ contentInput: value });
-    }
+    };
 
     updateSelectedTask = (event, { key, value }) => {
         this.setState({ selectedTaskGuid: value });
@@ -51,15 +52,15 @@ class CreateProjectUpdateModal extends React.Component {
 
     confirmNewUpdate = () => {
         const { contentInput, selectedTaskGuid, markedAsHighlight } = this.state;
-        let update = { content: contentInput, highlight: markedAsHighlight }
+        let update = { content: contentInput, highlight: markedAsHighlight };
         if(selectedTaskGuid !== "")
         {
             update["taskGuid"] = selectedTaskGuid;
         }
-        
+
+        this.refs.uploaderComponent.beginProcessFile();
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
-        this.props.closeCallback()
-    }
+    };
 
     updateHighlightStatus = () => {
         this.setState((prevState) => ({ 
@@ -68,6 +69,18 @@ class CreateProjectUpdateModal extends React.Component {
             currentAnimation: prevState.currentAnimation === 'tada' ? 'shake' : 'tada'    
         }));
     }
+
+    onFileUpload = (error, file) => {
+        console.log(error, file);
+
+        this.sleep(1000).then(() => {
+            this.props.closeCallback()
+        })
+    };
+
+    sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    };
 
     render() {
 
@@ -166,7 +179,7 @@ class CreateProjectUpdateModal extends React.Component {
                                 <Divider/>
                             }
                         </Form>
-
+                        <Uploader ref='uploaderComponent' onFileUploaded={this.onFileUpload} />
                     </Segment>
                 </Modal.Content>
                 <Modal.Actions>
