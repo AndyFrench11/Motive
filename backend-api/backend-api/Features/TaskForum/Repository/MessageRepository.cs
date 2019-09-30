@@ -190,7 +190,7 @@ namespace backend_api.Features.TaskForum.Repository
             {
                 using (_session)
                 {
-                    // Update comment node
+                    // Delete message node
                     _session.WriteTransaction(tx => RemoveMessageNode(tx, messageGuid));
 
                     return new RepositoryReturn<bool>(false);
@@ -215,6 +215,41 @@ namespace backend_api.Features.TaskForum.Repository
                                      "DETACH DELETE message";
             
             tx.Run(statement, new {messageId});
+        }
+        
+        
+        public RepositoryReturn<bool> DeleteAll(Guid channelGuid)
+        {
+            try
+            {
+                using (_session)
+                {
+                    // Delete all message nodes
+                    _session.WriteTransaction(tx => RemoveAllMessageNodes(tx, channelGuid));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveAllMessageNodes(ITransaction tx, Guid channelGuid)
+        {
+            var channelId = channelGuid.ToString();
+            
+            const string statement = "MATCH (message:Message), (channel:Channel) " + 
+                                     "WHERE channel.guid = $channelId " +
+                                     "AND (channel)--(message) " + 
+                                     "DETACH DELETE message";
+            
+            tx.Run(statement, new {channelId});
         }
     }
 }

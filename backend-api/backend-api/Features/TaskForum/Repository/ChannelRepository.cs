@@ -82,13 +82,6 @@ namespace backend_api.Features.TaskForum.Repository
                     // Get all channels
                     var foundChannels = _session.ReadTransaction(tx => RetrieveTaskChannels(tx, taskGuid));
                     
-//                    // For each channel, get messages
-//                    foreach (var channel in foundChannels)
-//                    {
-//                        // messageRepository.GetAllForChannel(channel.Guid);
-//;
-//                    }
-                    
                     return new RepositoryReturn<IEnumerable<Channel>>(foundChannels);
                 }
             }
@@ -156,11 +149,18 @@ namespace backend_api.Features.TaskForum.Repository
             {
                 using (_session)
                 {
-                    // Update comment node
+                    // Delete all messages for the channel first
+                    var messageRepository = new MessageRepository();
+                    var result = messageRepository.DeleteAll(channelGuid);
+                    
+                    if (result.IsError)
+                    {
+                        return result;
+                    }
+                    
+                    // Delete channel node
                     _session.WriteTransaction(tx => RemoveChannelNode(tx, channelGuid));
                     
-                    // Delete all messages for the channel
-
                     return new RepositoryReturn<bool>(false);
                 }
             }

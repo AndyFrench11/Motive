@@ -186,7 +186,7 @@ namespace backend_api.Features.Comments.Repository
             {
                 using (_session)
                 {
-                    // Update comment node
+                    // Delete comment node
                     _session.WriteTransaction(tx => RemoveCommentNode(tx, commentGuid));
 
                     return new RepositoryReturn<bool>(false);
