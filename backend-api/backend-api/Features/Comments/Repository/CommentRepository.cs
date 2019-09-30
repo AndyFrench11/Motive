@@ -212,5 +212,39 @@ namespace backend_api.Features.Comments.Repository
             
             tx.Run(statement, new {commentId});
         }
+        
+        public RepositoryReturn<bool> DeleteAll(Guid updateGuid)
+        {
+            try
+            {
+                using (_session)
+                {
+                    // Delete all comment nodes for update
+                    _session.WriteTransaction(tx => RemoveAllCommentNodes(tx, updateGuid));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveAllCommentNodes(ITransaction tx, Guid updateGuid)
+        {
+            var updateId = updateGuid.ToString();
+            
+            const string statement = "MATCH (comment:Comment), (update:ProjectUpdate) " + 
+                                     "WHERE update.guid = $updateId " + 
+                                     "AND (update)--(comment) " +
+                                     "DETACH DELETE comment";
+            
+            tx.Run(statement, new {updateId});
+        }
     }
 }
