@@ -83,7 +83,7 @@ namespace backend_api.Features.TaskStatus.Controller
         // UPDATE
         // PATCH api/taskstatus/:taskId
         [HttpPatch("{taskId}")]
-        public ActionResult Patch(string taskId, [FromBody]string status, [FromHeader]string userId)
+        public ActionResult Patch(string taskId, [FromBody]Model.TaskStatus taskStatus, [FromHeader]string userId)
         {
             // Parse comment guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
@@ -96,7 +96,8 @@ namespace backend_api.Features.TaskStatus.Controller
             // TODO: Check valid task
             
             //TODO: Check/convert status
-            
+
+            var status = taskStatus.Status;
             // Check valid status
             if (string.IsNullOrEmpty(status.Trim()))
             {

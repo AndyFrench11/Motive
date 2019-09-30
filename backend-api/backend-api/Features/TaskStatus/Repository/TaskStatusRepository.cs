@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using backend_api.Database;
+using backend_api.Models;
 using Neo4j.Driver.V1;
 
 namespace backend_api.Features.TaskStatus.Repository
@@ -21,7 +23,7 @@ namespace backend_api.Features.TaskStatus.Repository
                 using (_session)
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => AddStatusProperty(tx, taskGuid, status));
+                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
 
                     return new RepositoryReturn<bool>(false);
                 }
@@ -36,7 +38,7 @@ namespace backend_api.Features.TaskStatus.Repository
             }
         }
         
-        private void AddStatusProperty(ITransaction tx, Guid taskGuid, string status)
+        private void SetStatusProperty(ITransaction tx, Guid taskGuid, string status)
         {
             var taskId = taskGuid.ToString();
             
@@ -49,17 +51,81 @@ namespace backend_api.Features.TaskStatus.Repository
 
         public RepositoryReturn<string> GetForTask(Guid taskGuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (_session)
+                {
+                    // Add task status node
+                    var result = _session.ReadTransaction(tx => GetStatusProperty(tx, taskGuid));
+
+                    return new RepositoryReturn<string>(result);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<string>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<string>(true, e);
+            }
+        }
+        
+        private string GetStatusProperty(ITransaction tx, Guid taskGuid)
+        {
+            var taskId = taskGuid.ToString();
+            
+            const string statement = "MATCH (task:ProjectTask) " +
+                                     "WHERE task.guid = $taskId " +
+                                     "RETURN task.status";
+            
+            var result = tx.Run(statement, new {taskId}).SingleOrDefault();
+            var record = result[0].As<INode>().Properties;
+            return record["status"].ToString();
         }
 
         public RepositoryReturn<bool> Edit(Guid taskGuid, string status)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (_session)
+                {
+                    // Add task status node
+                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
         }
 
         public RepositoryReturn<bool> Delete(Guid taskGuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (_session)
+                {
+                    // Add task status node
+                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, ""));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
         }
     }
 }
