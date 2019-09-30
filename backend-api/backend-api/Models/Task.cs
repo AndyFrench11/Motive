@@ -11,11 +11,12 @@ namespace backend_api.Models
         public int orderIndex { get; set; }
         public LocalDateTime dateTimeCreated { get; set; }
         public LocalDateTime dateTimeCompleted { get; set; }
+        public string Status { get; set; }
 
 
         public ProjectTask()
         {
-            
+            Status = "";
         }
         
         public ProjectTask(IReadOnlyDictionary<string, object> props)
@@ -29,6 +30,7 @@ namespace backend_api.Models
                 this.dateTimeCompleted = new LocalDateTime(DateTime.Parse(props["dateTimeCompleted"].ToString()));    
             }
             this.Guid = Guid.Parse(props["guid"].ToString());
+            this.Status = props["status"].ToString();
         }
     }
 }

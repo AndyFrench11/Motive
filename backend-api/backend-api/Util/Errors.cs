@@ -12,5 +12,8 @@
         
         // Messages
         public const string MessageEmpty = "Message cannot be empty.";
+        
+        // Task
+        public const string StatusEmpty = "Task status cannot be empty.";
     }
 }
