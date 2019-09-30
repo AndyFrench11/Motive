@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
-import { postProjectUpdate } from "./actions";
+import {postProjectUpdate, resetModalState} from "./actions";
 import TrophyImage from '../../../ProjectImages/image16.png';
 import Uploader from "../../../../Common/Uploader";
 
@@ -12,6 +12,7 @@ class CreateProjectUpdateModal extends React.Component {
 
     constructor(props) {
         super(props);
+        this.props.resetModalState();
 
         this.taskOptions = this.props.project.taskList.map((task, index) => {
             return {
@@ -24,14 +25,16 @@ class CreateProjectUpdateModal extends React.Component {
         const { completedTaskIndex } = this.props;
 
         if(completedTaskIndex !== -1) {
-            this.state = { 
+            this.state = {
+                mediaUploadUrl: "",
                 contentInput: "",
                 selectedTaskGuid: this.props.project.taskList[completedTaskIndex].guid,
                 markedAsHighlight: false
             };
     
         } else {
-            this.state = { 
+            this.state = {
+                mediaUploadUrl: "",
                 contentInput: "",
                 selectedTaskGuid: "",
                 markedAsHighlight: false,
@@ -39,7 +42,16 @@ class CreateProjectUpdateModal extends React.Component {
                 currentAnimation: 'shake'
             };
         }
+    }
 
+    componentDidUpdate(prevProps) {
+
+        // When we receive the file
+        if (this.props.createdUpdateGuid !== prevProps.createdUpdateGuid) {
+            this.setState({mediaUploadUrl: `/projectupdate/${this.props.project.guid}/media/${this.props.createdUpdateGuid}`}, () => {
+                this.refs.uploaderComponent.beginProcessFile();
+            });
+        }
     }
 
     updateContentInput = (event, {value}) => {
@@ -58,7 +70,6 @@ class CreateProjectUpdateModal extends React.Component {
             update["taskGuid"] = selectedTaskGuid;
         }
 
-        this.refs.uploaderComponent.beginProcessFile();
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
     };
 
@@ -83,9 +94,9 @@ class CreateProjectUpdateModal extends React.Component {
     };
 
     render() {
-
+        console.log(this.props);
         const { user, project, completedTaskIndex } = this.props;
-        const { markedAsHighlight, animationVisible, currentAnimation } = this.state;
+        const { markedAsHighlight, animationVisible, currentAnimation, mediaUploadUrl } = this.state;
 
         return (
             <Modal open={true} onClose={this.props.closeCallback} closeIcon>
@@ -179,7 +190,7 @@ class CreateProjectUpdateModal extends React.Component {
                                 <Divider/>
                             }
                         </Form>
-                        <Uploader ref='uploaderComponent' onFileUploaded={this.onFileUpload} />
+                        <Uploader uploadUrl={ mediaUploadUrl } ref='uploaderComponent' onFileUploaded={this.onFileUpload} />
                     </Segment>
                 </Modal.Content>
                 <Modal.Actions>
@@ -188,6 +199,9 @@ class CreateProjectUpdateModal extends React.Component {
                     </Button>
                     <Button color='green' inverted onClick={this.confirmNewUpdate}>
                         <Icon name='checkmark'/> Update
+                    </Button>
+                    <Button color='green' inverted onClick={() => {console.log(this.state);}}>
+                        <Icon name='checkmark'/> STATE
                     </Button>
                 </Modal.Actions>
             </Modal>
@@ -198,17 +212,21 @@ class CreateProjectUpdateModal extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         postProjectUpdate: (projectGuid, userGuid, update) => dispatch(postProjectUpdate(projectGuid, userGuid, update)),
-    };
+        resetModalState: () => dispatch(resetModalState())
+    }
 }
 
 const mapStateToProps = state => {
+    console.log(state);
     const { createProjectUpdateReducer } = state;
     const { createProjectUpdateController } = createProjectUpdateReducer;
-    const { isUpdating, lastUpdated, result } = createProjectUpdateController;
+    const { isUpdating, lastUpdated, result, createdUpdateGuid } = createProjectUpdateController;
+
     return {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
+        createdUpdateGuid: createdUpdateGuid
     };
 };
 

@@ -46,7 +46,7 @@ class Uploader extends Component {
                 allowRevert={false}
                 server={
                     {
-                        url: serverURL + "/upload",
+                        url: serverURL + this.props.uploadUrl,
                         process: {
                             withCredentials: true
                         }

@@ -1,17 +1,25 @@
 import { combineReducers } from 'redux'
 import {
-    REQUEST_NEW_PROJECT_UPDATE, 
-    RECEIVE_NEW_PROJECT_UPDATE_RESPONSE
+    REQUEST_NEW_PROJECT_UPDATE,
+    RECEIVE_NEW_PROJECT_UPDATE_RESPONSE, RESET_NEW_PROJECT_STATE
 } from './actions'
 
-function addProjectUpdate(
+function createProjectUpdateController(
     state = {
         isUpdating: false,
-        result: ""
+        result: "",
+        createdUpdateGuid: null
     },
     action
 ) {
+    console.log(action);
     switch (action.type) {
+        case RESET_NEW_PROJECT_STATE:
+            return {
+                isUpdating: false,
+                result: "",
+                createdUpdateGuid: null
+            };
         case REQUEST_NEW_PROJECT_UPDATE:
             return Object.assign({}, state, {
                 isUpdating: true,
@@ -20,22 +28,11 @@ function addProjectUpdate(
             return Object.assign({}, state, {
                 isUpdating: false,
                 result: action.result,
-                lastUpdated: action.receivedAt
+                lastUpdated: action.receivedAt,
+                createdUpdateGuid: action.createdUpdateGuid
             });
         default:
             return state
-    }
-}
-
-
-function createProjectUpdateController(state = {}, action) {
-    switch (action.type) {
-        case REQUEST_NEW_PROJECT_UPDATE:
-        case RECEIVE_NEW_PROJECT_UPDATE_RESPONSE:
-            addProjectUpdate(state, action)
-        default:
-            return state;
-
     }
 }
 
