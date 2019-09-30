@@ -70,7 +70,6 @@ class ProjectTasks extends Component {
             createProjectUpdateModalOpen: false,
             completedTaskIndex: -1,
             showForum: false,
-            showForumIcon: 'chevron right',
             forumTask: null
         };
 
@@ -182,40 +181,35 @@ class ProjectTasks extends Component {
         }
     };
 
-
-    toggleTaskForum = (event, {index}) => {
+    showTaskForum = (event, {index}) => {
         const {taskList} = this.state;
-        const {showForum} = this.state;
-        let show = !showForum;
-        let icon = this.state.showForumIcon === 'chevron right' ? 'chevron left' : 'chevron right';
-        this.setState({showForum: show});
-        this.setState({showForumIcon: icon});
-
         let task = taskList[index];
-        if (show) {
-            this.setState({forumTask: task});
-        } else {
-            this.setState({forumTask: null})
-        }
+
+        this.setState({forumTask: task});
+        this.setState({showForum: true});
+    };
+
+    hideTaskForumCallback = ()  => {
+        this.setState({showForum: false});
+        this.setState({forumTask: null});
     };
 
     taskForumButton(index) {
-        const {showForumIcon} = this.state;
         // TODO: Only return if group project and logged in user is in the project
-
-        // TODO: Only display button for given task when forum is open, hide otherwise
-
-        return (
-            <Grid.Column width={1} floated='right' style={{marginRight: '2em'}}>
-                <Button
-                    index={index}
-                    basic
-                    icon={showForumIcon}
-                    onClick={this.toggleTaskForum}
-                >
-                </Button>
-            </Grid.Column>
-        );
+        const {showForum} = this.state;
+        if (!showForum) {
+            return (
+                <Grid.Column width={1} floated='right' style={{marginRight: '2em'}}>
+                    <Button
+                        index={index}
+                        basic
+                        icon='chevron right'
+                        onClick={this.showTaskForum}
+                    >
+                    </Button>
+                </Grid.Column>
+            );
+        }
     }
 
     renderDraggableTasks() {
@@ -306,6 +300,7 @@ class ProjectTasks extends Component {
                 <Grid.Column width={12}>
                     <TaskForum
                         task={forumTask}
+                        hideTaskForumCallback={this.hideTaskForumCallback}
                     />
                 </Grid.Column>
             );

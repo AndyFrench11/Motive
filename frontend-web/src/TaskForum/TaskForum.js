@@ -8,7 +8,8 @@ import ChannelList from "./Channels/ChannelList";
 import ChannelMessageList from "./Messages/ChannelMessageList";
 
 const getHeaderStyle = () => ({
-    padding: 12
+    padding: 12,
+    paddingLeft: 40
 });
 
 class TaskForum extends React.Component {
@@ -28,7 +29,6 @@ class TaskForum extends React.Component {
         // Get all channels
         this.setState({loadingChannels: true});
         this.props.getChannels(currentUser.guid, task.guid).then(() => {
-            // this.setState({selectedChannel: this.state.channels[0]})
             this.setState({channels: this.props.channels});
             this.setState({loadingChannels: false});
         });
@@ -106,15 +106,23 @@ class TaskForum extends React.Component {
             );
         }
     }
-
     render() {
         const {task} = this.props;
         return (
-            <div style={{overflow: 'auto', height: 800 }}>
+            <div>
                 <Grid celled>
                     <Grid.Row color='black'>
+                        <Button
+                            icon='arrow alternate circle left outline'
+                            style={{padding: 14}}
+                            inverted
+                            color='standard'
+                            onClick={this.props.hideTaskForumCallback}>
+                            Back
+                        </Button>
                         <Header
-                            as='h3'
+                            as='h2'
+                            textAlign='center'
                             style={getHeaderStyle()}
                             inverted>
                             {task.name}
