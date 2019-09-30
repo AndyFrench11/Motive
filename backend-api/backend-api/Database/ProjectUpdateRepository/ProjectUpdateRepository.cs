@@ -310,6 +310,15 @@ namespace backend_api.Database.ProjectUpdateRepository
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
+                    // Delete update comments first
+                    var commentRepository = new CommentRepository();
+                    var result = commentRepository.DeleteAll(projectUpdateGuid);
+
+                    if (result.IsError)
+                    {
+                        return result;
+                    }
+                    
                     session.WriteTransaction(tx => RemoveProjectUpdateNode(tx, projectUpdateGuid));
 
                     return new RepositoryReturn<bool>(true);

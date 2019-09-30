@@ -62,6 +62,7 @@ namespace backend_api.Features.Comments.Repository
                                      "authored: $authoredDate" +
                                      "}) " + 
                                      "RETURN comment";
+            
             var result = tx.Run(statement, new {messageString, commentId, authoredDate});
             var record = result.SingleOrDefault();
             return record == null ? null : new Comment(record[0].As<INode>().Properties);
@@ -185,7 +186,7 @@ namespace backend_api.Features.Comments.Repository
             {
                 using (_session)
                 {
-                    // Update comment node
+                    // Delete comment node
                     _session.WriteTransaction(tx => RemoveCommentNode(tx, commentGuid));
 
                     return new RepositoryReturn<bool>(false);
@@ -210,6 +211,40 @@ namespace backend_api.Features.Comments.Repository
                                      "DETACH DELETE comment";
             
             tx.Run(statement, new {commentId});
+        }
+        
+        public RepositoryReturn<bool> DeleteAll(Guid updateGuid)
+        {
+            try
+            {
+                using (_session)
+                {
+                    // Delete all comment nodes for update
+                    _session.WriteTransaction(tx => RemoveAllCommentNodes(tx, updateGuid));
+
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveAllCommentNodes(ITransaction tx, Guid updateGuid)
+        {
+            var updateId = updateGuid.ToString();
+            
+            const string statement = "MATCH (comment:Comment), (update:ProjectUpdate) " + 
+                                     "WHERE update.guid = $updateId " + 
+                                     "AND (update)--(comment) " +
+                                     "DETACH DELETE comment";
+            
+            tx.Run(statement, new {updateId});
         }
     }
 }

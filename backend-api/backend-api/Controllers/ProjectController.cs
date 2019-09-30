@@ -4,6 +4,7 @@ using backend_api.Database;
 using backend_api.Database.PersonRepository;
 using backend_api.Database.ProjectRepository;
 using backend_api.Models;
+using backend_api.Util;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -438,30 +439,7 @@ namespace backend_api.Controllers
             return StatusCode(200);
         }
 
-        
-        /**
-         * Attempts to parse a given string into a Guid.
-         * If the given string is null or cannot be formatted, returns a read only empty guid.
-         */
-        private Guid ParseGuid(string id)
-        {
-            Guid newGuid;
-            try
-            {
-                newGuid = Guid.Parse(id);
-            }
-            catch (ArgumentNullException)
-            {
-                return Guid.Empty;
-            }
-            catch (FormatException)
-            {
-                return Guid.Empty;
-            }
-            return newGuid;
-        }
-        
-        
+
         /**
          * Completes action to add a new member to a given project.
          *
@@ -471,8 +449,8 @@ namespace backend_api.Controllers
         public ActionResult AddNewMember(string projectId, string newMemberId)
         {
             // Parse project guid and new member guid
-            var projectGuid = ParseGuid(projectId);
-            var newMemberGuid = ParseGuid(newMemberId);
+            var projectGuid = ValidationUtil.ParseGuid(projectId);
+            var newMemberGuid = ValidationUtil.ParseGuid(newMemberId);
             if (projectGuid.Equals(Guid.Empty) || newMemberGuid.Equals(Guid.Empty))
             {
                 return BadRequest("Invalid guid.");
@@ -503,8 +481,8 @@ namespace backend_api.Controllers
         public ActionResult RemoveMember(string projectId, string memberId)
         {
             // Parse project guid and new member guid
-            var projectGuid = ParseGuid(projectId);
-            var newMemberGuid = ParseGuid(memberId);
+            var projectGuid = ValidationUtil.ParseGuid(projectId);
+            var newMemberGuid = ValidationUtil.ParseGuid(memberId);
             if (projectGuid.Equals(Guid.Empty) || newMemberGuid.Equals(Guid.Empty))
             {
                 return BadRequest("Invalid guid.");
