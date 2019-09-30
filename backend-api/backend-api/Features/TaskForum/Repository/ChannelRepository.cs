@@ -184,5 +184,53 @@ namespace backend_api.Features.TaskForum.Repository
             
             tx.Run(statement, new {channelId});
         }
+        
+        public RepositoryReturn<bool> DeleteAll(Guid taskGuid)
+        {
+            try
+            {
+                using (_session)
+                {
+                    // Delete channel nodes
+                    _session.WriteTransaction(tx => RemoveAllChannelNodesWithMessages(tx, taskGuid));
+                    _session.WriteTransaction(tx => RemoveAllChannelNodesWithoutMessages(tx, taskGuid));
+                    
+                    return new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private void RemoveAllChannelNodesWithMessages(ITransaction tx, Guid taskGuid)
+        {
+            var taskId = taskGuid.ToString();
+            
+            const string statement = "MATCH (channel:Channel), (task:ProjectTask), (message:Message) " + 
+                                     "WHERE task.guid = $taskId " + 
+                                     "AND (task)--(channel) " + 
+                                     "AND (channel)--(message) " +
+                                     "DETACH DELETE channel, message";
+            
+            tx.Run(statement, new {taskId});
+        }
+        
+        private void RemoveAllChannelNodesWithoutMessages(ITransaction tx, Guid taskGuid)
+        {
+            var taskId = taskGuid.ToString();
+            
+            const string statement = "MATCH (channel:Channel), (task:ProjectTask)" + 
+                                     "WHERE task.guid = $taskId " + 
+                                     "AND (task)--(channel) " +
+                                     "DETACH DELETE channel";
+            
+            tx.Run(statement, new {taskId});
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using backend_api.Features.TaskForum.Repository;
 using backend_api.Models;
 using Neo4j.Driver.V1;
 
@@ -97,6 +98,15 @@ namespace backend_api.Database.ProjectTaskRepository
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
+                    //Delete channel node and messages first
+                    var channelRepository = new ChannelRepository();
+                    var result = channelRepository.DeleteAll(projectTaskGuid);
+
+                    if (result.IsError)
+                    {
+                        return result;
+                    }
+                    
                     session.WriteTransaction(tx => DeleteTaskNode(tx, projectTaskGuid));
                     return new RepositoryReturn<bool>(true);
                 }
