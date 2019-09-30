@@ -72,7 +72,6 @@ class TaskForum extends React.Component {
 
     selectChannelCallback = (channel) => {
         this.setState({selectedChannel: channel});
-        console.log(channel.name);
     };
 
     channels() {
@@ -93,9 +92,12 @@ class TaskForum extends React.Component {
         const {selectedChannel} = this.state;
         if (selectedChannel === null) {
             return (
-                <Header>
-                    Please select a channel
-                </Header>
+                <Segment placeholder style={{overflow: 'auto', height: 400 }}>
+                    <Header icon>
+                        <Icon name='newspaper outline' />
+                        Please select a channel.
+                    </Header>
+                </Segment>
             )
         } else {
             return (
@@ -108,7 +110,7 @@ class TaskForum extends React.Component {
     render() {
         const {task} = this.props;
         return (
-            <div>
+            <div style={{overflow: 'auto', height: 800 }}>
                 <Grid celled>
                     <Grid.Row color='black'>
                         <Header
@@ -120,7 +122,7 @@ class TaskForum extends React.Component {
                     </Grid.Row>
 
                     <Grid.Row>
-                        <Grid.Column width={5}>
+                        <Grid.Column width={5} style={{overflow: 'auto', height: 700 }}>
                             {this.channels()}
                         </Grid.Column>
                         <Grid.Column width={11}>

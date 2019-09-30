@@ -5,7 +5,10 @@ import {
     Comment,
     GridColumn,
     Header,
-    Segment
+    Segment,
+    Divider,
+    Icon,
+    Button
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import {deleteMessage, createMessage, updateMessage, getAllMessages} from "./messageActions";
@@ -27,7 +30,7 @@ class ChannelMessageList extends React.Component {
         const {currentUser, channel} = this.props;
         // Fetch all messages
         this.setState({loading: true});
-        this.props.getMessges(currentUser.guid, channel.guid).then(() => {
+        this.props.getMessages(currentUser.guid, channel.guid).then(() => {
             this.setState({messages: this.props.messages});
             this.setState({loading: false});
         });
@@ -40,7 +43,7 @@ class ChannelMessageList extends React.Component {
         if (previousChannel !== channel) {
             // Fetch all messages
             this.setState({loading: true});
-            this.props.getMessges(currentUser.guid, channel.guid).then(() => {
+            this.props.getMessages(currentUser.guid, channel.guid).then(() => {
                 this.setState({messages: this.props.messages});
                 this.setState({loading: false});
             });
@@ -100,7 +103,9 @@ class ChannelMessageList extends React.Component {
     addMessageForm = () => {
         const {messageText} = this.state;
         return (
-            <Form reply onSubmit={this.sendMessage}>
+            <Form reply
+                  onSubmit={this.sendMessage}
+            >
                 <Grid>
                     <GridColumn width={12}>
                         <Form.TextArea
@@ -123,57 +128,70 @@ class ChannelMessageList extends React.Component {
         );
     };
 
-    channelHeader() {
-        const {channel} = this.props;
-        return (
-            <Header>
-                {channel.name}
-            </Header>
-        )
-    }
-
-    render() {
-        const {currentUser} = this.props;
+    content() {
+        const {currentUser, channel} = this.props;
         const {messages, loading} = this.state;
+
         if (loading || messages === null || messages === undefined) {
             return (
-                <Segment>
-                    {this.channelHeader()}
-                    <Grid divided='vertically' style={{marginTop: '5em'}} centered>
-                        <LoaderInlineCentered/>
-                    </Grid>
-                </Segment>
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
             );
         } else if (messages.length === 0) {
             return (
-                <Segment>
-                    {this.channelHeader()}
-                    <Comment.Group>
-                        {this.addMessageForm()}
-                    </Comment.Group>
-                </Segment>
+                <div>
+                    <Segment placeholder style={{overflow: 'auto', height: 400 }}>
+                        <Header icon>
+                            <Icon name='envelope outline' />
+                            No messages for this channel yet!
+                        </Header>
+                    </Segment>
+                    <Divider horizontal/>
+                    {this.addMessageForm()}
+                </div>
             );
         } else {
             return (
-                <Segment>
-                    {this.channelHeader()}
-                    <MessageList
-                        messages={messages}
-                        currentUser={currentUser}
-                        deleteMessageCallback={this.deleteMessageCallback}
-                        editMessageCallback={this.editMessageCallback}
-                    />
+                <div>
+                    <Segment style={{overflow: 'auto', height: 400 }}>
+                        <MessageList
+                            messages={messages}
+                            currentUser={currentUser}
+                            deleteMessageCallback={this.deleteMessageCallback}
+                            editMessageCallback={this.editMessageCallback}
+                        />
+                    </Segment>
+                    <Divider horizontal/>
                     {this.addMessageForm()}
-                </Segment>
+                </div>
             );
         }
+
+    };
+
+    render() {
+        const {channel} = this.props;
+
+        return (
+            <div>
+                <Divider horizontal>
+                    <Header as='h4'>
+                        <Icon name='newspaper outline'/>
+                        {channel.name}
+                    </Header>
+                </Divider>
+                {this.content()}
+            </div>
+
+        );
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         addMessage: (userGuid, channelGuid, messageText) => dispatch(createMessage(userGuid, channelGuid, messageText)),
-        getMessges: (userGuid, channelGuid) => dispatch(getAllMessages(userGuid, channelGuid)),
+        getMessages: (userGuid, channelGuid) => dispatch(getAllMessages(userGuid, channelGuid)),
         editMessage: (userGuid, messageGuid, messageText) => dispatch(updateMessage(userGuid, messageGuid, messageText)),
         deleteMessage: (userGuid, messageGuid) => dispatch(deleteMessage(userGuid, messageGuid))
     };

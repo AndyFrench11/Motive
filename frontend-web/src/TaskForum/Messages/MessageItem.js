@@ -110,38 +110,7 @@ class MessageItem extends React.Component {
         }
     }
 
-    leftAlignedMessage() {
-        const {message} = this.state;
-        const {guid, sent, author} = message;
-
-        const dateTime = new Date(sent);
-        const momentTime = Moment(dateTime).calendar();
-        return (
-            <Segment>
-                <Comment key={guid}>
-                    <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/matt.jpg'/>
-                    <Comment.Content>
-                        <Route render={({history}) => (
-                            <Comment.Author as='a' onClick={() => {
-                                history.push(`/profile/${author.guid}/`)
-                            }}> {author.firstName}
-                            </Comment.Author>
-                        )}/>
-                        <Comment.Metadata>
-                            <div>{momentTime}</div>
-                        </Comment.Metadata>
-                        {this.getText()}
-                        {this.getActions()}
-                    </Comment.Content>
-                </Comment>
-                {this.getConfirmDelete()}
-            </Segment>
-        );
-
-
-    }
-
-    rightAlignedMessage() {
+    message(alignment) {
         const {message} = this.state;
         const {guid, sent, author} = message;
 
@@ -169,36 +138,6 @@ class MessageItem extends React.Component {
             </Segment>
         );
     }
-
-    // message(alignment) {
-    //     const {message} = this.state;
-    //     const {guid, sent, author} = message;
-    //
-    //     const dateTime = new Date(sent);
-    //     const momentTime = Moment(dateTime).calendar();
-    //     return (
-    //         <Segment>
-    //             <Comment key={guid}>
-    //                 <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/matt.jpg'/>
-    //                 <Comment.Content>
-    //                     <Route render={({history}) => (
-    //                         <Comment.Author as='a' onClick={() => {
-    //                             history.push(`/profile/${author.guid}/`)
-    //                         }}> {author.firstName}
-    //                         </Comment.Author>
-    //                     )}/>
-    //                     <Comment.Metadata>
-    //                         <div>{momentTime}</div>
-    //                     </Comment.Metadata>
-    //                     {this.getText()}
-    //                     {this.getActions()}
-    //                 </Comment.Content>
-    //             </Comment>
-    //             {this.getConfirmDelete()}
-    //         </Segment>
-    //     );
-    //
-    // }
 
     render() {
         const {message} = this.state;
@@ -206,13 +145,13 @@ class MessageItem extends React.Component {
         if (currentUser.guid === message.author.guid) {
             return (
                 <div>
-                    {this.rightAlignedMessage()}
+                    {this.message('')}
                 </div>
         );
         } else {
             return (
                 <div>
-                    {this.leftAlignedMessage()}
+                    {this.message('')}
                 </div>
             );
         }

@@ -13,8 +13,7 @@ class ChannelItem extends React.Component {
             channel: this.props.channel,
             editing: false,
             newName: '',
-            confirmDeleteOpen: false,
-            channelSelectedClass: ''
+            confirmDeleteOpen: false
         }
     }
 
@@ -105,8 +104,6 @@ class ChannelItem extends React.Component {
 
     clickedChannel = () => {
         const {channel} = this.state;
-        // TODO: remove old state ?
-        this.setState({channelSelectedClass: 'channel-selected'});
         this.props.selectChannelCallback(channel);
     };
 
