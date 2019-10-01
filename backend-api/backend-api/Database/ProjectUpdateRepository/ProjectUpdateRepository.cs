@@ -53,10 +53,7 @@ namespace backend_api.Database.ProjectUpdateRepository
                         ICommentRepository commentRepository = new CommentRepository();
                         var comments = 
                             session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
-                            
-                        update.comments = comments.ReturnValue != null
-                            ? comments.ReturnValue.ToList()
-                            : new List<Comment>();
+                        update.comments = comments.ReturnValue.ToList();
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }
