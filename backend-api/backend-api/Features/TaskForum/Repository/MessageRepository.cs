@@ -100,6 +100,7 @@ namespace backend_api.Features.TaskForum.Repository
 
             const string statement = "MATCH (message:Message), (author:Person) " + 
                                      "WHERE message.guid = $messageId " + 
+                                     "AND (author)-[:AUTHORS]-(message)" +
                                      "RETURN author";
             
             var result = tx.Run(statement, new {messageId});
