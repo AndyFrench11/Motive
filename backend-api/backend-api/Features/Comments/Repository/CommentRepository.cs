@@ -140,6 +140,7 @@ namespace backend_api.Features.Comments.Repository
 
             const string statement = "MATCH (comment:Comment), (author:Person) " + 
                                      "WHERE comment.guid = $commentId " + 
+                                     "AND (author)-[:AUTHORS]-(comment) " +
                                      "RETURN author";
             var result = tx.Run(statement, new {commentId});
             var record = result.SingleOrDefault();
