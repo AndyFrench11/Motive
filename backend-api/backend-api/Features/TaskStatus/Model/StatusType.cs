@@ -1,9 +1,10 @@
 ﻿namespace backend_api.Features.TaskStatus.Model
 {
-    public enum Status
+    public enum StatusType
     {
         ToDo,
         Doing,
-        Done
+        Done,
+        None
     }
 }

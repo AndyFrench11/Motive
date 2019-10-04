@@ -32,15 +32,17 @@ namespace backend_api.Features.TaskStatus.Controller
             
             // TODO: check user has access to task/project - Forbidden()
             // TODO: task not found - NotFound()
-            
-            //TODO: Check status a given value/convert to value?
 
-            var status = taskStatus.Status;
-            
-            // Check valid status message
-            if (string.IsNullOrEmpty(status.Trim()))
+            if (taskStatus == null)
             {
-                return StatusCode(400, Errors.StatusEmpty);
+                return StatusCode(400, Errors.StatusInvalid);
+            }
+            
+            var status = taskStatus.getStatus();
+            // Check valid status
+            if (status == null)
+            {
+                return StatusCode(400, Errors.StatusInvalid);
             }
 
             var result = _taskStatusRepository.Add(taskGuid, status);
@@ -95,13 +97,16 @@ namespace backend_api.Features.TaskStatus.Controller
             
             // TODO: Check valid task
             
-            //TODO: Check/convert status
-
-            var status = taskStatus.Status;
-            // Check valid status
-            if (string.IsNullOrEmpty(status.Trim()))
+            if (taskStatus == null)
             {
-                return StatusCode(400, Errors.StatusEmpty);
+                return StatusCode(400, Errors.StatusInvalid);
+            }
+
+            var status = taskStatus.getStatus();
+            // Check valid status
+            if (status == null)
+            {
+                return StatusCode(400, Errors.StatusInvalid);
             }
             
             // TODO: Check User can access task
