@@ -56,9 +56,9 @@ namespace backend_api.Features.TaskStatus.Repository
                 using (_session)
                 {
                     // Add task status node
-                    var result = _session.ReadTransaction(tx => GetStatusProperty(tx, taskGuid));
-
-                    return new RepositoryReturn<string>(result);
+                    var status = _session.ReadTransaction(tx => GetStatusProperty(tx, taskGuid));
+                    
+                    return new RepositoryReturn<string>(status);
                 }
             }
             catch (ServiceUnavailableException e)
@@ -80,8 +80,8 @@ namespace backend_api.Features.TaskStatus.Repository
                                      "RETURN task.status";
             
             var result = tx.Run(statement, new {taskId}).SingleOrDefault();
-            var record = result[0].As<INode>().Properties;
-            return record["status"].ToString();
+            var record = result[0];
+            return record == null ? "" : record.ToString();
         }
 
         public RepositoryReturn<bool> Edit(Guid taskGuid, string status)
