@@ -18,19 +18,22 @@ namespace backend_api.Models
         {
             Status = "";
         }
-        
+
         public ProjectTask(IReadOnlyDictionary<string, object> props)
         {
             this.name = props["name"].ToString();
-            this.completed = (bool)(props["completed"]);
+            this.completed = (bool) (props["completed"]);
             this.orderIndex = Int32.Parse(props["orderIndex"].ToString());
             this.dateTimeCreated = new LocalDateTime(DateTime.Parse(props["dateTimeCreated"].ToString()));
             if (props.ContainsKey("dateTimeCompleted").Equals(true))
             {
-                this.dateTimeCompleted = new LocalDateTime(DateTime.Parse(props["dateTimeCompleted"].ToString()));    
+                this.dateTimeCompleted = new LocalDateTime(DateTime.Parse(props["dateTimeCompleted"].ToString()));
             }
             this.Guid = Guid.Parse(props["guid"].ToString());
-            this.Status = props["status"].ToString();
+            if (props.ContainsKey("status").Equals(true))
+            {
+                this.Status = props["status"].ToString();
+            }
         }
     }
 }
