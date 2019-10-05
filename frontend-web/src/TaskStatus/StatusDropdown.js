@@ -30,7 +30,7 @@ export default class StatusDropdown extends React.Component {
         super(props);
 
         this.state = {
-            selected: this.props.currentStatus
+            selected: this.props.task.status
         };
     }
 

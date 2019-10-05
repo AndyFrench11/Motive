@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {
-    Image, Segment, List, Button, Icon, Input, Transition, Label, Form, Grid, Header
+    Image, Segment, List, Button, Icon, Input, Transition, Label, Form, Grid, Header, Confirm
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
@@ -73,7 +73,9 @@ class ProjectTasks extends Component {
             createProjectUpdateModalOpen: false,
             completedTaskIndex: -1,
             showForum: false,
-            forumTask: null
+            forumTask: null,
+            markAsDoneOpen: false,
+            markDone: null
         };
 
         this.onDragEnd = this.onDragEnd.bind(this);
@@ -168,6 +170,45 @@ class ProjectTasks extends Component {
         this.setState({taskList: taskList});
 
 
+    };
+
+    // Doesn't work properly yet
+    getMarkAsDone = () => {
+        const {markAsDoneOpen, markDone} = this.state;
+        if (markDone !== null) {
+            return (
+                <Confirm
+                    open={markAsDoneOpen}
+                    content={'Would you like to mark the task " ' + markDone.name + ' " as complete?'}
+                    header='Mark as Complete'
+                    cancelButton='No'
+                    confirmButton="Yes"
+                    onCancel={this.cancelMarkAsDone}
+                    onConfirm={this.confirmMarkAsDone(markDone)}
+                />
+            );
+        }
+    };
+
+    cancelMarkAsDone = () => {
+        this.setState({markAsDoneOpen: false});
+    };
+
+    confirmMarkAsDone = (task) => {
+        this.setState({markAsDoneOpen: false, markDone: null});
+        const {taskList} = this.state;
+        let index = taskList.indexOf(task);
+        let completionStatus = taskList[index].completed;
+        if (!completionStatus) {
+            taskList[index].completed = true;
+            this.setState({taskList: taskList, completedTaskIndex: index});
+            this.props.updateTask(taskList[index].guid, {completed: true});
+            // this.showCreateProjectUpdateModal();
+        }
+    };
+
+    showMarkAsDoneCallback = (task) => {
+        this.setState({markAsDoneOpen: true, markDone: task});
     };
 
     markTaskAsDone = (event, {listIndex}) => {

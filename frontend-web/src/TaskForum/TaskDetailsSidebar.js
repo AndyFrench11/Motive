@@ -79,7 +79,7 @@ class TaskDetailsSidebar extends React.Component {
                         inverted
                     >Status</Header>
                     <StatusDropdown
-                        currentStatus={task.status}
+                        task={task}
                         setStatusCallback={this.setStatusCallback}
                         deleteStatusCallback={this.deleteStatusCallback}
                     />

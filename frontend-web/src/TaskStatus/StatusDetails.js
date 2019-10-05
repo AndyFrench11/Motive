@@ -33,7 +33,7 @@ export default class StatusDetails extends React.Component {
             case 3:
                 // Done
                 return (
-                    <Label color='olive'
+                    <Label color='green'
                            horizontal>
                         Status
                         <Label.Detail>Done!</Label.Detail>

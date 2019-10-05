@@ -15,7 +15,7 @@ export default class PriorityDetails extends React.Component {
             case 1:
                 // Low
                 return (
-                    <Label color='green'
+                    <Label color='olive'
                            horizontal>
                         Priority
                         <Label.Detail>Low</Label.Detail>
