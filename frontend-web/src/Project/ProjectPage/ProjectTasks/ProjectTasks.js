@@ -181,6 +181,15 @@ class ProjectTasks extends Component {
         }
     };
 
+    updateStatusCallback = (task, value) => {
+        const {taskList} = this.state;
+        let index = taskList.indexOf(task);
+        if (index !== -1) {
+            taskList[index].status = value;
+            this.setState({taskList: taskList});
+        }
+    };
+
     showTaskForum = (event, {index}) => {
         const {taskList} = this.state;
         let task = taskList[index];
@@ -301,6 +310,7 @@ class ProjectTasks extends Component {
                     <TaskForum
                         task={forumTask}
                         hideTaskForumCallback={this.hideTaskForumCallback}
+                        updateStatusCallback={this.updateStatusCallback}
                     />
                 </Grid.Column>
             );

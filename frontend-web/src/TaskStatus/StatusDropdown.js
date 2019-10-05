@@ -25,7 +25,17 @@ const statusOptions = [
 ];
 
 export default class StatusDropdown extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            selected: this.props.currentStatus
+        };
+    }
+
     handleChange = (e, { value }) => {
+        this.setState({selected: value});
         if (value === 3) {
             this.props.deleteStatusCallback();
         } else {
@@ -33,12 +43,14 @@ export default class StatusDropdown extends React.Component {
         }
     };
     render() {
+        const {selected} = this.state;
         return (
             <Dropdown
                 placeholder='Select Status'
                 fluid
                 selection
                 options={statusOptions}
+                value={selected}
                 onChange={this.handleChange}
             />
         );

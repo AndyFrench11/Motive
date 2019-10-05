@@ -23,18 +23,22 @@ class TaskDetailsSidebar extends React.Component {
 
     setStatusCallback = (value) => {
         const {currentUser, task} = this.props;
-        this.props.setStatus(currentUser.guid, task.guid, value);
+        this.props.setStatus(currentUser.guid, task.guid, value).then(() => {
+            this.props.updateStatusCallback(task, value);
+        });
     };
 
     deleteStatusCallback = () => {
         const {currentUser, task} = this.props;
         // Delete status request
-        this.props.removeStatus(currentUser.guid, task.guid);
+        this.props.removeStatus(currentUser.guid, task.guid).then(() => {
+            this.props.updateStatusCallback(task, 3);
+        });
     };
 
     render() {
         const {visible} = this.props;
-
+        const {task} = this.props;
         return (
                 <Sidebar
                     as={Menu}
@@ -52,6 +56,7 @@ class TaskDetailsSidebar extends React.Component {
                             inverted
                         >Status</Header>
                         <StatusDropdown
+                            currentStatus={task.status}
                             setStatusCallback={this.setStatusCallback}
                             deleteStatusCallback={this.deleteStatusCallback}
                         />

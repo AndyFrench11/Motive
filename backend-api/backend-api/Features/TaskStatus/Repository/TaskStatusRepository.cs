@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using backend_api.Database;
-using backend_api.Models;
 using Neo4j.Driver.V1;
 
 namespace backend_api.Features.TaskStatus.Repository

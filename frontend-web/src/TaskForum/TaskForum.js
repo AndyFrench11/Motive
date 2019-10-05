@@ -126,6 +126,7 @@ class TaskForum extends React.Component {
                     visible={sidebarVisible}
                     hideSidebarCallback={this.hideSidebarCallback}
                     task={task}
+                    updateStatusCallback={this.props.updateStatusCallback}
                 />
                 <Sidebar.Pusher>
                     {this.messages()}
