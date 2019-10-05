@@ -47,7 +47,8 @@ function receiveCreateComment(response) {
     }
     return {
         type: RECEIVE_CREATE_PROJECT_UPDATE_COMMENT,
-        receivedAt: Date.now()
+        receivedAt: Date.now(),
+        comment: null
     }
 }
 

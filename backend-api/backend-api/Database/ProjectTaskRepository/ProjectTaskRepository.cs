@@ -39,12 +39,14 @@ namespace backend_api.Database.ProjectTaskRepository
             string taskGuid = task.Guid.ToString();
             bool completed = task.completed;
             int orderIndex = task.orderIndex;
+            var status = task.Status;
             tx.Run("CREATE(pt:ProjectTask {name: $taskName, " +
                    "completed: $completed, " +
                    "orderIndex: $orderIndex, " +
-                   "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
+                   "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " + 
+                   "status: $status, " +
                    "guid: $taskGuid})", 
-                new { taskName, completed, orderIndex, taskGuid });
+                new { taskName, completed, orderIndex, taskGuid, status });
         }
 
         private void CreateTaskRelationship(ITransaction tx, ProjectTask task, Guid projectGuid)
