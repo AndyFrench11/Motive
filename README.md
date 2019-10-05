@@ -10,7 +10,7 @@ A passion project social media platform that allows people to share and collabor
 * `.gitlab-ci.yml` - Master Continuous Integration File to run all pipelines, speaking to Virtual Machine at `csse-s402g2.canterbury.ac.nz`.
 * `docker-compose.yml` - Docker build file which speaks to each projects docker file to enable containerisation of each project.
 
-### Backend API :back: :end:
+## Backend API :back: :end:
 
 #### Dependencies
 
@@ -18,7 +18,7 @@ A passion project social media platform that allows people to share and collabor
 
 #### Configuration
 
-### Backend Tests :vertical\_traffic\_light:
+## Backend Tests :vertical\_traffic\_light:
 
 #### Dependencies
 
@@ -26,7 +26,7 @@ A passion project social media platform that allows people to share and collabor
 
 #### Configuration
 
-### Web Frontend :bullettrain\_front: :end:
+## Web Frontend :bullettrain\_front: :end:
 
 #### Dependencies
 
