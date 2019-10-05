@@ -127,6 +127,7 @@ class TaskForum extends React.Component {
                     hideSidebarCallback={this.hideSidebarCallback}
                     task={task}
                     updateStatusCallback={this.props.updateStatusCallback}
+                    updatePriorityCallback={this.props.updatePriorityCallback}
                 />
                 <Sidebar.Pusher>
                     {this.messages()}

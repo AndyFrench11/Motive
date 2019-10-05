@@ -1,20 +1,20 @@
 import {Dropdown} from 'semantic-ui-react'
 import React from "react";
 
-const statusOptions = [
+const priorityOptions = [
     {
         key: 0,
-        text: 'To Do',
+        text: 'Low',
         value: 1,
     },
     {
         key: 1,
-        text: 'Doing',
+        text: 'Medium',
         value: 2,
     },
     {
         key: 2,
-        text: 'Done',
+        text: 'High',
         value: 3,
     },
     {
@@ -24,32 +24,33 @@ const statusOptions = [
     },
 ];
 
-export default class StatusDropdown extends React.Component {
+export default class PriorityDropdown extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            selected: this.props.currentStatus
+            selected: this.props.currentPriority
         };
     }
 
     handleChange = (e, { value }) => {
         this.setState({selected: value});
         if (value === 0) {
-            this.props.deleteStatusCallback();
+            this.props.deletePriorityCallback();
         } else {
-            this.props.setStatusCallback(value);
+            this.props.setPriorityCallback(value);
         }
     };
+
     render() {
         const {selected} = this.state;
         return (
             <Dropdown
-                placeholder='Select Status'
+                placeholder='Select Priority'
                 fluid
                 selection
-                options={statusOptions}
+                options={priorityOptions}
                 value={selected}
                 onChange={this.handleChange}
             />
