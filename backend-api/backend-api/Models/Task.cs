@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using backend_api.Features.TaskStatus.Model;
 using Neo4j.Driver.V1;
 
 namespace backend_api.Models
@@ -11,12 +12,11 @@ namespace backend_api.Models
         public int orderIndex { get; set; }
         public LocalDateTime dateTimeCreated { get; set; }
         public LocalDateTime dateTimeCompleted { get; set; }
-        public string Status { get; set; }
+        public int Status { get; set; }
 
 
         public ProjectTask()
         {
-            Status = "";
         }
 
         public ProjectTask(IReadOnlyDictionary<string, object> props)
@@ -32,7 +32,8 @@ namespace backend_api.Models
             this.Guid = Guid.Parse(props["guid"].ToString());
             if (props.ContainsKey("status").Equals(true))
             {
-                this.Status = props["status"].ToString();
+                var status = new TaskStatus(props["status"].ToString());
+                this.Status = status.getValue();
             }
         }
     }

@@ -2,9 +2,9 @@
 {
     public enum StatusType
     {
-        ToDo,
-        Doing,
-        Done,
-        None
+        ToDo = 0,
+        Doing = 1,
+        Done = 2,
+        None = 3
     }
 }
