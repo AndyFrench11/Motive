@@ -1,4 +1,4 @@
-# Motive.
+# Motive.    :gorilla:
 
 A passion project social media platform that allows people to share and collaborate on their passion, knowing their data is secure and their privacy is respected.
 
@@ -10,7 +10,7 @@ A passion project social media platform that allows people to share and collabor
 * `.gitlab-ci.yml` - Master Continuous Integration File to run all pipelines, speaking to Virtual Machine at `csse-s402g2.canterbury.ac.nz`.
 * `docker-compose.yml` - Docker build file which speaks to each projects docker file to enable containerisation of each project.
 
-### Backend API
+### Backend API :back: :end:
 
 #### Dependencies
 
@@ -18,7 +18,7 @@ A passion project social media platform that allows people to share and collabor
 
 #### Configuration
 
-### Backend Tests
+### Backend Tests :vertical\_traffic\_light:
 
 #### Dependencies
 
@@ -26,7 +26,7 @@ A passion project social media platform that allows people to share and collabor
 
 #### Configuration
 
-### Web Frontend
+### Web Frontend :bullettrain\_front: :end:
 
 #### Dependencies
 
