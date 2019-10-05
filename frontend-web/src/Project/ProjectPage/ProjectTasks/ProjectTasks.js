@@ -8,6 +8,9 @@ import {postTask, deleteTask, updateTask, updateTaskOrder} from "./actions";
 import uuidv4 from 'uuid/v4';
 import CreateProjectUpdateModal from "../ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
 import TaskForum from "../../../TaskForum/TaskForum";
+import PriorityDetails from "../../../TaskPriority/PriorityDetails";
+import StatusDetails from "../../../TaskStatus/StatusDetails";
+import ButtonGroup from "react-bootstrap/es/ButtonGroup";
 
 //Drag and Drop Properties
 // fake data generator
@@ -207,26 +210,64 @@ class ProjectTasks extends Component {
         this.setState({showForum: true});
     };
 
-    hideTaskForumCallback = ()  => {
+    hideTaskForumCallback = () => {
         this.setState({showForum: false});
         this.setState({forumTask: null});
     };
 
-    taskForumButton(index) {
-        // TODO: Only return if group project and logged in user is in the project
+    taskDetailInformation(index) {
+        const {taskList} = this.state;
+        let task = taskList[index];
+        return (
+            <div>
+                <PriorityDetails
+                    priority={task.priority}
+                />
+                <StatusDetails
+                    status={task.status}
+                />
+            </div>
+        );
+    }
+
+    deleteButton(index) {
+        return (
+            <Button index={index}
+                    onClick={this.deleteTask}
+                    basic
+                    negative
+                    icon='delete'>
+            </Button>
+        )
+    }
+
+    showForumButton(index) {
+        return (
+            <Button
+                index={index}
+                basic
+                icon='chevron right'
+                onClick={this.showTaskForum}
+            >
+            </Button>
+        )
+    }
+
+    taskInteractionButtons(index) {
         const {showForum} = this.state;
         if (!showForum) {
             return (
-                <Grid.Column width={1} floated='right' style={{marginRight: '2em'}}>
-                    <Button
-                        index={index}
-                        basic
-                        icon='chevron right'
-                        onClick={this.showTaskForum}
-                    >
-                    </Button>
-                </Grid.Column>
-            );
+                <ButtonGroup>
+                    {this.deleteButton(index)}
+                    {this.showForumButton(index)}
+                </ButtonGroup>
+            )
+        } else {
+            return (
+                <ButtonGroup>
+                    {this.deleteButton(index)}
+                </ButtonGroup>
+            )
         }
     }
 
@@ -258,18 +299,18 @@ class ProjectTasks extends Component {
                                                 icon='check'>
                                         </Button>
                                     </Grid.Column>
-                                    <Grid.Column width={10} style={{marginLeft: '2em'}}>
-                                        {taskList[index].name}
+                                    <Grid.Column width={8} style={{marginLeft: '2em'}}>
+                                        <Grid.Row>
+                                            {taskList[index].name}
+                                        </Grid.Row>
+                                        <Grid.Row>
+                                            {this.taskDetailInformation(index)}
+                                        </Grid.Row>
 
                                     </Grid.Column>
-                                    <Grid.Column width={1} floated='right' style={{marginRight: '2em'}}>
-                                        <Button index={index} onClick={this.deleteTask} basic circular negative
-                                                icon='delete'>
-                                        </Button>
+                                    <Grid.Column width={2} floated='right' style={{marginRight: '2em'}}>
+                                        {this.taskInteractionButtons(index)}
                                     </Grid.Column>
-
-                                    {this.taskForumButton(index)}
-
                                 </Grid.Row>
                             </Grid>
                         </div>

@@ -42,6 +42,7 @@ export default class StatusDropdown extends React.Component {
             this.props.setStatusCallback(value);
         }
     };
+
     render() {
         const {selected} = this.state;
         return (
