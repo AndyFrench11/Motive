@@ -3,51 +3,18 @@ using System.Linq;
 using backend_api.Database;
 using Neo4j.Driver.V1;
 
-namespace backend_api.Features.TaskStatus.Repository
+namespace backend_api.Features.TaskPriority.Repository
 {
-    public class TaskStatusRepository: ITaskStatusRepository
+    public class TaskPriorityRepository : ITaskPriorityRepository
     {
-        
         private readonly ISession _session;
 
-        public TaskStatusRepository()
+        public TaskPriorityRepository()
         {
             var neo4JConnection = new neo4jConnection();
             _session = neo4JConnection.driver.Session();
         }
-        public RepositoryReturn<bool> Add(Guid taskGuid, string status)
-        {
-            try
-            {
-                using (_session)
-                {
-                    // Add task status node
-                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
-
-                    return new RepositoryReturn<bool>(false);
-                }
-            }
-            catch (ServiceUnavailableException e)
-            {
-                return new RepositoryReturn<bool>(true, e);
-            }
-            catch (Exception e)
-            {
-                return new RepositoryReturn<bool>(true, e);
-            }
-        }
         
-        private void SetStatusProperty(ITransaction tx, Guid taskGuid, string status)
-        {
-            var taskId = taskGuid.ToString();
-            
-            const string statement = "MATCH (task:ProjectTask) " +
-                                     "WHERE task.guid = $taskId " +
-                                     "SET task.status = $status ";
-            
-            tx.Run(statement, new {taskId, status});
-        }
-
         public RepositoryReturn<string> GetForTask(Guid taskGuid)
         {
             try
@@ -55,9 +22,9 @@ namespace backend_api.Features.TaskStatus.Repository
                 using (_session)
                 {
                     // Add task status node
-                    var status = _session.ReadTransaction(tx => GetStatusProperty(tx, taskGuid));
+                    var priority = _session.ReadTransaction(tx => GetPriorityProperty(tx, taskGuid));
                     
-                    return new RepositoryReturn<string>(status);
+                    return new RepositoryReturn<string>(priority);
                 }
             }
             catch (ServiceUnavailableException e)
@@ -70,13 +37,13 @@ namespace backend_api.Features.TaskStatus.Repository
             }
         }
         
-        private string GetStatusProperty(ITransaction tx, Guid taskGuid)
+        private string GetPriorityProperty(ITransaction tx, Guid taskGuid)
         {
             var taskId = taskGuid.ToString();
             
             const string statement = "MATCH (task:ProjectTask) " +
                                      "WHERE task.guid = $taskId " +
-                                     "RETURN task.status";
+                                     "RETURN task.priority";
             
             var result = tx.Run(statement, new {taskId}).SingleOrDefault();
             if (result == null)
@@ -86,15 +53,15 @@ namespace backend_api.Features.TaskStatus.Repository
             var record = result[0];
             return record == null ? "" : record.ToString();
         }
-
-        public RepositoryReturn<bool> Edit(Guid taskGuid, string status)
+        
+        public RepositoryReturn<bool> Edit(Guid taskGuid, string priority)
         {
             try
             {
                 using (_session)
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
+                    _session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, priority));
 
                     return new RepositoryReturn<bool>(false);
                 }
@@ -108,6 +75,17 @@ namespace backend_api.Features.TaskStatus.Repository
                 return new RepositoryReturn<bool>(true, e);
             }
         }
+        
+        private void SetPriorityProperty(ITransaction tx, Guid taskGuid, string priority)
+        {
+            var taskId = taskGuid.ToString();
+            
+            const string statement = "MATCH (task:ProjectTask) " +
+                                     "WHERE task.guid = $taskId " +
+                                     "SET task.priority = $priority ";
+            
+            tx.Run(statement, new {taskId, priority});
+        }
 
         public RepositoryReturn<bool> Delete(Guid taskGuid)
         {
@@ -116,7 +94,7 @@ namespace backend_api.Features.TaskStatus.Repository
                 using (_session)
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, ""));
+                    _session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, ""));
 
                     return new RepositoryReturn<bool>(false);
                 }

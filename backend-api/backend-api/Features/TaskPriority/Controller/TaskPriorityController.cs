@@ -1,62 +1,23 @@
 ﻿using System;
-using backend_api.Features.TaskStatus.Repository;
+using backend_api.Features.TaskPriority.Repository;
 using backend_api.Util;
 using Microsoft.AspNetCore.Mvc;
 
-namespace backend_api.Features.TaskStatus.Controller
+namespace backend_api.Features.TaskPriority.Controller
 {
     [Route("api/[controller]")]
-    public class TaskStatusController: Microsoft.AspNetCore.Mvc.Controller
+    public class TaskPriorityController: Microsoft.AspNetCore.Mvc.Controller
     {
 
-        private readonly ITaskStatusRepository _taskStatusRepository;
+        private readonly ITaskPriorityRepository _taskPriorityRepository;
 
-        public TaskStatusController()
+        public TaskPriorityController()
         {
-            _taskStatusRepository = new TaskStatusRepository();
-        }
-                
-        // ADD TO TASK
-        // POST api/taskstatus/:taskId
-        [HttpPost("{taskId}")]
-        public ActionResult Post(string taskId, [FromBody]Model.TaskStatus taskStatus, [FromHeader]string userId)
-        {
-            // Parse task guid and user guid
-            var taskGuid = ValidationUtil.ParseGuid(taskId);
-            var authorGuid = ValidationUtil.ParseGuid(userId);
-            if (taskGuid.Equals(Guid.Empty) || authorGuid.Equals(Guid.Empty))
-            {
-                return BadRequest(Errors.InvalidGuid);
-            }
-
-            
-            // TODO: check user has access to task/project - Forbidden()
-            // TODO: task not found - NotFound()
-
-            if (taskStatus == null)
-            {
-                return StatusCode(400, Errors.StatusInvalid);
-            }
-            
-            var status = taskStatus.getStatus();
-            // Check valid status
-            if (status == null)
-            {
-                return StatusCode(400, Errors.StatusInvalid);
-            }
-
-            var result = _taskStatusRepository.Add(taskGuid, status);
-            
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(201, result.ReturnValue);
+            _taskPriorityRepository = new TaskPriorityRepository();
         }
         
         // READ
-        // GET api/taskstatus/:taskId
+        // GET api/taskpriority/:taskId
         [HttpGet("{taskId}")]
         public ActionResult<string> Get(string taskId, [FromHeader]string userId)
         {
@@ -72,7 +33,7 @@ namespace backend_api.Features.TaskStatus.Controller
                 return BadRequest(Errors.InvalidGuid);
             }
 
-            var result = _taskStatusRepository.GetForTask(taskGuid);
+            var result = _taskPriorityRepository.GetForTask(taskGuid);
             
             if (result.IsError)
             {
@@ -81,11 +42,12 @@ namespace backend_api.Features.TaskStatus.Controller
             
             return StatusCode(200, result.ReturnValue);
         }
-
+        
+        
         // UPDATE
-        // PATCH api/taskstatus/:taskId
+        // PATCH api/taskpriority/:taskId
         [HttpPatch("{taskId}")]
-        public ActionResult Patch(string taskId, [FromBody]Model.TaskStatus taskStatus, [FromHeader]string userId)
+        public ActionResult Patch(string taskId, [FromBody]Models.TaskPriority taskPriority, [FromHeader]string userId)
         {
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
@@ -97,21 +59,21 @@ namespace backend_api.Features.TaskStatus.Controller
             
             // TODO: Check valid task
             
-            if (taskStatus == null)
+            if (taskPriority == null)
             {
-                return StatusCode(400, Errors.StatusInvalid);
+                return StatusCode(400, Errors.PriorityInvalid);
             }
 
-            var status = taskStatus.getStatus();
+            var priority = taskPriority.getPriority();
             // Check valid status
-            if (status == null)
+            if (priority == null)
             {
-                return StatusCode(400, Errors.StatusInvalid);
+                return StatusCode(400, Errors.PriorityInvalid);
             }
             
             // TODO: Check User can access task
             
-            var result = _taskStatusRepository.Edit(taskGuid, status);
+            var result = _taskPriorityRepository.Edit(taskGuid, priority);
             
             if (result.IsError)
             {
@@ -122,7 +84,7 @@ namespace backend_api.Features.TaskStatus.Controller
         }
         
         // DELETE
-        // DELETE api/taskstatus/:taskId
+        // DELETE api/taskpriority/:taskId
         [HttpDelete("{taskId}")]
         public ActionResult Delete(string taskId, [FromHeader]string userId)
         {
@@ -139,7 +101,7 @@ namespace backend_api.Features.TaskStatus.Controller
                 return BadRequest(Errors.InvalidGuid);
             }
 
-            var result = _taskStatusRepository.Delete(taskGuid);
+            var result = _taskPriorityRepository.Delete(taskGuid);
             
             if (result.IsError)
             {
@@ -148,5 +110,6 @@ namespace backend_api.Features.TaskStatus.Controller
             
             return StatusCode(200);
         }
+
     }
 }

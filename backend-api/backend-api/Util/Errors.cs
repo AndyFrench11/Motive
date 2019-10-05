@@ -15,5 +15,6 @@
         
         // Task
         public const string StatusInvalid = "Task status provided is invalid.";
+        public const string PriorityInvalid = "Task priority provided is invalid.";
     }
 }
