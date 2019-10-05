@@ -1,11 +1,12 @@
 import React from 'react'
 import {
-    Divider, Grid, Header, Image, Segment, Label, Menu, Input, Button, Icon, Card, Modal, List, Comment, Form
+    Divider, Grid, Header, Image, Segment, Label, Menu, Input, Button, Icon, Card, Modal, List, Comment, Form, Sidebar
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import {createChannel, updateChannel, deleteChannel, getAllChannels} from "./channelActions";
 import ChannelList from "./Channels/ChannelList";
 import ChannelMessageList from "./Messages/ChannelMessageList";
+import TaskDetailsSidebar from "./TaskDetailsSidebar";
 
 const getHeaderStyle = () => ({
     padding: 12,
@@ -20,7 +21,8 @@ class TaskForum extends React.Component {
         this.state = {
             selectedChannel: null,
             channels: this.props.channels,
-            loadingChannels: true
+            loadingChannels: true,
+            sidebarVisible: false
         };
     }
 
@@ -74,6 +76,14 @@ class TaskForum extends React.Component {
         this.setState({selectedChannel: channel});
     };
 
+    showSidebar = () => {
+        this.setState({sidebarVisible: true});
+    };
+
+    hideSidebarCallback = () => {
+        this.setState({sidebarVisible: false});
+    };
+
     channels() {
         const {channels, loadingChannels} = this.state;
         return (
@@ -106,6 +116,24 @@ class TaskForum extends React.Component {
             );
         }
     }
+
+    mainContent() {
+        const {task} = this.props;
+        const {sidebarVisible} = this.state;
+        return (
+            <Sidebar.Pushable as={Segment}>
+                <TaskDetailsSidebar
+                    visible={sidebarVisible}
+                    hideSidebarCallback={this.hideSidebarCallback}
+                    task={task}
+                />
+                <Sidebar.Pusher>
+                    {this.messages()}
+                </Sidebar.Pusher>
+            </Sidebar.Pushable>
+        );
+    }
+
     render() {
         const {task} = this.props;
         return (
@@ -113,10 +141,8 @@ class TaskForum extends React.Component {
                 <Grid celled>
                     <Grid.Row color='black'>
                         <Button
-                            icon='arrow alternate circle left outline'
                             style={{padding: 14}}
                             inverted
-                            color='standard'
                             onClick={this.props.hideTaskForumCallback}>
                             Back
                         </Button>
@@ -127,6 +153,12 @@ class TaskForum extends React.Component {
                             inverted>
                             {task.name}
                         </Header>
+                        <Button
+                            padding={14}
+                            inverted
+                            onClick={this.showSidebar}>
+                            Show Task Details
+                        </Button>
                     </Grid.Row>
 
                     <Grid.Row>
@@ -134,7 +166,7 @@ class TaskForum extends React.Component {
                             {this.channels()}
                         </Grid.Column>
                         <Grid.Column width={11}>
-                            {this.messages()}
+                            {this.mainContent()}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

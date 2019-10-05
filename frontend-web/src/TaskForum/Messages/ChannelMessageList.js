@@ -129,7 +129,7 @@ class ChannelMessageList extends React.Component {
     };
 
     content() {
-        const {currentUser, channel} = this.props;
+        const {currentUser} = this.props;
         const {messages, loading} = this.state;
 
         if (loading || messages === null || messages === undefined) {
