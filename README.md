@@ -13,26 +13,40 @@ A passion project social media platform that allows people to share and collabor
 ## Backend API :back: :end:
 
 #### Dependencies
+.NET Core Runtime 2.2
 
 #### How to run the program
 
 #### Configuration
+Navigate to App.config.
+Running locally:  
+- Set backend key `databaseURL` to value `bolt://localhost:7687`
+- Set backend key `databaseHttpURL` to value `http://localhost:7474`
 
-## Backend Tests :vertical\_traffic\_light:
-
-#### Dependencies
-
-#### How to run the program
-
-#### Configuration
+Running on VM:
+- Set backend key `databaseURL` to value `bolt://csse-s402g2.canterbury.ac.nz:7687`
+- Set backend key `databaseHttpURL` to value `http://csse-s402g2.canterbury.ac.nz:7474`
 
 ## Web Frontend :bullettrain\_front: :end:
 
 #### Dependencies
+npm
+java...?
+node.js
+yarn
 
 #### How to run the program
+yarn install
+yarn start
 
 #### Configuration
+Set the .env backend address to be:
+Running locally: `https://localhost:8081/api`
+Running on the VM: `http://csse-s402g2.canterbury.ac.nz:8080/api` 
+
+
+
+
 
 DESKTOP CLIENT
 
