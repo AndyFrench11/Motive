@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {
-    Image, Segment, List, Button, Icon, Input, Transition, Label, Form, Grid, Header
+    Image, Segment, List, Button, Icon, Input, Transition, Label, Form, Grid, Header, Confirm
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
@@ -8,6 +8,9 @@ import {postTask, deleteTask, updateTask, updateTaskOrder} from "./actions";
 import uuidv4 from 'uuid/v4';
 import CreateProjectUpdateModal from "../ProjectUpdates/CreateProjectUpdateModal/CreateProjectUpdateModal";
 import TaskForum from "../../../TaskForum/TaskForum";
+import PriorityDetails from "../../../TaskPriority/PriorityDetails";
+import StatusDetails from "../../../TaskStatus/StatusDetails";
+import ButtonGroup from "react-bootstrap/es/ButtonGroup";
 
 //Drag and Drop Properties
 // fake data generator
@@ -70,7 +73,9 @@ class ProjectTasks extends Component {
             createProjectUpdateModalOpen: false,
             completedTaskIndex: -1,
             showForum: false,
-            forumTask: null
+            forumTask: null,
+            markAsDoneOpen: false,
+            markDone: null
         };
 
         this.onDragEnd = this.onDragEnd.bind(this);
@@ -167,6 +172,45 @@ class ProjectTasks extends Component {
 
     };
 
+    // Doesn't work properly yet
+    getMarkAsDone = () => {
+        const {markAsDoneOpen, markDone} = this.state;
+        if (markDone !== null) {
+            return (
+                <Confirm
+                    open={markAsDoneOpen}
+                    content={'Would you like to mark the task " ' + markDone.name + ' " as complete?'}
+                    header='Mark as Complete'
+                    cancelButton='No'
+                    confirmButton="Yes"
+                    onCancel={this.cancelMarkAsDone}
+                    onConfirm={this.confirmMarkAsDone(markDone)}
+                />
+            );
+        }
+    };
+
+    cancelMarkAsDone = () => {
+        this.setState({markAsDoneOpen: false});
+    };
+
+    confirmMarkAsDone = (task) => {
+        this.setState({markAsDoneOpen: false, markDone: null});
+        const {taskList} = this.state;
+        let index = taskList.indexOf(task);
+        let completionStatus = taskList[index].completed;
+        if (!completionStatus) {
+            taskList[index].completed = true;
+            this.setState({taskList: taskList, completedTaskIndex: index});
+            this.props.updateTask(taskList[index].guid, {completed: true});
+            // this.showCreateProjectUpdateModal();
+        }
+    };
+
+    showMarkAsDoneCallback = (task) => {
+        this.setState({markAsDoneOpen: true, markDone: task});
+    };
+
     markTaskAsDone = (event, {listIndex}) => {
         const {taskList} = this.state;
         const completionStatus = taskList[listIndex].completed;
@@ -190,6 +234,15 @@ class ProjectTasks extends Component {
         }
     };
 
+    updatePriorityCallback = (task, value) => {
+        const {taskList} = this.state;
+        let index = taskList.indexOf(task);
+        if (index !== -1) {
+            taskList[index].priority = value;
+            this.setState({taskList: taskList});
+        }
+    };
+
     showTaskForum = (event, {index}) => {
         const {taskList} = this.state;
         let task = taskList[index];
@@ -198,26 +251,64 @@ class ProjectTasks extends Component {
         this.setState({showForum: true});
     };
 
-    hideTaskForumCallback = ()  => {
+    hideTaskForumCallback = () => {
         this.setState({showForum: false});
         this.setState({forumTask: null});
     };
 
-    taskForumButton(index) {
-        // TODO: Only return if group project and logged in user is in the project
+    taskDetailInformation(index) {
+        const {taskList} = this.state;
+        let task = taskList[index];
+        return (
+            <div>
+                <PriorityDetails
+                    priority={task.priority}
+                />
+                <StatusDetails
+                    status={task.status}
+                />
+            </div>
+        );
+    }
+
+    deleteButton(index) {
+        return (
+            <Button index={index}
+                    onClick={this.deleteTask}
+                    basic
+                    negative
+                    icon='delete'>
+            </Button>
+        )
+    }
+
+    showForumButton(index) {
+        return (
+            <Button
+                index={index}
+                basic
+                icon='chevron right'
+                onClick={this.showTaskForum}
+            >
+            </Button>
+        )
+    }
+
+    taskInteractionButtons(index) {
         const {showForum} = this.state;
         if (!showForum) {
             return (
-                <Grid.Column width={1} floated='right' style={{marginRight: '2em'}}>
-                    <Button
-                        index={index}
-                        basic
-                        icon='chevron right'
-                        onClick={this.showTaskForum}
-                    >
-                    </Button>
-                </Grid.Column>
-            );
+                <ButtonGroup>
+                    {this.deleteButton(index)}
+                    {this.showForumButton(index)}
+                </ButtonGroup>
+            )
+        } else {
+            return (
+                <ButtonGroup>
+                    {this.deleteButton(index)}
+                </ButtonGroup>
+            )
         }
     }
 
@@ -249,18 +340,18 @@ class ProjectTasks extends Component {
                                                 icon='check'>
                                         </Button>
                                     </Grid.Column>
-                                    <Grid.Column width={10} style={{marginLeft: '2em'}}>
-                                        {taskList[index].name}
+                                    <Grid.Column width={8} style={{marginLeft: '2em'}}>
+                                        <Grid.Row>
+                                            {taskList[index].name}
+                                        </Grid.Row>
+                                        <Grid.Row>
+                                            {this.taskDetailInformation(index)}
+                                        </Grid.Row>
 
                                     </Grid.Column>
-                                    <Grid.Column width={1} floated='right' style={{marginRight: '2em'}}>
-                                        <Button index={index} onClick={this.deleteTask} basic circular negative
-                                                icon='delete'>
-                                        </Button>
+                                    <Grid.Column width={2} floated='right' style={{marginRight: '2em'}}>
+                                        {this.taskInteractionButtons(index)}
                                     </Grid.Column>
-
-                                    {this.taskForumButton(index)}
-
                                 </Grid.Row>
                             </Grid>
                         </div>
@@ -311,6 +402,7 @@ class ProjectTasks extends Component {
                         task={forumTask}
                         hideTaskForumCallback={this.hideTaskForumCallback}
                         updateStatusCallback={this.updateStatusCallback}
+                        updatePriorityCallback={this.updatePriorityCallback}
                     />
                 </Grid.Column>
             );
