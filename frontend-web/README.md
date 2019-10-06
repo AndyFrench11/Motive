@@ -69,4 +69,4 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 
 
 ### Styling and Component Framework
-https://reactstrap.github.io
+https://react.semantic-ui.com
