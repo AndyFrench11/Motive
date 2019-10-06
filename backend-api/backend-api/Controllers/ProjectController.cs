@@ -6,6 +6,7 @@ using backend_api.Database;
 using backend_api.Database.PersonRepository;
 using backend_api.Database.ProjectRepository;
 using backend_api.Models;
+using backend_api.Util;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -56,6 +57,64 @@ namespace backend_api.Controllers
             return StatusCode(200, result.ReturnValue);
         }
 
+        // Get all of the owners of a single project
+        [HttpGet("{projectId}/owners")]
+        public ActionResult<Project> GetProjectOwners(string projectId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<Person>> result = _personRepository.GetAllForProject(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200, result.ReturnValue);
+
+        }
+
+        // Get all of the owners of a single project
+        [HttpGet("{projectId}/subprojects")]
+        public ActionResult<Project> GetSubProjects(string projectId)
+        {
+
+            Guid guidToGet;
+            try
+            {
+                guidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<IEnumerable<Project>> result = _projectRepository.GetSubProjects(guidToGet);
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(200, result.ReturnValue);
+
+        }
+
         // GET api/values/5
         [HttpGet("{projectId}")]
         public ActionResult<Project> Get(string projectId)
@@ -91,7 +150,7 @@ namespace backend_api.Controllers
 
         }
 
-        // POST api/project 
+        // POST api/project
         [HttpPost]
         [ValidSessionRequired]
         public ActionResult Post([FromBody] Project projectToCreate)
@@ -101,7 +160,7 @@ namespace backend_api.Controllers
 
             // Create a new project password (only decryptable to the owner at the moment)
             string newProjectPasswordPlainText = Convert.ToBase64String(CryptoHelpers.GetRandomBytes(16));
-            
+
             // Get the user's public key
             RepositoryReturn<Person> fetchAccount = _personRepository.GetByGuid(userLoggedInSession.userGuid);
             if (fetchAccount.IsError)
@@ -156,7 +215,37 @@ namespace backend_api.Controllers
             return StatusCode(201);
         }
         
-        // PATCH api/project/{projectId}/tasks
+        // POST api/project/{projectId}/subproject
+        [HttpPost("{projectId}/subproject")]
+        public ActionResult PostNewSubProject(string projectId, [FromBody]Project subProjectToCreate)
+        {
+
+            //Check user is valid first
+            Guid projectGuidToGet;
+            try
+            {
+                projectGuidToGet = Guid.Parse(projectId);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (FormatException)
+            {
+                return BadRequest();
+            }
+
+            RepositoryReturn<bool> result = _projectRepository.AddSubProject(projectGuidToGet, subProjectToCreate);
+
+            if (result.IsError)
+            {
+                return StatusCode(500, result.ErrorException.Message);
+            }
+
+            return StatusCode(201);
+        }
+
+        // PATCH api/values
         [HttpPatch("{projectId}/tasks")]
         [ValidSessionRequired]
         public ActionResult UpdateTasks(string projectId, [FromBody]List<ProjectTask> projectTaskList)
@@ -299,36 +388,7 @@ namespace backend_api.Controllers
 
             return StatusCode(200);
         }
-        
-        // Get all of the owners of a single project
-        [HttpGet("{projectId}/owners")]
-        public ActionResult<Project> GetProjectOwners(string projectId)
-        {
 
-            Guid guidToGet;
-            try
-            {
-                guidToGet = Guid.Parse(projectId);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
-            catch (FormatException)
-            {
-                return BadRequest();
-            }
-
-            RepositoryReturn<IEnumerable<Person>> result = _personRepository.GetAllForProject(guidToGet);
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(200, result.ReturnValue);
-
-        }
-        
         // DELETE api/values/5
         [HttpDelete("{projectId}")]
         [ValidSessionRequired]
@@ -390,34 +450,11 @@ namespace backend_api.Controllers
             return StatusCode(200);
         }
 
-        
-        /**
-         * Attempts to parse a given string into a Guid.
-         * If the given string is null or cannot be formatted, returns a read only empty guid.
-         */
-        private Guid ParseGuid(string id)
-        {
-            Guid newGuid;
-            try
-            {
-                newGuid = Guid.Parse(id);
-            }
-            catch (ArgumentNullException)
-            {
-                return Guid.Empty;
-            }
-            catch (FormatException)
-            {
-                return Guid.Empty;
-            }
-            return newGuid;
-        }
-        
-        
+
         /**
          * Completes action to add a new member to a given project.
          *
-         * PATCH api/project/:projectId/giveAccessTo 
+         * PATCH api/project/:projectId/giveAccessTo
          */
         [HttpPatch("{projectId}/giveAccessTo")]
         [ValidSessionRequired]
@@ -429,19 +466,19 @@ namespace backend_api.Controllers
             Guid projectGuid = ParseGuid(projectId);
             if (projectGuid == Guid.Empty)
                 return StatusCode(400, "Invalid parse project GUID");
-            
+
             //TODO check if emails legit
-            
+
             // Get the link between the requesting user and the specified project (they may not own it)
-            RepositoryReturn<ProjectAccessRelationship> returnProjectAccessRelationship = 
+            RepositoryReturn<ProjectAccessRelationship> returnProjectAccessRelationship =
                 _projectRepository.GetUserAccessToProject(projectGuid, userLoggedInSession.userGuid);
-            
+
             if (returnProjectAccessRelationship.IsError)
             {
                 // Failed to get relationship
                 return StatusCode(500, returnProjectAccessRelationship.ErrorException.Message);
             }
-            
+
             if (returnProjectAccessRelationship.ReturnValue == null)
             {
                 // Supposed owner has no relationship to this project
@@ -453,7 +490,7 @@ namespace backend_api.Controllers
                 // Supposed owner does not have a valid access level to edit access to this project
                 return StatusCode(401, "You do not have correct access privileges to this resource");
             }
-            
+
             RSAEngine rsaEngine = new RSAEngine();
             // Get the user's private key to fetch the project decryption key
             RSAParameters privateKey = rsaEngine.ConvertStringToKey(userLoggedInSession.privateKey);
@@ -472,17 +509,17 @@ namespace backend_api.Controllers
                 }
 
                 Person currentPerson = requestPerson.ReturnValue;
-                
+
                 RSAParameters currentUserPublicKey =
                     rsaEngine.ConvertStringToKey(currentPerson.publicKey);
-                
+
                 // Create the media key unique to the current user's public key
                 string currentUserEncryptedMediaKey = Convert.ToBase64String(rsaEngine.EncryptString(plaintextProjectKey, currentUserPublicKey));
-                
+
                 // Finally set the encrypted key to the user's GUID
                 usersToGiveAccess[currentPerson.Guid] = new Tuple<AccessLevel, string>(AccessLevel.Viewer, currentUserEncryptedMediaKey);
             }
-            
+
             RepositoryReturn<bool> requestAddUserToMedia = _projectRepository.AddProjectMembers(projectGuid,
                 usersToGiveAccess);
             if (requestAddUserToMedia.IsError)
@@ -508,7 +545,7 @@ namespace backend_api.Controllers
 //            {
 //                return BadRequest("Invalid guid.");
 //            }
-//            
+//
 //            // TODO
 //            // Check user is logged in - Unauthorised()
 //            // Check logged in user owns the project - Forbidden()

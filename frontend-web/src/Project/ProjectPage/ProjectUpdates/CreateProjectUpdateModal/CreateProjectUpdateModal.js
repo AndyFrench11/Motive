@@ -4,7 +4,8 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
-import {postProjectUpdate, resetModalState} from "./actions";
+import { postProjectUpdate, resetModalState } from "./actions";
+import dateFormat from 'dateformat';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import Uploader from "../../../../Common/Uploader";
 
@@ -64,14 +65,19 @@ class CreateProjectUpdateModal extends React.Component {
 
     confirmNewUpdate = () => {
         const { contentInput, selectedTaskGuid, markedAsHighlight } = this.state;
-        let update = { content: contentInput, highlight: markedAsHighlight };
-        if(selectedTaskGuid !== "")
-        {
-            update["taskGuid"] = selectedTaskGuid;
+        const defaultTaskGuid = "00000000-0000-0000-0000-000000000000";
+        const currentDateTime = new Date();
+        var event = dateFormat(currentDateTime, "yyyy-mm-dd") + "T" +  dateFormat(currentDateTime, "HH:MM:ss") + ".667000000"
+        const update = {
+            content: contentInput,
+            highlight: markedAsHighlight,
+            taskGuid: selectedTaskGuid !== "" ? selectedTaskGuid : defaultTaskGuid,
+            guid: uuidv4(),
+            dateTimeCreated: event
         }
 
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
-    };
+    }
 
     updateHighlightStatus = () => {
         this.setState((prevState) => ({ 
@@ -94,7 +100,7 @@ class CreateProjectUpdateModal extends React.Component {
     };
 
     render() {
-        console.log(this.props);
+
         const { user, project, completedTaskIndex } = this.props;
         const { markedAsHighlight, animationVisible, currentAnimation, mediaUploadUrl } = this.state;
 
@@ -214,7 +220,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    console.log(state);
     const { createProjectUpdateReducer } = state;
     const { createProjectUpdateController } = createProjectUpdateReducer;
     const { isUpdating, lastUpdated, result, createdUpdateGuid } = createProjectUpdateController;

@@ -39,24 +39,17 @@ function receiveSingleProject(json) {
     }
 }
 
-export function postProject(guid, valuesJson, imageIndex) {
+export function postProject(userGuid, newProject) {
     return dispatch => {
         dispatch(requestNewProject());
         //Take only the values needed for the request
-        let newProject = {
-            name: valuesJson.projectNameInput,
-            description: valuesJson.descriptionInput,
-            taskList: valuesJson.taskList,
-            tagList: valuesJson.tags,
-            imageIndex
-        };
 
-        return axios.post(serverUrl + "/project", newProject, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                withCredentials: true
-            })
+        return axios.post(serverUrl + "/project", newProject, {headers: {
+                'Content-Type': 'application/json',
+                'userId': userGuid
+            },
+            withCredentials: true
+        })
             .then(response => dispatch(receiveNewProjectResponse(response)))
             .catch(error =>  {
                 console.log("The server is not running!");

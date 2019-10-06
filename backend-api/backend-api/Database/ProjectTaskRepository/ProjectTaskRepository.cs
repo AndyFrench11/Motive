@@ -1,4 +1,5 @@
 ﻿using System;
+using backend_api.Features.TaskForum.Repository;
 using backend_api.Models;
 using Neo4j.Driver.V1;
 
@@ -38,7 +39,14 @@ namespace backend_api.Database.ProjectTaskRepository
             string taskGuid = task.Guid.ToString();
             bool completed = task.completed;
             int orderIndex = task.orderIndex;
-            tx.Run("CREATE(pt:ProjectTask {name: $taskName, completed: $completed, orderIndex: $orderIndex, guid: $taskGuid})", new { taskName, completed, orderIndex, taskGuid });
+            var status = task.Status;
+            tx.Run("CREATE(pt:ProjectTask {name: $taskName, " +
+                   "completed: $completed, " +
+                   "orderIndex: $orderIndex, " +
+                   "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " + 
+                   "status: $status, " +
+                   "guid: $taskGuid})", 
+                new { taskName, completed, orderIndex, taskGuid, status });
         }
 
         private void CreateTaskRelationship(ITransaction tx, ProjectTask task, Guid projectGuid)
@@ -70,7 +78,20 @@ namespace backend_api.Database.ProjectTaskRepository
         {
             //Edit the task node based on completion status
             string projectTaskId = projectTaskGuid.ToString();
-            tx.Run("MATCH (a:ProjectTask) WHERE a.guid = $projectTaskId SET a.completed = $completed", new { projectTaskId, completed });
+            string query = "MATCH (a:ProjectTask) WHERE a.guid = $projectTaskId " +
+                           "SET a.completed = $completed";
+                           
+            if (completed)
+            {
+                query += ", a.dateTimeCompleted = localdatetime({ timezone: 'Pacific/Auckland' })";
+            }
+            else
+            {
+                query += ", a.dateTimeCompleted = NULL";
+            }
+            
+            tx.Run(query, 
+                new { projectTaskId, completed });
         }
 
         public RepositoryReturn<bool> Delete(Guid projectTaskGuid)
@@ -79,6 +100,15 @@ namespace backend_api.Database.ProjectTaskRepository
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
+                    //Delete channel node and messages first
+                    var channelRepository = new ChannelRepository();
+                    var result = channelRepository.DeleteAll(projectTaskGuid);
+
+                    if (result.IsError)
+                    {
+                        return result;
+                    }
+                    
                     session.WriteTransaction(tx => DeleteTaskNode(tx, projectTaskGuid));
                     return new RepositoryReturn<bool>(true);
                 }

@@ -27,6 +27,10 @@ namespace backend_api.Database.ProjectRepository
         
         RepositoryReturn<bool> Delete(Guid projectGuid);
 
+        RepositoryReturn<bool> AddSubProject(Guid parentProjectGuid, Project newSubProject);
+
+        RepositoryReturn<IEnumerable<Project>> GetSubProjects(Guid parentProjectGuid);
+
         RepositoryReturn<ProjectAccessRelationship> GetUserAccessToProject(Guid projectGuid, Guid userGuid);
 
         RepositoryReturn<bool> AddProjectMembers(Guid projectGuid,

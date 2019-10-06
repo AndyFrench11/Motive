@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@opuscapita/react-dates": "^0.5.8",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "bad-words": "^3.0.3",
     "bootstrap": "^4.3.1",
     "cross-fetch": "^3.0.2",
@@ -13,6 +13,7 @@
     "filepond-plugin-file-validate-type": "^1.2.4",
     "filepond-plugin-image-preview": "^4.4.0",
     "js-sha256": "^0.9.0",
+    "dateformat": "^3.0.3",
     "moment": "^2.24.0",
     "react": "^16.9.0",
     "react-beautiful-dnd": "^11.0.5",
@@ -42,7 +43,8 @@
     "yarn": "^1.15.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "HTTPS=true react-scripts start",
+    "prestart": "rm -f ./node_modules/webpack-dev-server/ssl/server.pem && cp -f ./server.pem ./node_modules/webpack-dev-server/ssl",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

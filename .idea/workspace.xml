@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3b73335d-e96a-4155-ac37-22dc3929547b" name="Default Changelist" comment="" />
+    <list default="true" id="3b73335d-e96a-4155-ac37-22dc3929547b" name="Default Changelist" comment="Merge remote-tracking branch 'remotes/origin/dev' into A_ProjectFamilies&#10;&#10;# Conflicts:&#10;#&#9;frontend-web/.env&#10;#&#9;frontend-web/src/UserProfile/UserProfile.js">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend-api/backend-api/App.config" beforeDir="false" afterPath="$PROJECT_DIR$/backend-api/backend-api/App.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend-web/.env" beforeDir="false" afterPath="$PROJECT_DIR$/frontend-web/.env" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,17 +16,17 @@
     <session id="1426648351">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="5" />
+          <entry key="project.closed" value="6" />
           <entry key="project.open.time.7" value="3" />
           <entry key="project.open.time.8" value="1" />
-          <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="6" />
+          <entry key="project.open.time.9" value="3" />
+          <entry key="project.opened" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="config" value="28" />
-          <entry key="env" value="1" />
+          <entry key="config" value="30" />
+          <entry key="env" value="29" />
           <entry key="js" value="148" />
           <entry key="txt" value="71" />
         </counts>
@@ -30,7 +34,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JavaScript" value="148" />
-          <entry key="PLAIN_TEXT" value="100" />
+          <entry key="PLAIN_TEXT" value="130" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -48,6 +52,11 @@
           <entry key="PLAIN_TEXT" value="2" />
         </counts>
       </usages-collector>
+      <usages-collector id="statistics.vcs.git.usages">
+        <counts>
+          <entry key="git.branch.checkout.local" value="1" />
+        </counts>
+      </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
@@ -55,8 +64,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/frontend-web/src/rootReducer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
+            <state relative-caret-position="180">
+              <caret line="29" column="27" selection-start-line="29" selection-start-column="27" selection-end-line="29" selection-end-column="27" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -67,7 +76,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectDetails/reducers.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
+            <state relative-caret-position="120">
               <caret line="22" column="3" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
@@ -76,7 +85,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend-api/backend-api/App.config">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
@@ -85,11 +94,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/frontend-web/.env">
           <provider selected="true" editor-type-id="text-editor">
             <state>
-              <caret column="31" selection-start-column="31" selection-end-column="31" />
+              <caret column="34" lean-forward="true" selection-start-column="34" selection-end-column="62" />
             </state>
           </provider>
         </entry>
@@ -98,14 +107,19 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="A_ProjectFamilies" />
+      </map>
+    </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/frontend-web/src/Project/reducers.js" />
         <option value="$PROJECT_DIR$/frontend-web/src/rootReducer.js" />
-        <option value="$PROJECT_DIR$/backend-api/backend-api/App.config" />
         <option value="$PROJECT_DIR$/frontend-web/.env" />
+        <option value="$PROJECT_DIR$/backend-api/backend-api/App.config" />
       </list>
     </option>
   </component>
@@ -124,18 +138,16 @@
       <path value="$PROJECT_DIR$/frontend-web/semantic/tasks/config/admin/templates/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="1440" />
-    <option name="y" value="-157" />
-    <option name="width" value="1920" />
-    <option name="height" value="985" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="y" value="23" />
+    <option name="width" value="1680" />
+    <option name="height" value="955" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -146,13 +158,20 @@
             <path>
               <item name="Motive" type="b2602c69:ProjectViewProjectNode" />
               <item name="Motive" type="462c0819:PsiDirectoryNode" />
-              <item name="frontend-web" type="462c0819:PsiDirectoryNode" />
+              <item name="backend-api" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Motive" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Motive" type="462c0819:PsiDirectoryNode" />
+              <item name="backend-api" type="462c0819:PsiDirectoryNode" />
+              <item name="backend-api" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -191,6 +210,7 @@
       <workItem from="1568776957513" duration="66000" />
       <workItem from="1568851235443" duration="465000" />
       <workItem from="1568893122588" duration="103000" />
+      <workItem from="1569655454958" duration="354000" />
     </task>
     <task id="LOCAL-00001" summary="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js">
       <created>1565761900406</created>
@@ -234,17 +254,24 @@
       <option name="project" value="LOCAL" />
       <updated>1568893204284</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Merge remote-tracking branch 'remotes/origin/dev' into A_ProjectFamilies&#10;&#10;# Conflicts:&#10;#&#9;frontend-web/.env&#10;#&#9;frontend-web/src/UserProfile/UserProfile.js">
+      <created>1569655595005</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1569655595005</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2921000" />
+    <option name="totallyTimeSpent" value="3504000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1440" y="-157" width="1920" height="985" extended-state="0" />
+    <frame x="0" y="23" width="1680" height="955" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1687966" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17216118" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -258,7 +285,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" visible="true" weight="0.2150056" />
+      <window_info anchor="bottom" id="Version Control" order="7" visible="true" weight="0.21436848" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="SBT Console" order="9" />
       <window_info anchor="bottom" id="Terminal" order="10" />
@@ -285,7 +312,8 @@
     <MESSAGE value="Merge remote-tracking branch 'remotes/origin/dev' into M_HomePage&#10;&#10;# Conflicts:&#10;#&#9;backend-api/backend-api/Controllers/ProjectController.cs&#10;#&#9;frontend-web/src/Home/Home.js&#10;#&#9;frontend-web/src/index.js" />
     <MESSAGE value="Updated reducers to match new scheme" />
     <MESSAGE value="Updated configs for deployment" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated configs for deployment" />
+    <MESSAGE value="Merge remote-tracking branch 'remotes/origin/dev' into A_ProjectFamilies&#10;&#10;# Conflicts:&#10;#&#9;frontend-web/.env&#10;#&#9;frontend-web/src/UserProfile/UserProfile.js" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'remotes/origin/dev' into A_ProjectFamilies&#10;&#10;# Conflicts:&#10;#&#9;frontend-web/.env&#10;#&#9;frontend-web/src/UserProfile/UserProfile.js" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/backend-api/backend-api/Properties/launchSettings.json">
@@ -318,8 +346,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/frontend-web/src/rootReducer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
+        <state relative-caret-position="180">
+          <caret line="29" column="27" selection-start-line="29" selection-start-column="27" selection-end-line="29" selection-end-column="27" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
@@ -328,7 +356,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/frontend-web/src/Project/ProjectPage/ProjectDetails/reducers.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
+        <state relative-caret-position="120">
           <caret line="22" column="3" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
@@ -336,17 +364,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/frontend-web/.env">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="34" lean-forward="true" selection-start-column="34" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/backend-api/backend-api/App.config">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="5" column="77" selection-start-line="5" selection-start-column="77" selection-end-line="5" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/frontend-web/.env">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="31" selection-start-column="31" selection-end-column="31" />
         </state>
       </provider>
     </entry>

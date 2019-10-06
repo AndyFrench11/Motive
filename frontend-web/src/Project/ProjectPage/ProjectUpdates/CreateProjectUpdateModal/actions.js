@@ -15,8 +15,8 @@ function requestNewProjectUpdate() {
 export function postProjectUpdate(projectGuid, userGuid, update) {
     return dispatch => {
         dispatch(requestNewProjectUpdate());
-
         //Take only the values needed for the request
+        return axios.post(serverUrl + `/projectUpdate`, update, {headers: {
         return axios.post(serverUrl + `/projectUpdate`, update, {
             withCredentials: true,
             headers: {

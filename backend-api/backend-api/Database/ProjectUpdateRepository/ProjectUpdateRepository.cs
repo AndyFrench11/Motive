@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using backend_api.Features.Comments.Repository;
 using backend_api.Models;
 using Neo4j.Driver.V1;
 
@@ -27,7 +28,7 @@ namespace backend_api.Database.ProjectUpdateRepository
                     
                     foreach (ProjectUpdate update in returnedUpdates)
                     {
-                        //Retieve the project task associated to the update
+                        //Retrieve the project task associated to the update
                         var returnedProjectTask = session.ReadTransaction(tx => RetrieveProjectTaskForGivenUpdate(tx, update.Guid));
                         if (returnedProjectTask != null)
                         {
@@ -47,6 +48,12 @@ namespace backend_api.Database.ProjectUpdateRepository
                         var associatedTags =
                             session.ReadTransaction(tx => RetrieveProjectTags(tx, returnedProject.Guid));
                         update.relatedProject.tagList = associatedTags.ToList();
+                        
+                        //Retrieve all comments for the update
+                        ICommentRepository commentRepository = new CommentRepository();
+                        var comments = 
+                            session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
+                        update.comments = comments.ReturnValue.ToList();
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }
@@ -106,6 +113,12 @@ namespace backend_api.Database.ProjectUpdateRepository
                         }
                         var returnedPerson = session.ReadTransaction(tx => RetrievePersonForGivenUpdate(tx, update.Guid));
                         update.relatedPerson = returnedPerson;
+                        
+                        //Retrieve all comments for the update
+                        ICommentRepository commentRepository = new CommentRepository();
+                        var comments = 
+                            session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
+                        update.comments = comments.ReturnValue.ToList();
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }
@@ -120,8 +133,18 @@ namespace backend_api.Database.ProjectUpdateRepository
         private List<ProjectUpdate> RetrieveUpdatesForSingleProject(ITransaction tx, Guid projectGuid)
         {
             var projectId = projectGuid.ToString();
-            var result = tx.Run("MATCH (pu:ProjectUpdate) -- (p:Project) WHERE p.guid = $projectId RETURN pu", new { projectId });
+            
+            //Works for non sub project
+//            var query = "MATCH (pu:ProjectUpdate),(parent:Project),(child:Project) " +
+//                        "WHERE (pu) -- (parent) OR (pu) -- (child) -[:IS_SUBPROJECT_OF]-> (parent) " +
+//                        "AND parent.guid = $projectId " +
+//                        "RETURN DISTINCT pu";
+
+            var query = "MATCH (pu:ProjectUpdate) -- (parent:Project) " +
+                        "WHERE parent.guid = $projectId RETURN pu";
+            var result = tx.Run(query, new { projectId });
             var records = result.Select(record => new ProjectUpdate(record[0].As<INode>().Properties)).ToList();
+            //records = records.Distinct().ToList();
             return records;
         }
 
@@ -195,8 +218,9 @@ namespace backend_api.Database.ProjectUpdateRepository
             string projectUpdateContent = projectUpdate.content;
             string projectUpdateId = projectUpdate.Guid.ToString();
             bool highlight = projectUpdate.highlight;
-            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, highlight: $highlight, guid: $projectUpdateId})", 
-                new { projectUpdateContent, highlight, projectUpdateId });
+            string projectUpdateCreatedDateTime = projectUpdate.dateTimeCreated;
+            tx.Run("CREATE(pu:ProjectUpdate {content: $projectUpdateContent, highlight: $highlight, dateTimeCreated: $projectUpdateCreatedDateTime, guid: $projectUpdateId})", 
+                new { projectUpdateContent, highlight, projectUpdateCreatedDateTime, projectUpdateId });
         }
 
         private void CreateProjectUpdateToProjectRelationship(ITransaction tx, Guid projectUpdateGuid, Guid projectGuid)
@@ -286,6 +310,15 @@ namespace backend_api.Database.ProjectUpdateRepository
             {
                 using (var session = _neo4jConnection.driver.Session())
                 {
+                    // Delete update comments first
+                    var commentRepository = new CommentRepository();
+                    var result = commentRepository.DeleteAll(projectUpdateGuid);
+
+                    if (result.IsError)
+                    {
+                        return result;
+                    }
+                    
                     session.WriteTransaction(tx => RemoveProjectUpdateNode(tx, projectUpdateGuid));
 
                     return new RepositoryReturn<bool>(true);
