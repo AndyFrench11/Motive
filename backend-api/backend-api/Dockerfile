@@ -7,6 +7,7 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY . ./
+ENV ASPNETCORE_URLS=http://+:8081
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
