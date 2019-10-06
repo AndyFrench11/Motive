@@ -4,16 +4,16 @@ A passion project social media platform that allows people to share and collabor
 
 ## File Structure
 
-* `backend-api` - ASP.NET Back-end API Project.
-* `backend-tests` - Back-end Testing Project in xUnit.
-* `frontend-web` - React/Redux Front-end Project.
+* `/backend-api` - ASP.NET Back-end API Project.
+* `/backend-tests` - Back-end Testing Project in xUnit.
+* `/frontend-web` - React/Redux Front-end Project.
 * `.gitlab-ci.yml` - Master Continuous Integration File to run all pipelines, speaking to Virtual Machine at `csse-s402g2.canterbury.ac.nz`.
 * `docker-compose.yml` - Docker build file which speaks to each projects docker file to enable containerisation of each project.
 
 ## Backend API :back: :end: 
 
 #### Location   
-`backend-api`
+`/backend-api`
 
 #### Dependencies
 [.NET Core Runtime 2.2](https://dotnet.microsoft.com/download)    
@@ -30,7 +30,7 @@ By pressing the 'Run' button, using the kestrel server, and this will start the 
 
    
 - Option 2: Command Line   
-This requires navigating into the `backend-api/backend-api`.   
+This requires navigating into the `/backend-api/backend-api`.   
 From there, run the `dotnet run` command.   
 This will start the application running on the 8081 port.
 
@@ -47,14 +47,14 @@ Running on VM:
 ## Web Frontend :bullettrain\_front: :end:
 
 #### Location   
-`frontend-web`
+`/frontend-web`
 
 #### Dependencies
 [Node.js Runtime](https://nodejs.org/en/)   
 [Yarn](https://yarnpkg.com/lang/en/)   
 
 #### How to run the program
-From inside `frontend-web`:   
+From inside `/frontend-web`:   
 `yarn install`   
 `yarn start`   
 
@@ -70,7 +70,7 @@ In `.env`, set the `REACT_APP_BACKEND_ADDRESS` to be:
 
 #### How to run the program   
 
-After having downloaded Neo4j, run `./bin/neo4j console`.    
+After having downloaded Neo4j, navigate to `/neo4j-community-3.5.x` and run `./bin/neo4j console`.    
 This starts the database on the bolt port 7687, and then the browser view is on 7474.
 
 #### Configuration    
