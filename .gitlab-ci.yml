@@ -26,4 +26,3 @@ deploy-backend:
   - sudo docker run -d -p 8080:80 --name motive-backend-container motive_backend-api
   only:
   - dev@afr66/Motive
-
