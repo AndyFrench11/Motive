@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using backend_api.Crypto;
+using backend_api.Database.ProjectRepository;
 
 namespace backend_api.Models
 {
@@ -16,7 +17,6 @@ namespace backend_api.Models
         
         
         public bool IsEncrypted { private set; get; }
-
         
         public MediaTracker(string extension, string contentHeader, byte[] salt)
         {
@@ -63,6 +63,24 @@ namespace backend_api.Models
             this.contentHeader = aesEngine.DecryptStringFromBytes_Aes(Convert.FromBase64String(this.contentHeader), password);
             this.IsEncrypted = false;
             return true;
+        }
+
+        public MediaType GetMediaType()
+        {
+            if (this.IsEncrypted)
+                throw new InvalidOperationException("MediaTracker is currently encrypted");
+            
+            if (this.contentHeader.StartsWith("image"))
+            {
+                return MediaType.Image;
+            }
+
+            if (this.contentHeader.StartsWith("video"))
+            {
+                return MediaType.Video;
+            }
+            
+            throw new InvalidDataException("MediaTracker has invalid content type");
         }
     }
 }

@@ -1,5 +1,6 @@
 import axios from 'axios/index'
 
+export const RESET_NEW_PROJECT_STATE = 'UPDATE_MODAL_RESET_STATE';
 export const REQUEST_NEW_PROJECT_UPDATE = 'REQUEST_NEW_PROJECT_UPDATE';
 export const RECEIVE_NEW_PROJECT_UPDATE_RESPONSE = 'RECEIVE_NEW_PROJECT_UPDATE_RESPONSE';
 
@@ -16,6 +17,9 @@ export function postProjectUpdate(projectGuid, userGuid, update) {
         dispatch(requestNewProjectUpdate());
         //Take only the values needed for the request
         return axios.post(serverUrl + `/projectUpdate`, update, {headers: {
+        return axios.post(serverUrl + `/projectUpdate`, update, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
                 'projectGuid': projectGuid,
                 'userGuid': userGuid
@@ -31,18 +35,28 @@ export function postProjectUpdate(projectGuid, userGuid, update) {
     }
 }
 
+export function resetModalState() {
+    return dispatch => {
+        dispatch({
+            type: RESET_NEW_PROJECT_STATE,
+        })
+    }
+}
+
 function receiveNewProjectUpdateResponse(response) {
     if(response.status === 201) {
         return {
             type: RECEIVE_NEW_PROJECT_UPDATE_RESPONSE,
             result: response.data,
-            receivedAt: Date.now()
+            receivedAt: Date.now(),
+            createdUpdateGuid: response.data
         }
     } else if(response.status === 500) {
         return {
             type: RECEIVE_NEW_PROJECT_UPDATE_RESPONSE,
             result: "Internal Server Error",
-            receivedAt: Date.now()
+            receivedAt: Date.now(),
+            createdUpdateGuid: null
         }
     }
 }

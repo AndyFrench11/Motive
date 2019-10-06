@@ -206,6 +206,7 @@ class SignUp extends Component {
                                     {/*Password Policy Notice*/}
                                     <List bulleted>
                                         <List.Item>Passwords should be at least 8 characters long.</List.Item>
+                                        <List.Item>Passwords should contain at least 1 number or special character.</List.Item>
                                         <List.Item>Passwords shouldn't use your name(s).</List.Item>
                                     </List>
 

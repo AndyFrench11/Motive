@@ -47,7 +47,8 @@ export function postProject(userGuid, newProject) {
         return axios.post(serverUrl + "/project", newProject, {headers: {
                 'Content-Type': 'application/json',
                 'userId': userGuid
-            }
+            },
+            withCredentials: true
         })
             .then(response => dispatch(receiveNewProjectResponse(response)))
             .catch(error =>  {

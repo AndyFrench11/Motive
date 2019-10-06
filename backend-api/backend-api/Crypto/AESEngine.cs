@@ -9,7 +9,7 @@ namespace backend_api.Crypto
         // Rfc2898DeriveBytes constants:
         private readonly int Iterations = 1042; // Recommendation is >= 1000.
 
-        private bool randomSalt = false;
+        private bool randomSalt = true;
 
         public void DecryptFile(string sourceFilename, string destinationFilename, string password, byte[] salt)
         {
