@@ -17,5 +17,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+CMD [ "cat", "/etc/letsencrypt/live/csse-s402g2.canterbury.ac.nz/privkey.pem", "/etc/letsencrypt/live/csse-s402g2.canterbury.ac.nz/fullchain.pem", ">", "/etc/letsencrypt/live/csse-s402g2.canterbury.ac.nz/complete.pem" ]
 EXPOSE 8082
 CMD [ "npm", "start" ]
