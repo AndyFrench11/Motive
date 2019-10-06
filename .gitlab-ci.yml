@@ -13,7 +13,7 @@ deploy-frontend:
   stage: deploy-frontend
   script: 
   - sudo docker container stop motive-frontend-container || true && sudo docker rm motive-frontend-container || true
-  - sudo cat /etc/letsencrypt/live/csse-s402g2.canterbury.ac.nz/privkey.pem /etc/letsencrypt/live/csse-s402g2.canterbury.ac.nz/fullchain.pem > ~/server.pem
+  - sudo cat /etc/letsencrypt/live/csse-s402g2.canterbury.ac.nz/privkey.pem /etc/letsencrypt/live/csse-s402g2.canterbury.ac.nz/fullchain.pem > /home/sengstudent/server.pem
   - sudo docker run -p 443:8082 -d --name motive-frontend-container motive_frontend-web
   only:
   - dev@afr66/Motive
