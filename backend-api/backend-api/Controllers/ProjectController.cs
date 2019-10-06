@@ -463,7 +463,7 @@ namespace backend_api.Controllers
             string sessionId = Request.Cookies["sessionId"];
             Session userLoggedInSession = SessionsController.GetLoggedInSession(sessionId);
 
-            Guid projectGuid = ParseGuid(projectId);
+            Guid projectGuid = Guid.Parse(projectId);
             if (projectGuid == Guid.Empty)
                 return StatusCode(400, "Invalid parse project GUID");
 
