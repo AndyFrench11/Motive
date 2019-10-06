@@ -1,11 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>backend_api</RootNamespace>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
@@ -13,9 +11,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.2.7" />
     <PackageReference Include="Neo4j.Driver" Version="1.7.1" />
+    <PackageReference Include="Neo4jClient" Version="3.1.0.6" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0-preview7.19362.9" />
+    <PackageReference Include="UploadStream" Version="2.2.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Models\" />
+    <Folder Include="PlaintextUploads" />
+    <Folder Include="Uploads" />
   </ItemGroup>
 </Project>
