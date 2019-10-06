@@ -16,7 +16,7 @@ namespace backend_api.Database.MediaRepository
             _neo4jConnection = new neo4jConnection();
         }
         
-        public RepositoryReturn<bool> Create(MediaTracker newFileTracker, string encryptedMediaPassword, Guid ownerGuid)
+        public RepositoryReturn<bool> Create(MediaTracker newFileTracker, Guid updateGuid, MediaType mediaType)
         {
             if (!newFileTracker.IsEncrypted)
             {
@@ -27,7 +27,7 @@ namespace backend_api.Database.MediaRepository
                 using (var session = _neo4jConnection.driver.Session())
                 {
                     session.WriteTransaction(tx => CreateMediaNode(tx, newFileTracker));
-                    session.WriteTransaction(tx => LinkUserToMedia(tx, newFileTracker.Guid, ownerGuid, encryptedMediaPassword, AccessLevel.Owner));
+                    session.WriteTransaction(tx => LinkUpdateToMedia(tx, newFileTracker.Guid, updateGuid, mediaType));
                     return new RepositoryReturn<bool>(true);
                 }
             }
@@ -49,36 +49,14 @@ namespace backend_api.Database.MediaRepository
                    "})");
         }
 
-        private void LinkUserToMedia(ITransaction tx, Guid mediaGuid, Guid userGuid,
-            string encryptedMediaPassword,
-            AccessLevel accessLevel)
+        private void LinkUpdateToMedia(ITransaction tx, Guid mediaGuid, Guid updateGuid,
+            MediaType mediaType)
         {
-            // Looks for an existing relationship and replaces it.
-            tx.Run("MATCH (user:Person),(media:Media)\n" +
-                   $"WHERE user.guid = '{userGuid}' AND media.guid = '{mediaGuid}'\n" +
-                   $"MERGE (user)-[r:{accessLevel}]->(media)\n" + 
-                   $"ON CREATE SET r.encryptedKey = '{encryptedMediaPassword}'\n" + 
-                   $"ON MATCH SET r.encryptedKey = '{encryptedMediaPassword}'\n"
+            // Looks for an existing relationship and updates it.
+            tx.Run("MATCH (pu:ProjectUpdate),(media:Media)\n" +
+                   $"WHERE pu.guid = '{updateGuid}' AND media.guid = '{mediaGuid}'\n" +
+                   $"MERGE (pu)-[r:{mediaType}]->(media)"
             );
-        }
-
-        public RepositoryReturn<bool> AddUsersToMedia(Guid mediaGuid, IDictionary<Guid, string> newUserGuids)
-        {
-            try
-            {
-                using (var session = _neo4jConnection.driver.Session())
-                {
-                    foreach (var userGuidToKey in newUserGuids)
-                    {
-                        session.WriteTransaction(tx => LinkUserToMedia(tx, mediaGuid, userGuidToKey.Key, userGuidToKey.Value, AccessLevel.Viewer));
-                    }
-                    return new RepositoryReturn<bool>(true);
-                }
-            }
-            catch (Neo4jException e)
-            {
-                return new RepositoryReturn<bool>(true, e);
-            }
         }
 
         public RepositoryReturn<MediaTracker> GetByGuid(Guid mediaGuid)
@@ -111,37 +89,6 @@ namespace backend_api.Database.MediaRepository
             catch (Neo4jException e)
             {
                 return new RepositoryReturn<MediaTracker>(true, e);
-            }
-        }
-
-        public RepositoryReturn<ProjectAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid)
-        {
-            try
-            {
-                using (var session = _neo4jConnection.driver.Session())
-                {
-
-                    var returnedMediaAccessRelationship = session.ReadTransaction(tx =>
-                    {
-                        var result = tx.Run(
-                            $"MATCH (person:Person {{ guid: '{userGuid}' }})-[r]->(m:Media {{ guid : '{mediaGuid}'}})\nRETURN r");
-
-                        var record = result.SingleOrDefault();
-                        return new ProjectAccessRelationship(record?[0].As<IRelationship>());
-                    });
-                    switch (returnedMediaAccessRelationship)
-                    {
-                        case null:
-                            return new RepositoryReturn<ProjectAccessRelationship>(null);
-                        default:
-                            return new RepositoryReturn<ProjectAccessRelationship>(returnedMediaAccessRelationship);
-                    }
-                }
-            }
-
-            catch (Neo4jException e)
-            {
-                return new RepositoryReturn<ProjectAccessRelationship>(true, e);
             }
         }
 

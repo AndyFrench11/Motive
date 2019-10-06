@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using backend_api.Crypto;
@@ -29,7 +30,7 @@ namespace backend_api.Controllers
         {
             Console.WriteLine("Clearing inactive sessions...");
             int numOfClosedSessions = 0;
-            foreach(KeyValuePair<string, Session> sessionEntry in LoggedInSessions)
+            foreach(KeyValuePair<string, Session> sessionEntry in LoggedInSessions.ToList())
             {
                 if (sessionEntry.Value.expiry < DateTime.Now)
                 {

@@ -200,9 +200,6 @@ class CreateProjectUpdateModal extends React.Component {
                     <Button color='green' inverted onClick={this.confirmNewUpdate}>
                         <Icon name='checkmark'/> Update
                     </Button>
-                    <Button color='green' inverted onClick={() => {console.log(this.state);}}>
-                        <Icon name='checkmark'/> STATE
-                    </Button>
                 </Modal.Actions>
             </Modal>
         );

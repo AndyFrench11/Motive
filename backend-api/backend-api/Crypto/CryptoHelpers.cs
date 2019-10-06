@@ -8,8 +8,10 @@ namespace backend_api.Crypto
         {
             // Random 32 bit salt
             byte[] randomArray = new byte[numberOfBytes];
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(randomArray); // The salt is now filled with cryptographically strong random bytes.
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(randomArray); // The salt is now filled with cryptographically strong random bytes.
+            }
             return randomArray;
         }
     }

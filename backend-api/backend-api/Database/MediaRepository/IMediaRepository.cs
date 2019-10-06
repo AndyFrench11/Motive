@@ -7,14 +7,9 @@ namespace backend_api.Database.MediaRepository
 {
     public interface IMediaRepository
     {
-        RepositoryReturn<bool> Create(MediaTracker newFileTracker, string encryptedMediaPassword, Guid ownerGuid);
+        RepositoryReturn<bool> Create(MediaTracker newFileTracker, Guid updateGuid, MediaType mediaType);
 
         RepositoryReturn<MediaTracker> GetByGuid(Guid mediaGuid);
-
-        RepositoryReturn<bool> AddUsersToMedia(Guid mediaGuid, IDictionary<Guid, string> newUserGuidsWithKey);
-        
-        RepositoryReturn<ProjectAccessRelationship> GetEncryptedMediaKey(Guid mediaGuid, Guid userGuid);  
-
         RepositoryReturn<MediaTracker> Update(Guid mediaGuid, Guid userGuid);
 
         RepositoryReturn<bool> Delete(Guid mediaGuid, Guid userGuid);
