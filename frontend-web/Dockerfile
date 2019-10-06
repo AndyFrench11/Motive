@@ -9,6 +9,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY semantic.json .
 COPY semantic/ .
+COPY server.pem .
 
 
 
