@@ -1,0 +1,83 @@
+.column.centerDot {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    width: 3rem !important;
+  }
+
+.column.connector {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    width: 4rem !important;
+  }
+
+.ui.grid.timelineItem {
+    
+}
+
+.column.timelineColumn {
+    width: 10rem !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+}
+
+.row.popUpRow {
+  margin-left: 1em !important; 
+  margin-right: 1em !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.ui.divider.popUpDivider {
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+/* .ui.tiny.avatar.image.popUpImage {
+  visibility: visible !important;
+} */
+
+.ui.red.massive.circular.floating.label.timelineHighlight {
+  position: absolute;
+  z-index: 100;
+  top: -1em;
+  right: 100%;
+  left: 100%;
+  margin: 0 0 0 -1em !important;
+}
+
+.row.taskPopUpRow {
+  margin-left: 1em !important; 
+  margin-right: 1em !important;
+  padding-top: 0em !important;
+  padding-bottom: 0em !important;
+}
+
+.tasks.large.icon.taskIcon {
+  padding-top: 0.5em !important;
+}
+
+.three.wide.column.trophyImageColumn {
+  padding-right: 0em !important;
+}
+
+.four.wide.column.popUpProfileImage {
+  padding-left: 0em !important;
+}
+
+.ui.rounded.image.trophyImage {
+  padding-top: 0.5em !important;
+}
+
+.ui.medium.header.popUpName {
+  padding-top: 0.5em !important;
+}
+
+.large.circular.icon.emptyTimeLineIcon {
+  background-color: #dedede !important;
+}
+
+.three.wide.column.popUpTaskImage {
+  padding-left: 0em !important;
+  padding-right: 0em !important;
+}
+

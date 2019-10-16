@@ -403,3 +403,8 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+.idea
+
+/App.config
+!/backend-api/App.config

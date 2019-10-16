@@ -1,54 +1,101 @@
-import React, { Component } from 'react';
-import './Home.css';
-import { Button, Header, Image, Modal } from 'semantic-ui-react'
+import React, {Component} from 'react';
+import { 
+    Grid, Segment, Header, Divider
+} from 'semantic-ui-react';
+import TopNavBar from '../Common/TopNavBar';
+import Footer from '../Common/Footer';
+import _ from 'lodash';
+import LoaderInlineCentered from "../Common/Loader";
+import axios from 'axios';
+import { Route } from 'react-router-dom';
+import {connect} from "react-redux";
+import { fetchProjectUpdatesForUser } from "./actions";
+import ProjectUpdate from "../Project/ProjectPage/ProjectUpdates/ProjectUpdate/ProjectUpdate";
 
 class Home extends Component {
     constructor(props) {
       super(props);
 
-      this.toggle = this.toggle.bind(this);
       this.state = {
-        isOpen: false
+        users: [],
+        modalVisible: false
       };
+
     }
 
-    toggle() {
-      this.setState({
-        isOpen: !this.state.isOpen
-      });
+    componentDidMount() {
+        this.props.fetchProjectUpdatesForUser(this.props.currentUser.guid);
+    }
+
+    renderHomeFeed() {
+        const { projectUpdates } = this.props;
+        if (projectUpdates === null || projectUpdates === undefined) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
+        } else if(projectUpdates.length == 0) {
+            return (
+                <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
+                    <Header icon>
+                        You have not made any updates! Visit your profile page to create a project and get started.
+                    </Header>
+                </Segment>
+            )
+        } 
+        else {
+            
+            //Sort the project updates based on time created
+            projectUpdates.sort((a, b) => (a.dateTimeCreated < b.dateTimeCreated) ? 1 : ((b.dateTimeCreated < a.dateTimeCreated) ? -1 : 0));
+
+            return (
+                <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
+                    {projectUpdates.map((update, index) => (
+                        <ProjectUpdate
+                            tags={update.relatedProject.tagList}
+                            projectName={update.relatedProject.name}
+                            update={update}
+                            index={index}
+                            removeUpdateCallback={this.removeUpdateCallback}
+                        />
+                    ))};
+                 </Segment>
+
+            );
+        }
     }
 
     render() {
 
-      const ModalModalExample = () => (
-        <Modal trigger={<Button>Show Modal</Button>}>
-          <Modal.Header>Select a Photo</Modal.Header>
-          <Modal.Content image>
-            <Image wrapped size='medium' src='/images/avatar/large/rachel.png' />
-            <Modal.Description>
-              <Header>Default Profile Image</Header>
-              <p>We've found the following gravatar image associated with your e-mail address.</p>
-              <p>Is it okay to use this photo?</p>
-            </Modal.Description>
-          </Modal.Content>
-        </Modal>
-      )
-
-
-
-      return (
-        <div>
-          <span className="title-header"> Welcome to Motive.</span>
-            {ModalModalExample()}
-          </div>
-          
-
-      );
-
-
-
-
+        return (
+            <div className='home'>
+                <TopNavBar/>
+                    <Header centered size='large' style={{ marginLeft:'6em', marginTop: '3em'}}>Welcome to the Home Feed! Here, you see updates from all of the projects you are contributing to. 🦍🦍🦍</Header>
+                    {this.renderHomeFeed()}
+                <Footer/>
+            </div>
+        );
     };
-  }
-  
-  export default Home;
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchProjectUpdatesForUser: (userGuid) => dispatch(fetchProjectUpdatesForUser(userGuid))
+    };
+}
+
+const mapStateToProps = state => {
+    const { homeReducer } = state;
+    const { homeController } = homeReducer;
+    const { isUpdating, lastUpdated, result } = homeController;
+    return {
+        isUpdating: isUpdating,
+        projectUpdates: result,
+        lastUpdated: lastUpdated,
+        currentUser: state.authReducer.authController.currentUser
+    };
+};
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

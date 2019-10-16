@@ -1,0 +1,7 @@
+.channel-change-on-hover:hover {
+    background-color: lightgrey!important;
+}
+
+.channel-selected {
+    background-color: darkgrey!important;
+}
