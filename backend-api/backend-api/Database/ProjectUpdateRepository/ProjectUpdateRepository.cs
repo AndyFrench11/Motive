@@ -335,5 +335,34 @@ namespace backend_api.Database.ProjectUpdateRepository
             string updateId = updateGuid.ToString();
             tx.Run("MATCH (pu:ProjectUpdate) WHERE pu.guid = $updateId DETACH DELETE pu", new { updateId });
         }
+
+        public RepositoryReturn<bool> Exists(Guid projectUpdateGuid)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    // Find single update
+                    var foundUpdate = session.ReadTransaction(tx => RetrieveUpdate(tx, projectUpdateGuid));
+                    return foundUpdate != null ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private ProjectUpdate RetrieveUpdate(ITransaction tx, Guid updateGuid)
+        {
+            var updateId = updateGuid.ToString();
+
+            const string statement = "MATCH (update:ProjectUpdate) " + 
+                                     "WHERE update.guid = $updateId " + 
+                                     "RETURN update";
+            var result = tx.Run(statement, new {updateId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new ProjectUpdate(record[0].As<INode>().Properties);
+        }
     }
 }

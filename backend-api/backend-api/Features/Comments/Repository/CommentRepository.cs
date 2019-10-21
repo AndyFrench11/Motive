@@ -10,9 +10,14 @@ namespace backend_api.Features.Comments.Repository
 {
     public class CommentRepository : ICommentRepository
     {
-        private readonly ISession _session;
+        private ISession _session;
 
         public CommentRepository()
+        {
+            OpenNewSession();
+        }
+
+        private void OpenNewSession()
         {
             var neo4JConnection = new neo4jConnection();
             _session = neo4JConnection.driver.Session();
@@ -20,6 +25,8 @@ namespace backend_api.Features.Comments.Repository
         
         public RepositoryReturn<Comment> Add(Comment comment, Guid authorGuid, Guid updateGuid)
         {
+            OpenNewSession();
+            
             try
             {
                 using (_session)
@@ -91,9 +98,46 @@ namespace backend_api.Features.Comments.Repository
                                      "CREATE UNIQUE (author)-[:AUTHORS]->(comment)";
             tx.Run(statement, new {commentId, authorId});
         }
+
+        public RepositoryReturn<bool> Exists(Guid commentGuid)
+        {
+            OpenNewSession();
+
+            try
+            {
+                using (_session)
+                {
+                    // Find single comment
+                    var foundComment = _session.ReadTransaction(tx => RetrieveComment(tx, commentGuid));
+                    return foundComment != null ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private Comment RetrieveComment(ITransaction tx, Guid commentGuid)
+        {
+            var commentId = commentGuid.ToString();
+
+            const string statement = "MATCH (comment:Comment) " + 
+                                     "WHERE comment.guid = $commentId " + 
+                                     "RETURN comment";
+            var result = tx.Run(statement, new {commentId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new Comment(record[0].As<INode>().Properties);
+        }
         
         public RepositoryReturn<IEnumerable<Comment>> GetAllForUpdate(Guid updateGuid)
         {
+            OpenNewSession();
+            
             try
             {
                 using (_session)
@@ -149,6 +193,8 @@ namespace backend_api.Features.Comments.Repository
 
         public RepositoryReturn<bool> Edit(Comment comment)
         {
+            OpenNewSession();
+            
             try
             {
                 using (_session)
@@ -183,6 +229,8 @@ namespace backend_api.Features.Comments.Repository
         
         public RepositoryReturn<bool> Delete(Guid commentGuid)
         {
+            OpenNewSession();
+            
             try
             {
                 using (_session)
@@ -216,6 +264,8 @@ namespace backend_api.Features.Comments.Repository
         
         public RepositoryReturn<bool> DeleteAll(Guid updateGuid)
         {
+            OpenNewSession();
+            
             try
             {
                 using (_session)

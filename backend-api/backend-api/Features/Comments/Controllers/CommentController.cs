@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using backend_api.Database.ProjectUpdateRepository;
 using backend_api.Features.Comments.Models;
 using backend_api.Features.Comments.Repository;
 using backend_api.Util;
@@ -30,9 +31,20 @@ namespace backend_api.Features.Comments.Controllers
                 return BadRequest(Errors.InvalidGuid);
             }
 
-            
+            // TODO: Check user is authorised - Unauthorised()
             // TODO: check user has access to task/project - Forbidden()
-            // TODO: task not found - NotFound()
+            
+            // Check update exists
+            var projectUpdateRepository = new ProjectUpdateRepository();
+            var exists = projectUpdateRepository.Exists(updateGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.UpdateNotFound);
+            }
             
             // Check valid comment message
             if (string.IsNullOrEmpty(commentToCreate.Message.Trim()))
@@ -40,14 +52,11 @@ namespace backend_api.Features.Comments.Controllers
                 return StatusCode(400, Errors.CommentEmpty);
             }
 
+            // Create
             var result = _commentRepository.Add(commentToCreate, authorGuid, updateGuid);
-            
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(201, result.ReturnValue);
+            return result.IsError
+                ? StatusCode(500, result.ErrorException.Message)
+                : StatusCode(201, result.ReturnValue);
         }
         
         // READ
@@ -55,9 +64,7 @@ namespace backend_api.Features.Comments.Controllers
         [HttpGet("{updateId}")]
         public ActionResult<List<Comment>> GetAll(string updateId, [FromHeader]string userId)
         {
-            // TODO
-            // Check auth/user - Unauthorised() and Forbidden() if no access to project
-            // Check update exists - NotFound()
+            // TODO: Check auth/user - Unauthorised() and Forbidden() if no access to project
             
             // Parse update guid and user guid
             var updateGuid = ValidationUtil.ParseGuid(updateId);
@@ -66,9 +73,21 @@ namespace backend_api.Features.Comments.Controllers
             {
                 return BadRequest(Errors.InvalidGuid);
             }
-
-            var result = _commentRepository.GetAllForUpdate(updateGuid);
             
+            // Check update exists
+            var projectUpdateRepository = new ProjectUpdateRepository();
+            var exists = projectUpdateRepository.Exists(updateGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.UpdateNotFound);
+            }
+
+            // Get all
+            var result = _commentRepository.GetAllForUpdate(updateGuid);
             if (result.IsError)
             {
                 return StatusCode(500, result.ErrorException.Message);
@@ -92,7 +111,16 @@ namespace backend_api.Features.Comments.Controllers
 
             commentToUpdate.Guid = commentGuid;
             
-            // TODO: Check valid comment
+            // Check comment exists
+            var exists = _commentRepository.Exists(commentGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.CommentNotFound);
+            }
             
             // Check valid comment message
             if (string.IsNullOrEmpty(commentToUpdate.Message.Trim()))
@@ -100,10 +128,11 @@ namespace backend_api.Features.Comments.Controllers
                 return StatusCode(400, Errors.CommentEmpty);
             }
             
+            // TODO: check authorised - Unauthorised()
             // TODO: Check User can access update comment i.e. they are the comment author - Forbidden()
             
+            // Edit
             var result = _commentRepository.Edit(commentToUpdate);
-            
             if (result.IsError)
             {
                 return StatusCode(500, result.ErrorException.Message);
@@ -116,11 +145,6 @@ namespace backend_api.Features.Comments.Controllers
         [HttpDelete("{commentId}")]
         public ActionResult Delete(string commentId, [FromHeader]string userId)
         {
-            // TODO
-            // Check auth - Unauthorised()
-            // Check permissions - Forbidden()
-            // Check comment exists - NotFound()
-            
             // Parse comment guid and user guid
             var commentGuid = ValidationUtil.ParseGuid(commentId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -128,9 +152,23 @@ namespace backend_api.Features.Comments.Controllers
             {
                 return BadRequest(Errors.InvalidGuid);
             }
-
-            var result = _commentRepository.Delete(commentGuid);
             
+            // TODO Check auth - Unauthorised()
+            // TODO Check permissions - can only delete if I am the author - Forbidden()
+            
+            // Check comment exists
+            var exists = _commentRepository.Exists(commentGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.CommentNotFound);
+            }
+
+            // Delete
+            var result = _commentRepository.Delete(commentGuid);
             if (result.IsError)
             {
                 return StatusCode(500, result.ErrorException.Message);
