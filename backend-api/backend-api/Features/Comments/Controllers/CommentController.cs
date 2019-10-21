@@ -32,7 +32,6 @@ namespace backend_api.Features.Comments.Controllers
             }
 
             // TODO: Check user is authorised - Unauthorised()
-            // TODO: check user has access to task/project - Forbidden()
             
             // Check update exists
             var projectUpdateRepository = new ProjectUpdateRepository();
@@ -64,7 +63,7 @@ namespace backend_api.Features.Comments.Controllers
         [HttpGet("{updateId}")]
         public ActionResult<List<Comment>> GetAll(string updateId, [FromHeader]string userId)
         {
-            // TODO: Check auth/user - Unauthorised() and Forbidden() if no access to project
+            // TODO: Check auth/user - Unauthorised()
             
             // Parse update guid and user guid
             var updateGuid = ValidationUtil.ParseGuid(updateId);
@@ -122,6 +121,17 @@ namespace backend_api.Features.Comments.Controllers
                 return StatusCode(404, Errors.CommentNotFound);
             }
             
+            // Check user is comment author
+            var isAuthor = _commentRepository.IsAuthor(userGuid, commentGuid);
+            if (isAuthor.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!isAuthor.ReturnValue)
+            {
+                return StatusCode(403, Errors.NotCommentAuthor);
+            }
+            
             // Check valid comment message
             if (string.IsNullOrEmpty(commentToUpdate.Message.Trim()))
             {
@@ -129,7 +139,6 @@ namespace backend_api.Features.Comments.Controllers
             }
             
             // TODO: check authorised - Unauthorised()
-            // TODO: Check User can access update comment i.e. they are the comment author - Forbidden()
             
             // Edit
             var result = _commentRepository.Edit(commentToUpdate);
@@ -154,7 +163,6 @@ namespace backend_api.Features.Comments.Controllers
             }
             
             // TODO Check auth - Unauthorised()
-            // TODO Check permissions - can only delete if I am the author - Forbidden()
             
             // Check comment exists
             var exists = _commentRepository.Exists(commentGuid);
@@ -166,7 +174,18 @@ namespace backend_api.Features.Comments.Controllers
             {
                 return StatusCode(404, Errors.CommentNotFound);
             }
-
+            
+            // Check user is comment author
+            var isAuthor = _commentRepository.IsAuthor(userGuid, commentGuid);
+            if (isAuthor.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!isAuthor.ReturnValue)
+            {
+                return StatusCode(403, Errors.NotCommentAuthor);
+            }
+            
             // Delete
             var result = _commentRepository.Delete(commentGuid);
             if (result.IsError)

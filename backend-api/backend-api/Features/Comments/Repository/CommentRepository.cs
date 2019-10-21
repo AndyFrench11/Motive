@@ -99,41 +99,6 @@ namespace backend_api.Features.Comments.Repository
             tx.Run(statement, new {commentId, authorId});
         }
 
-        public RepositoryReturn<bool> Exists(Guid commentGuid)
-        {
-            OpenNewSession();
-
-            try
-            {
-                using (_session)
-                {
-                    // Find single comment
-                    var foundComment = _session.ReadTransaction(tx => RetrieveComment(tx, commentGuid));
-                    return foundComment != null ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
-                }
-            }
-            catch (ServiceUnavailableException e)
-            {
-                return new RepositoryReturn<bool>(true, e);
-            }
-            catch (Exception e)
-            {
-                return new RepositoryReturn<bool>(true, e);
-            }
-        }
-        
-        private Comment RetrieveComment(ITransaction tx, Guid commentGuid)
-        {
-            var commentId = commentGuid.ToString();
-
-            const string statement = "MATCH (comment:Comment) " + 
-                                     "WHERE comment.guid = $commentId " + 
-                                     "RETURN comment";
-            var result = tx.Run(statement, new {commentId});
-            var record = result.SingleOrDefault();
-            return record == null ? null : new Comment(record[0].As<INode>().Properties);
-        }
-        
         public RepositoryReturn<IEnumerable<Comment>> GetAllForUpdate(Guid updateGuid)
         {
             OpenNewSession();
@@ -297,5 +262,64 @@ namespace backend_api.Features.Comments.Repository
             
             tx.Run(statement, new {updateId});
         }
+        
+        public RepositoryReturn<bool> Exists(Guid commentGuid)
+        {
+            OpenNewSession();
+
+            try
+            {
+                using (_session)
+                {
+                    // Find single comment
+                    var foundComment = _session.ReadTransaction(tx => RetrieveComment(tx, commentGuid));
+                    return foundComment != null ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private Comment RetrieveComment(ITransaction tx, Guid commentGuid)
+        {
+            var commentId = commentGuid.ToString();
+
+            const string statement = "MATCH (comment:Comment) " + 
+                                     "WHERE comment.guid = $commentId " + 
+                                     "RETURN comment";
+            var result = tx.Run(statement, new {commentId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new Comment(record[0].As<INode>().Properties);
+        }
+
+        public RepositoryReturn<bool> IsAuthor(Guid authorGuid, Guid commentGuid)
+        {
+            OpenNewSession();
+            
+            try
+            {
+                using (_session)
+                {
+                    // Check author
+                    var author = _session.ReadTransaction(tx => RetrieveCommentAuthor(tx, commentGuid));
+                    return author.Guid == authorGuid ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
     }
 }

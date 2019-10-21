@@ -18,5 +18,7 @@ namespace backend_api.Features.Comments.Repository
         RepositoryReturn<bool> DeleteAll(Guid updateGuid);
         
         RepositoryReturn<bool> Exists(Guid commentGuid);
+
+        RepositoryReturn<bool> IsAuthor(Guid authorGuid, Guid commentGuid);
     }
 }

@@ -10,6 +10,7 @@
         // Comments
         public const string CommentEmpty = "Comment cannot be empty.";
         public const string CommentNotFound = "Comment not found.";
+        public const string NotCommentAuthor = "You cannot modify this resource.";
         
         // Channels
         public const string ChannelNameEmpty = "Discussion Channel name cannot be empty.";
