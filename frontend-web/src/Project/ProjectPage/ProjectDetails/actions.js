@@ -36,7 +36,9 @@ export function updateProjectName(projectGuid, newProjectName) {
             newProjectName: newProjectName
         }
 
-        return axios.patch(serverUrl + `/project/${projectGuid}/name` , projectUpdate, {headers: {
+        return axios.patch(serverUrl + `/project/${projectGuid}/name` , projectUpdate, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
             }
         })
@@ -81,7 +83,9 @@ export function updateProjectDescription(projectGuid, newProjectDescription) {
             newProjectDescription: newProjectDescription
         }
 
-        return axios.patch(serverUrl + `/project/${projectGuid}/description` , projectUpdate, {headers: {
+        return axios.patch(serverUrl + `/project/${projectGuid}/description` , projectUpdate, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
             }
         })
@@ -126,7 +130,9 @@ export function updateProjectImageIndex(projectGuid, imageIndex) {
             newImageIndex: imageIndex
         }
 
-        return axios.patch(serverUrl + `/project/${projectGuid}/imageIndex` , projectUpdate, {headers: {
+        return axios.patch(serverUrl + `/project/${projectGuid}/imageIndex` , projectUpdate, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
             }
         })
@@ -167,7 +173,9 @@ export function postTag(projectGuid, tag) {
         dispatch(requestNewTag());
         //Take only the values needed for the request
 
-        return axios.post(serverUrl + `/project/${projectGuid}/tags`, tag, {headers: {
+        return axios.post(serverUrl + `/project/${projectGuid}/tags`, tag, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json'
             }
         })
@@ -208,7 +216,9 @@ export function removeTag(projectGuid, tag) {
     return dispatch => {
         dispatch(requestRemoveTag());
     
-        return axios.delete(serverUrl + `/project/${projectGuid}/tags`, {headers: {
+        return axios.delete(serverUrl + `/project/${projectGuid}/tags`, {
+            withCredentials: true,
+            headers: {
                 'tagName': tag.name
             }
         })

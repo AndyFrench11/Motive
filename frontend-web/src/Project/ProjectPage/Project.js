@@ -19,6 +19,7 @@ import CreateProjectUpdateModal from "./ProjectUpdates/CreateProjectUpdateModal/
 import ProjectUpdateList from "./ProjectUpdates/ProjectUpdate/ProjectUpdateList";
 import ProjectTimeline from "./ProjectTimeline/ProjectTimeline";
 import SubProjectList from "./SubProjects/SubProjectList";
+import Sharer from "../../Common/Sharer";
 
 function importAll(r) {
     let images = {};
@@ -163,6 +164,7 @@ class ProjectPageLayout extends React.Component {
                             <p style={{fontSize: 16}}>Created on {formattedDateTime}</p>
                         </Grid.Row>
                     </Grid>
+                    <Sharer/>
                 </Grid.Column>
             );
         }

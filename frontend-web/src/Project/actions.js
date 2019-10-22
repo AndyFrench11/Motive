@@ -22,7 +22,7 @@ function requestSingleProject() {
 export function fetchProject(projectId) {
     return dispatch => {
         dispatch(requestSingleProject());
-        return axios.get(serverUrl + "/project/" + projectId)
+        return axios.get(serverUrl + "/project/" + projectId, {withCredentials: true,})
             .then(response => dispatch(receiveSingleProject(response)))
             .catch(error =>  {
                 console.log("The server is not running!");

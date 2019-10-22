@@ -8,10 +8,6 @@ class ImageViewer extends Component {
     constructor(props) {
         super(props);
 
-        console.log(this.props.projectGuid);
-        console.log(this.props.imageGuid);
-
-
         this.state = {
             imageUrl: "",
         }
@@ -53,13 +49,12 @@ class ImageViewer extends Component {
             return (
                 <div>
                     <Image
-                        size={this.props.size}
-                        src={this.state.imageUrl}
+                        fluid
+                        src={imageUrl}
                     />
                 </div>
             );
         }
-
     };
 }
 export default ImageViewer

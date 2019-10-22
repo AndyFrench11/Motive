@@ -54,8 +54,6 @@ class ProjectUpdate extends React.Component {
     render() {
         const { update, projectName, tags, currentUser } = this.props;
         const { relatedPerson, relatedTask, content, dateTimeCreated, guid, comments, imageGuid, videoGuid, relatedProjectGuid } = update;
-        console.log(imageGuid);
-        console.log(videoGuid);
 
         const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
 
@@ -171,9 +169,21 @@ class ProjectUpdate extends React.Component {
                             content={content} 
                             updatingContent={updatingContent} 
                             updateContentStateCallback={this.updateContentStateCallback}/>
+
+                        <Segment>
+                            {imageGuid !== '00000000-0000-0000-0000-000000000000' &&
+                            <ImageViewer imageGuid={imageGuid} projectGuid = {relatedProjectGuid}/>
+                            }
+
+                            {videoGuid !== '00000000-0000-0000-0000-000000000000' &&
+                            <VideoPlayer videoGuid={videoGuid} projectGuid = {relatedProjectGuid}/>
+                            }
+
+                        </Segment>
+
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">
-                        <Segment style={{overflow: 'auto', maxHeight: 300 }}>
+                        <Segment style={{overflow: 'auto', maxHeight: 600 }}>
                             <ProjectUpdateCommentList
                                 comments={comments}
                                 currentUser={currentUser}
@@ -184,13 +194,7 @@ class ProjectUpdate extends React.Component {
                 </Grid>
 
                 <Divider/>
-                {imageGuid != '00000000-0000-0000-0000-000000000000' &&
-                    <ImageViewer imageGuid={imageGuid} projectGuid = {relatedProjectGuid}/>
-                }
 
-                {videoGuid != '00000000-0000-0000-0000-000000000000' &&
-                <VideoPlayer videoGuid={videoGuid} projectGuid = {relatedProjectGuid}/>
-                }
             </Segment>
 
         );

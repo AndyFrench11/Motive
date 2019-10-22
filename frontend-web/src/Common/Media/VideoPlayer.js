@@ -50,7 +50,7 @@ class VideoPlayer extends Component {
             return (
                 <div>
                     <ReactPlayer
-                        url={this.state.videoUrl}
+                        url={videoUrl}
                         controls
                         playing={this.state.isPlaying}
                         volume={0}

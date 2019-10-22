@@ -31,7 +31,9 @@ export function postTask(projectGuid, valuesJson) {
             guid: valuesJson.guid
         };
 
-        return axios.post(serverUrl + "/projectTask", newTask, {headers: {
+        return axios.post(serverUrl + "/projectTask", newTask, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
                 'projectId': projectGuid
             }
@@ -72,7 +74,9 @@ export function deleteTask(taskGuid) {
     return dispatch => {
         dispatch(requestDeleteTask());
     
-        return axios.delete(serverUrl + "/projectTask/" + taskGuid)
+        return axios.delete(serverUrl + "/projectTask/" + taskGuid, {
+            withCredentials: true,
+        })
             .then(response => dispatch(receiveDeleteTaskResponse(response)))
             .catch(error =>  {
                 console.log("The server is not running!");
@@ -113,7 +117,9 @@ export function updateTask(taskGuid, valuesJson) {
             completed: valuesJson.completed
         };
 
-        return axios.patch(serverUrl + "/projectTask", taskUpdates, {headers: {
+        return axios.patch(serverUrl + "/projectTask", taskUpdates, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
                 'projectTaskId': taskGuid
             }
@@ -155,7 +161,9 @@ export function updateTaskOrder(projectGuid, taskList) {
         dispatch(requestUpdateTaskOrder());
         //Take only the values needed for the request
 
-        return axios.patch(serverUrl + `/project/${projectGuid}/tasks`, taskList, {headers: {
+        return axios.patch(serverUrl + `/project/${projectGuid}/tasks`, taskList, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json'
             }
         })
