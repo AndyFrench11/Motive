@@ -95,13 +95,13 @@ class ProjectPageLayout extends React.Component {
 
     renderProjectDetails(project) {
         const isSubProject = project.parentProjectGuid !== "00000000-0000-0000-0000-000000000000";
-        const subProject = this.props.ownersProjects.find((ownerProject) => ownerProject.guid === project.parentProjectGuid);
+        //const subProject = this.props.ownersProjects.find((ownerProject) => ownerProject.guid === project.parentProjectGuid);
         return (
             <Grid.Column width={7}>
                 <ProjectName/>
 
                 {isSubProject && 
-                    <Header size='tiny' style={{'marginTop': '0em'}}>Sub Project of '{subProject.name}'</Header>
+                    <Header size='tiny' style={{'marginTop': '0em'}}>Sub Project'</Header>
                 }
                 <ProjectDescription/>
                 <ProjectTags isSubProject={isSubProject}/>
@@ -151,7 +151,7 @@ class ProjectPageLayout extends React.Component {
                     <Grid divided>
                         <Grid.Row>
                             <Grid.Column width={4}>
-                                <span>Owned by {ownerString}</span>
+                                <span>By {ownerString}</span>
                             </Grid.Column>
                             <Grid.Column width={12}> 
                                 {projectOwners.map((owner, index) => (
@@ -164,7 +164,7 @@ class ProjectPageLayout extends React.Component {
                             <p style={{fontSize: 16}}>Created on {formattedDateTime}</p>
                         </Grid.Row>
                     </Grid>
-                    <Sharer/>
+                    <Sharer projectId={this.props.project.guid}/>
                 </Grid.Column>
             );
         }
