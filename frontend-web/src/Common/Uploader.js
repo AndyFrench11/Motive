@@ -28,6 +28,10 @@ class Uploader extends Component {
 
 
     beginProcessFile = () => {
+        if (this.pond.getFile() == null || this.pond == null) {
+            this.props.onFileUploaded();
+        }
+
         this.pond.processFile().then(file => {
             console.log(file);
         });

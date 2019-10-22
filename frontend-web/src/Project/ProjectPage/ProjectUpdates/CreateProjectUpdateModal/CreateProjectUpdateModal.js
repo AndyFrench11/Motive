@@ -46,9 +46,8 @@ class CreateProjectUpdateModal extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-
         // When we receive the file
-        if (this.props.createdUpdateGuid !== prevProps.createdUpdateGuid) {
+        if (this.props.createdUpdateGuid !== null &&  this.props.createdUpdateGuid !== prevProps.createdUpdateGuid) {
             this.setState({mediaUploadUrl: `/projectupdate/${this.props.project.guid}/media/${this.props.createdUpdateGuid}`}, () => {
                 this.refs.uploaderComponent.beginProcessFile();
             });
@@ -87,12 +86,8 @@ class CreateProjectUpdateModal extends React.Component {
         }));
     }
 
-    onFileUpload = (error, file) => {
-        console.log(error, file);
-
-        this.sleep(1000).then(() => {
-            this.props.closeCallback()
-        })
+    onFileUpload = () => {
+        this.props.closeCallback()
     };
 
     sleep = (milliseconds) => {
