@@ -9,8 +9,7 @@ import { postTag, removeTag } from "./actions";
 class ProjectTags extends React.Component {
     state = { 
         addingNewTag: false,
-        tagInputValue: "",
-        tagList: this.props.tagList
+        tagInputValue: ""
     };
 
     updateTagState = () => {
@@ -22,35 +21,41 @@ class ProjectTags extends React.Component {
     }
 
     addNewTag = (event, {value}) => {
-        console.log(this.state.tagInputValue)
-        const { tagList, tagInputValue } = this.state;
-        let newTag = {name: tagInputValue};
-        tagList.push(newTag);
+        const { tagInputValue } = this.state;
+        const { tagList } = this.props.currentProject;
+        let alreadyAdded = false;
+        
+        for(let i = 0; i < tagList.length; i++) {
+            if(tagList[i].name === tagInputValue){
+                alreadyAdded = true;
+            }
+        }
 
-        this.setState({
-            addingNewTag: false,
-            tagInputValue: "",
-            tagList: tagList
-        });
+        if(tagInputValue !== "" && !alreadyAdded) {
+            let newTag = {name: tagInputValue};
+            this.props.postTag(this.props.currentProject.guid, newTag)
 
-        //Update the backend!
-        this.props.postTag(this.props.projectGuid, newTag)
+            this.setState({
+                addingNewTag: false,
+                tagInputValue: ""
+            });
+        }
+
 
     }
 
     removeTag = (event, {index}) => {
-        const { tagList } = this.state;
+        const { tagList } = this.props.currentProject;
         const tag = tagList[index];
-        tagList.splice(index, 1);
-        this.setState({ tagList: tagList })
 
         //Update the backend!
-        this.props.removeTag(this.props.projectGuid, tag);
+        this.props.removeTag(this.props.currentProject.guid, tag);
     }
 
     render() {
-        const { tagList, addingNewTag } = this.state;
-        const { isSubProject } = this.props;
+        const { addingNewTag } = this.state;
+        const { isSubProject, currentProject } = this.props;
+        const { tagList } = currentProject;
         return (
             <Grid.Row style={ {marginTop: '1em'} }>
                 {tagList.map((tag, index) =>
@@ -105,6 +110,7 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
+        currentProject: state.projectController.result
     };
 };
 

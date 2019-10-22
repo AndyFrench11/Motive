@@ -9,8 +9,7 @@ import { updateProjectName } from "./actions";
 class ProjectName extends React.Component {
     state = { 
         updatingProjectName: false,
-        projectNameInputValue: "",
-        projectName: this.props.projectName
+        projectNameInputValue: ""
     };
 
     updateProjectNameState = () => {
@@ -22,15 +21,14 @@ class ProjectName extends React.Component {
     };
 
     updateProjectName = () => {
-        const { projectNameInputValue, projectName } = this.state;
-        if((projectNameInputValue !== "") && (projectNameInputValue !== projectName)) {
+        const { projectNameInputValue } = this.state;
+        if((projectNameInputValue !== "") && (projectNameInputValue !== this.props.currentProject.name)) {
             this.setState({
                 updatingProjectName: false,
-                projectNameInputValue: "",
-                projectName: projectNameInputValue
+                projectNameInputValue: ""
             });
             //Update the backend!
-            this.props.updateProjectName(this.props.projectGuid, projectNameInputValue)
+            this.props.updateProjectName(this.props.currentProject.guid, projectNameInputValue)
 
         } else {
             this.setState({
@@ -42,7 +40,8 @@ class ProjectName extends React.Component {
     }
 
     render() {
-        const { projectName, updatingProjectName } = this.state;
+        const { updatingProjectName } = this.state;
+        const { name } = this.props.currentProject;
         return (
             <Grid.Row>
                 {updatingProjectName ?  
@@ -50,7 +49,7 @@ class ProjectName extends React.Component {
                         size='big'
                         onChange={this.updateProjectNameInputValue}
                         action
-                        defaultValue={projectName}
+                        defaultValue={name}
                         >
                         <input/>
                         <Button icon='check' onClick={this.updateProjectName} size='medium'/>
@@ -58,7 +57,7 @@ class ProjectName extends React.Component {
 
                     </Input>
                     : 
-                    <Header size='large' onClick={this.updateProjectNameState}>{projectName}</Header>
+                    <Header size='large' onClick={this.updateProjectNameState}>{name}</Header>
                 }
             </Grid.Row>
         );
@@ -72,13 +71,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    const { projectDetailsReducer } = state;
-    const { projectDetailsController } = projectDetailsReducer;
-    const { isUpdating, lastUpdated, result } = projectDetailsController;
+
     return {
-        isUpdating: isUpdating,
-        result: result,
-        lastUpdated: lastUpdated,
+        currentProject: state.projectController.result
     };
 };
 

@@ -11,7 +11,7 @@ namespace backend_api.Database.ProjectRepository
 
         RepositoryReturn<Project> GetByGuid(Guid projectGuid);
         
-        RepositoryReturn<bool> Add(Project projectToAdd, Guid userGuid);
+        RepositoryReturn<bool> Add(Project projectToAdd, Guid userGuid, string encryptedProjectPassword);
 
         RepositoryReturn<bool> EditTaskOrder(List<ProjectTask> projectTaskList, Guid projectGuid);
         
@@ -26,15 +26,18 @@ namespace backend_api.Database.ProjectRepository
         RepositoryReturn<bool> EditPhotoIndex(Guid projectGuid, int photoIndex);
         
         RepositoryReturn<bool> Delete(Guid projectGuid);
-        
-        RepositoryReturn<bool> AddProjectMember(Guid projectGuid, Guid newMemberGuid);
-        
-        RepositoryReturn<bool> RemoveProjectMember(Guid projectGuid, Guid newMemberGuid);
-        
+
         RepositoryReturn<bool> AddSubProject(Guid parentProjectGuid, Project newSubProject);
-        
+
         RepositoryReturn<IEnumerable<Project>> GetSubProjects(Guid parentProjectGuid);
 
         RepositoryReturn<bool> IsGroupMember(Guid userGuid, Guid projectGuid);
+
+        RepositoryReturn<ProjectAccessRelationship> GetUserAccessToProject(Guid projectGuid, Guid userGuid);
+
+        RepositoryReturn<bool> AddProjectMembers(Guid projectGuid,
+            IDictionary<Guid, Tuple<AccessLevel, string>> newMemberInfo);
+
+        RepositoryReturn<bool> RemoveProjectMembers(Guid projectGuid, IDictionary<Guid, AccessLevel> membersToRemove);
     }
 }

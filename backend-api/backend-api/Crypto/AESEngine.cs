@@ -9,7 +9,7 @@ namespace backend_api.Crypto
         // Rfc2898DeriveBytes constants:
         private readonly int Iterations = 1042; // Recommendation is >= 1000.
 
-        private bool randomSalt = false;
+        private bool randomSalt = true;
 
         public void DecryptFile(string sourceFilename, string destinationFilename, string password, byte[] salt)
         {
@@ -209,7 +209,6 @@ namespace backend_api.Crypto
 
 
             // Return the encrypted bytes from the memory stream, need to add the salt for decryption
-
             byte[] encryptedWithSalt = new byte[encrypted.Length + 8];
             
             Array.Copy(encrypted, 0, encryptedWithSalt, 0, encrypted.Length);

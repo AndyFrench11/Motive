@@ -1,4 +1,5 @@
 import axios from 'axios/index'
+import { fetchProjects } from './../UserProfile/actions'
 
 export const REQUEST_SINGLE_PROJECT = 'REQUEST_PROJECT';
 export const RECEIVE_SINGLE_PROJECT = 'RECEIVE_PROJECT';
@@ -47,9 +48,10 @@ export function postProject(userGuid, newProject) {
         return axios.post(serverUrl + "/project", newProject, {headers: {
                 'Content-Type': 'application/json',
                 'userId': userGuid
-            }
+            },
+            withCredentials: true
         })
-            .then(response => dispatch(receiveNewProjectResponse(response)))
+            .then(response => dispatch(receiveNewProjectResponse(response, dispatch, userGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -65,8 +67,9 @@ function requestNewProject() {
     }
 }
 
-function receiveNewProjectResponse(response) {
+function receiveNewProjectResponse(response, dispatch, userGuid) {
     if(response.status === 201) {
+        dispatch(fetchProjects(userGuid))
         return {
             type: RECEIVE_NEW_PROJECT_RESPONSE,
             result: response.data,

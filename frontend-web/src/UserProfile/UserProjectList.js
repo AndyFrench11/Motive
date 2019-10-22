@@ -1,12 +1,14 @@
 import React from 'react'
 import {
-    Button, Segment, Header, Item, TransitionablePortal, Modal, Icon
+    Button, Segment, Header, Item, TransitionablePortal, Modal, Icon, Grid
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import { Route } from 'react-router-dom';
 import NewProjectForm from "../Project/CreateNewProject/ModalForm";
 import uuidv4 from 'uuid/v4';
 import { postProject } from '../Project/actions';
+import { fetchProjects } from "./actions";
+import LoaderInlineCentered from "../Common/Loader";
 
 function importAll(r) {
     let images = {};
@@ -22,12 +24,15 @@ class UserProjectList extends React.Component {
         super(props);
 
         this.state = { 
-            projects: this.props.projects,
             modalVisible: false,
             submitButtonDisabled: true,
             selectedImageIndex: -1
         };
 
+    }
+
+    componentDidMount() {
+        this.props.fetchProjects(this.props.currentUser.guid);
     }
 
     componentDidUpdate(oldProps) {
@@ -60,8 +65,8 @@ class UserProjectList extends React.Component {
 
     handleModalSubmit = () => {
         //Add the new project to the local state
-        const { projects, selectedImageIndex } = this.state;
-        const { newProjectValues, userGuid } = this.props;
+        const { selectedImageIndex } = this.state;
+        const { newProjectValues, currentUser } = this.props;
 
         const newProject = {
             name: newProjectValues.projectNameInput,
@@ -72,13 +77,11 @@ class UserProjectList extends React.Component {
             guid: uuidv4()
         };
 
-        projects.push(newProject);
+        this.props.postProject(currentUser.guid, newProject);
 
-        this.props.postProject(userGuid, newProject);
 
         this.setState({
             modalVisible: false, 
-            projects: projects,
             submitButtonDisabled: true,
             selectedImageIndex: -1
         });
@@ -86,86 +89,97 @@ class UserProjectList extends React.Component {
     };
 
     render() {
-        var photoList = Object.keys(images);
 
-        const { projects } = this.state;
-
-        if(projects.length == 0){
-            return(
-                <Segment placeholder style={{marginLeft: '5em', marginRight: '5em'}}>
-                    <Header icon>
-                        <Icon name='idea outline' />
-                        No projects have been created.
-                    </Header>
-                    <Button onClick={this.showModal}>Create Project</Button>
-                    <TransitionablePortal open={this.state.modalVisible}
-                                        transition={{animation: 'fade up', duration: 500}}>
-                        <Modal open={true} onClose={this.closeModal} closeIcon>
-                            <Modal.Header>Create a New Project</Modal.Header>
-                            <Modal.Content>
-                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={false} />
-                            </Modal.Content>
-                            <Modal.Actions>
-                                <Button
-                                    positive
-                                    icon='checkmark'
-                                    labelPosition='right'
-                                    content="All good to go!"
-                                    onClick={this.handleModalSubmit}
-                                    disabled={this.state.submitButtonDisabled}
-                                />
-                            </Modal.Actions>
-                        </Modal>
-                    </TransitionablePortal>
-                </Segment>
-            );
+        if (this.props.projects === undefined || this.props.projects === null ) {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            )
         } else {
+
             var photoList = Object.keys(images);
 
-            return (
-                <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
-                    <Item.Group link divided>
-                        {projects.map((project, index) => {
-                            return (
-                                <Route render={({ history }) => (
-                                    <Item key={index} onClick={() => { history.push(`/project/${project.guid}/`) }}>
-                                        <Item.Image size='tiny' src={images[photoList[project.imageIndex]]} />
-                                        <Item.Content>
-                                            <Item.Header>{project.name}</Item.Header>
-                                            <Item.Description>{project.description}</Item.Description>
-                                        </Item.Content>
-                                    </Item>
-                                )} />
-                        )})}
-                    </Item.Group>
-                    <Button onClick={this.showModal}>Create Project</Button>
-                    <TransitionablePortal open={this.state.modalVisible}
-                                        transition={{animation: 'fade up', duration: 500}}>
-                        <Modal open={true} onClose={this.closeModal} closeIcon>
-                            <Modal.Header>Create a New Project</Modal.Header>
-                            <Modal.Content>
-                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={false}/>
-                            </Modal.Content>
-                            <Modal.Actions>
-                                <Button
-                                    positive
-                                    icon='checkmark'
-                                    labelPosition='right'
-                                    content="All good to go!"
-                                    onClick={this.handleModalSubmit}
-                                    disabled={this.state.submitButtonDisabled}
-                                />
-                            </Modal.Actions>
-                        </Modal>
-                    </TransitionablePortal>
-                </Segment>
-            )
+            const { projects } = this.props;
+
+            if(projects.length == 0){
+                return(
+                    <Segment placeholder style={{marginLeft: '5em', marginRight: '5em'}}>
+                        <Header icon>
+                            <Icon name='idea outline' />
+                            No projects have been created.
+                        </Header>
+                        <Button onClick={this.showModal}>Create Project</Button>
+                        <TransitionablePortal open={this.state.modalVisible}
+                                            transition={{animation: 'fade up', duration: 500}}>
+                            <Modal open={true} onClose={this.closeModal} closeIcon>
+                                <Modal.Header>Create a New Project</Modal.Header>
+                                <Modal.Content>
+                                    <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={false} />
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button
+                                        positive
+                                        icon='checkmark'
+                                        labelPosition='right'
+                                        content="All good to go!"
+                                        onClick={this.handleModalSubmit}
+                                        disabled={this.state.submitButtonDisabled}
+                                    />
+                                </Modal.Actions>
+                            </Modal>
+                        </TransitionablePortal>
+                    </Segment>
+                );
+            } else {
+                var photoList = Object.keys(images);
+
+                return (
+                    <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
+                        <Item.Group link divided>
+                            {projects.map((project, index) => {
+                                return (
+                                    <Route render={({ history }) => (
+                                        <Item key={index} onClick={() => { history.push(`/project/${project.guid}/`) }}>
+                                            <Item.Image size='tiny' src={images[photoList[project.imageIndex]]} />
+                                            <Item.Content>
+                                                <Item.Header>{project.name}</Item.Header>
+                                                <Item.Description>{project.description}</Item.Description>
+                                            </Item.Content>
+                                        </Item>
+                                    )} />
+                            )})}
+                        </Item.Group>
+                        <Button onClick={this.showModal}>Create Project</Button>
+                        <TransitionablePortal open={this.state.modalVisible}
+                                            transition={{animation: 'fade up', duration: 500}}>
+                            <Modal open={true} onClose={this.closeModal} closeIcon>
+                                <Modal.Header>Create a New Project</Modal.Header>
+                                <Modal.Content>
+                                    <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={false}/>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button
+                                        positive
+                                        icon='checkmark'
+                                        labelPosition='right'
+                                        content="All good to go!"
+                                        onClick={this.handleModalSubmit}
+                                        disabled={this.state.submitButtonDisabled}
+                                    />
+                                </Modal.Actions>
+                            </Modal>
+                        </TransitionablePortal>
+                    </Segment>
+                )
+            }
         }
-  }
+    }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
+        fetchProjects: (guid) => dispatch(fetchProjects(guid)),
         postProject: (guid, values, imageIndex) => dispatch(postProject(guid, values, imageIndex))
     };
 }
@@ -180,6 +194,8 @@ const mapStateToProps = state => {
         isPosting: isPosting,
         result: result,
         lastUpdated: lastUpdated,
+        projects: state.profilePage.projects.items,
+        currentUser: state.authReducer.authController.currentUser
     }
 };
 
