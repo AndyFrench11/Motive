@@ -10,8 +10,6 @@ class VideoPlayer extends Component {
             videoUrl: "",
             isPlaying: false
         };
-
-        console.log(this.props.guid)
     }
 
     readResponseAsBlob = (response) => {
@@ -35,8 +33,7 @@ class VideoPlayer extends Component {
     };
 
     componentDidMount() {
-        const { guid } = this.props.match.params;
-        this.fetchVideo(serverURL + "/resource/secure?resourceGuid=" + guid);
+        this.fetchVideo(serverURL + `/projectupdate/${this.props.projectGuid}/media/${this.props.videoGuid}`);
     }
 
     render() {
