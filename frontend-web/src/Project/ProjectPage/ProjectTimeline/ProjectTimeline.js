@@ -22,8 +22,8 @@ class ProjectTimeline extends React.Component {
 
     render() {
 
-        const { updates } = this.props;
-        if (updates === undefined || updates === null) {
+        const { projectUpdates } = this.props;
+        if (projectUpdates === undefined || projectUpdates === null) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>
@@ -34,7 +34,7 @@ class ProjectTimeline extends React.Component {
             const { tasks } = this.props;
 
             //Only get the five most recent updates
-            const mostRecentUpdates = updates.sort((a, b) => (a.dateTimeCreated > b.dateTimeCreated) ? 1 : ((b.dateTimeCreated > a.dateTimeCreated) ? -1 : 0)).slice(-4);
+            const mostRecentUpdates = projectUpdates.sort((a, b) => (a.dateTimeCreated > b.dateTimeCreated) ? 1 : ((b.dateTimeCreated > a.dateTimeCreated) ? -1 : 0)).slice(-4);
 
             //Only get the five left over top tasks that are not completed
             const upcomingTasks = tasks.filter((task) => !task.completed).slice(-4);
