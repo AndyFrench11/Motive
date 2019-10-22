@@ -100,11 +100,11 @@ namespace backend_api.Controllers
                 return StatusCode(404, "You do not have access to this resource");
             }
 
-            if (returnProjectAccessRelationship.ReturnValue.AccessLevel != AccessLevel.Owner)
-            {
-                // Supposed owner does not have a valid access level to edit access to this project
-                return StatusCode(401, "You do not have correct access privileges to this resource");
-            }
+//            if (returnProjectAccessRelationship.ReturnValue.AccessLevel != AccessLevel.Owner)
+//            {
+//                // Supposed owner does not have a valid access level to edit access to this project
+//                return StatusCode(401, "You do not have correct access privileges to this resource");
+//            }
             
             RSAEngine rsaEngine = new RSAEngine();
             
