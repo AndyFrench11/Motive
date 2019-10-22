@@ -136,6 +136,7 @@ class TaskDetailsSidebar extends React.Component {
                     <AssignmentDropDown
                         currentAssignee={assignee}
                         setAssigneeCallback={this.setAssigneeCallback}
+                        projectOwners={this.props.projectOwners}
                     />
                 </Menu.Item>
             </Sidebar>

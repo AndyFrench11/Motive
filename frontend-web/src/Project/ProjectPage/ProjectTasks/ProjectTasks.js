@@ -426,6 +426,7 @@ class ProjectTasks extends Component {
 
     taskForum() {
         const {showForum, forumTask} = this.state;
+        const {projectOwners} = this.props;
         if (showForum) {
             return (
                 <Grid.Column width={12}>
@@ -435,6 +436,7 @@ class ProjectTasks extends Component {
                         updateStatusCallback={this.updateStatusCallback}
                         updatePriorityCallback={this.updatePriorityCallback}
                         updateAssigneeCallback={this.updateAssigneeCallback}
+                        projectOwners={projectOwners}
                     />
                 </Grid.Column>
             );

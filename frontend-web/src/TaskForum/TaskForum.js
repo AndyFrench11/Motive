@@ -129,6 +129,7 @@ class TaskForum extends React.Component {
                     updateStatusCallback={this.props.updateStatusCallback}
                     updatePriorityCallback={this.props.updatePriorityCallback}
                     updateAssigneeCallback={this.props.updateAssigneeCallback}
+                    projectOwners={this.props.projectOwners}
                 />
                 <Sidebar.Pusher>
                     {this.messages()}
