@@ -200,7 +200,7 @@ class ProjectUpdate extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         deleteProjectUpdate: (updateGuid, projectGuid) => dispatch(deleteProjectUpdate(updateGuid, projectGuid)),
-        updateProjectUpdateHighlight: (updateGuid, newHighlightStatus) => dispatch(updateProjectUpdateHighlight(updateGuid, newHighlightStatus))
+        updateProjectUpdateHighlight: (updateGuid, newHighlightStatus, projectGuid) => dispatch(updateProjectUpdateHighlight(updateGuid, newHighlightStatus, projectGuid))
     };
 }
 
