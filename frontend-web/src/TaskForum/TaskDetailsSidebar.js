@@ -19,21 +19,21 @@ class TaskDetailsSidebar extends React.Component {
         }
     }
 
-    componentDidMount() {
-        const {currentUser, task} = this.props;
-        this.props.fetchAssignee(currentUser.guid, task.guid).then(() => {
-            this.setState({assignee: this.props.assignee});
-            console.log(this.state.assignee);
-        });
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        const {currentUser, task} = this.props;
-        this.props.fetchAssignee(currentUser.guid, task.guid).then(() => {
-            this.setState({assignee: this.props.assignee});
-            console.log(this.state.assignee);
-        });
-    }
+    // componentDidMount() {
+    //     const {currentUser, task} = this.props;
+    //     this.props.fetchAssignee(currentUser.guid, task.guid).then(() => {
+    //         this.setState({assignee: this.props.assignee});
+    //         console.log(this.state.assignee);
+    //     });
+    // }
+    //
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     const {currentUser, task} = this.props;
+    //     this.props.fetchAssignee(currentUser.guid, task.guid).then(() => {
+    //         this.setState({assignee: this.props.assignee});
+    //         console.log(this.state.assignee);
+    //     });
+    // }
 
     getStatus = () => {
         const {currentUser, task} = this.props;
