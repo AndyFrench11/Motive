@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import ReactPlayer from "react-player";
 import LoaderInlineCentered from "../../Common/Loader";
-import {Grid} from "semantic-ui-react";
+import {Grid, Segment} from "semantic-ui-react";
 
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
 
@@ -48,14 +48,14 @@ class VideoPlayer extends Component {
             );
         } else {
             return (
-                <div>
+                <Segment>
                     <ReactPlayer
                         url={videoUrl}
                         controls
                         playing={this.state.isPlaying}
                         volume={0}
                     />
-                </div>
+                </Segment>
             );
         }
     };

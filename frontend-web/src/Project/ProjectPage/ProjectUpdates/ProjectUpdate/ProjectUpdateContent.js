@@ -12,8 +12,7 @@ class ProjectUpdateContent extends React.Component {
         super(props);
     
         this.state = { 
-            projectUpdateInputValue: "",
-            projectUpdateContent: this.props.content
+            projectUpdateInputValue: ""
         };
     }
 
@@ -22,14 +21,14 @@ class ProjectUpdateContent extends React.Component {
     }
 
     updateProjectUpdateContent = () => {
-        const { projectUpdateInputValue, projectUpdateContent } = this.state;
+        const { projectUpdateInputValue } = this.state;
+        const { content } = this.props;
         
-        if((projectUpdateInputValue !== "") && (projectUpdateInputValue !== projectUpdateContent)) {
+        if((projectUpdateInputValue !== "") && (projectUpdateInputValue !== content)) {
 
-            this.setState({ projectUpdateContent: projectUpdateInputValue });
-            this.props.updateContentStateCallback();
             //Update the backend!
-            this.props.updateProjectUpdateContent(this.props.updateGuid, projectUpdateInputValue);
+            this.props.updateProjectUpdateContent(this.props.updateGuid, projectUpdateInputValue, this.props.relatedProjectGuid);
+            this.props.updateContentStateCallback();
             
         } else {
             this.setState({ projectUpdateInputValue: "" });
@@ -42,15 +41,14 @@ class ProjectUpdateContent extends React.Component {
     }
 
     render() {
-        const { projectUpdateContent } = this.state;
-        const { updatingContent } = this.props;
+        const { updatingContent, content } = this.props;
         return (
             <Grid.Row>
                 {updatingContent ?  
                     <Form style={{'marginLeft': '1em', 'marginRight': '1em'}}>
                         <Grid>
                             <Grid.Row width={15} style={{ minHeight: 200 }}>
-                                <TextArea defaultValue={projectUpdateContent} onChange={this.updateProjectUpdateInputValue} />
+                                <TextArea defaultValue={content} onChange={this.updateProjectUpdateInputValue} />
                             </Grid.Row>
                             <Grid.Row>
                                 <Segment>
@@ -61,7 +59,7 @@ class ProjectUpdateContent extends React.Component {
                         </Grid>
                     </Form>
                     : 
-                    <Segment>{projectUpdateContent}</Segment> 
+                    <Segment>{content}</Segment> 
                 }
             </Grid.Row>
         );
@@ -70,7 +68,7 @@ class ProjectUpdateContent extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        updateProjectUpdateContent: (updateGuid, newContent) => dispatch(updateProjectUpdateContent(updateGuid, newContent)),
+        updateProjectUpdateContent: (updateGuid, newContent, projectGuid) => dispatch(updateProjectUpdateContent(updateGuid, newContent, projectGuid)),
     };
 }
 
@@ -81,7 +79,7 @@ const mapStateToProps = state => {
     return {
         isUpdating: isUpdating,
         result: result,
-        lastUpdated: lastUpdated,
+        lastUpdated: lastUpdated
     };
 };
 

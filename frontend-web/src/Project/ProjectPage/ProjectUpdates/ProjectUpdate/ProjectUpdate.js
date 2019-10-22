@@ -166,20 +166,19 @@ class ProjectUpdate extends React.Component {
 
                         <ProjectUpdateContent 
                             updateGuid={guid}
-                            content={content} 
+                            content={content}
+                            relatedProjectGuid={relatedProjectGuid}
                             updatingContent={updatingContent} 
                             updateContentStateCallback={this.updateContentStateCallback}/>
 
-                        <Segment>
-                            {imageGuid !== '00000000-0000-0000-0000-000000000000' &&
-                            <ImageViewer imageGuid={imageGuid} projectGuid = {relatedProjectGuid}/>
-                            }
+                        
+                        {imageGuid !== '00000000-0000-0000-0000-000000000000' &&
+                        <ImageViewer imageGuid={imageGuid} projectGuid = {relatedProjectGuid}/>
+                        }
 
-                            {videoGuid !== '00000000-0000-0000-0000-000000000000' &&
-                            <VideoPlayer videoGuid={videoGuid} projectGuid = {relatedProjectGuid}/>
-                            }
-
-                        </Segment>
+                        {videoGuid !== '00000000-0000-0000-0000-000000000000' &&
+                        <VideoPlayer videoGuid={videoGuid} projectGuid = {relatedProjectGuid}/>
+                        }
 
                     </Grid.Column>
                     <Grid.Column width={6} floated="right">

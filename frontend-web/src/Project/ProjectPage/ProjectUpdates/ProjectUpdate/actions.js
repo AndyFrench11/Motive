@@ -50,7 +50,7 @@ function requestUpdateProjectUpdateContent() {
     }
 }
 
-export function updateProjectUpdateContent(updateGuid, newContent) {
+export function updateProjectUpdateContent(updateGuid, newContent, projectGuid) {
     return dispatch => {
         dispatch(requestUpdateProjectUpdateContent());
         //Take only the values needed for the request
@@ -63,7 +63,7 @@ export function updateProjectUpdateContent(updateGuid, newContent) {
                 'Content-Type': 'application/json',
             }
         })
-            .then(response => dispatch(receiveUpdateProjectUpdateContentResponse(response)))
+            .then(response => dispatch(receiveUpdateProjectUpdateContentResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -73,8 +73,9 @@ export function updateProjectUpdateContent(updateGuid, newContent) {
     }
 }
 
-function receiveUpdateProjectUpdateContentResponse(response) {
+function receiveUpdateProjectUpdateContentResponse(response, dispatch, projectGuid) {
     if(response.status === 200) {
+        dispatch(fetchProjectUpdates(projectGuid))
         return {
             type: RECEIVE_UPDATE_PROJECT_UPDATE_CONTENT_RESPONSE,
             result: response.data,

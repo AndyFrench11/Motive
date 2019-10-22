@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, Grid} from "semantic-ui-react";
+import {Image, Grid, Segment} from "semantic-ui-react";
 import LoaderInlineCentered from "../../Common/Loader";
 
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
@@ -47,12 +47,12 @@ class ImageViewer extends Component {
             );
         } else {
             return (
-                <div>
+                <Segment>
                     <Image
                         size='big'
                         src={imageUrl}
                     />
-                </div>
+                </Segment>
             );
         }
     };

@@ -95,13 +95,13 @@ class ProjectPageLayout extends React.Component {
 
     renderProjectDetails(project) {
         const isSubProject = project.parentProjectGuid !== "00000000-0000-0000-0000-000000000000";
-        const subProject = this.props.ownersProjects.find((ownerProject) => ownerProject.guid === project.parentProjectGuid);
+        //const subProject = this.props.ownersProjects.find((ownerProject) => ownerProject.guid === project.parentProjectGuid);
         return (
             <Grid.Column width={7}>
                 <ProjectName/>
 
                 {isSubProject && 
-                    <Header size='tiny' style={{'marginTop': '0em'}}>Sub Project of '{subProject.name}'</Header>
+                    <Header size='tiny' style={{'marginTop': '0em'}}>Sub Project</Header>
                 }
                 <ProjectDescription/>
                 <ProjectTags isSubProject={isSubProject}/>
