@@ -42,7 +42,7 @@ class VideoPlayer extends Component {
         const {videoUrl} = this.state;
         if(videoUrl === "") {
             return (
-                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                <Grid divided='vertically' style={{marginTop: '5em', marginBottom: '5em'}} centered>
                     <LoaderInlineCentered/>
                 </Grid>
             );

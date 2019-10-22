@@ -41,7 +41,7 @@ class ImageViewer extends Component {
         const {imageUrl} = this.state;
         if(imageUrl === "") {
             return (
-                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                <Grid divided='vertically' style={{marginTop: '5em', marginBottom: '5em'}} centered>
                     <LoaderInlineCentered/>
                 </Grid>
             );
@@ -49,7 +49,7 @@ class ImageViewer extends Component {
             return (
                 <div>
                     <Image
-                        fluid
+                        size='big'
                         src={imageUrl}
                     />
                 </div>
