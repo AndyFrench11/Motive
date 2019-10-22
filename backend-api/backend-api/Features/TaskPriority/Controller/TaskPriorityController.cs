@@ -1,4 +1,5 @@
 ﻿using System;
+using backend_api.Database.ProjectRepository;
 using backend_api.Database.ProjectTaskRepository;
 using backend_api.Features.TaskPriority.Repository;
 using backend_api.Util;
@@ -19,10 +20,9 @@ namespace backend_api.Features.TaskPriority.Controller
         // READ
         // GET api/taskpriority/:taskId
         [HttpGet("{taskId}")]
-        public ActionResult<string> Get(string taskId, [FromHeader] string userId)
+        public ActionResult Get(string taskId, [FromHeader] string userId)
         {
             // TODO: Check auth - Unauthorised()
-            // TODO: Check permissions - Forbidden()
 
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
@@ -33,16 +33,17 @@ namespace backend_api.Features.TaskPriority.Controller
             }
 
             // Check task exists
-            var projectTaskRepository = new ProjectTaskRepository();
-            var exists = projectTaskRepository.Exists(taskGuid);
-            if (exists.IsError)
+            var existError = CheckTaskExists(taskGuid);
+            if (existError != null)
             {
-                return StatusCode(500, exists.ErrorException.Message);
+                return existError;
             }
 
-            if (!exists.ReturnValue)
+            // Check user is part of group
+            var error = CheckGroupMember(taskGuid, userGuid);
+            if (error != null)
             {
-                return StatusCode(404, Errors.TaskNotFound);
+                return error;
             }
 
             // Read
@@ -53,7 +54,6 @@ namespace backend_api.Features.TaskPriority.Controller
                 : StatusCode(200, result.ReturnValue);
         }
 
-
         // UPDATE
         // PATCH api/taskpriority/:taskId
         [HttpPatch("{taskId}")]
@@ -61,7 +61,6 @@ namespace backend_api.Features.TaskPriority.Controller
             [FromHeader] string userId)
         {
             // TODO: Check auth - Unauthorised()
-            // TODO: Check permissions - Forbidden()
 
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
@@ -72,22 +71,23 @@ namespace backend_api.Features.TaskPriority.Controller
             }
 
             // Check task exists
-            var projectTaskRepository = new ProjectTaskRepository();
-            var exists = projectTaskRepository.Exists(taskGuid);
-            if (exists.IsError)
+            var existError = CheckTaskExists(taskGuid);
+            if (existError != null)
             {
-                return StatusCode(500, exists.ErrorException.Message);
+                return existError;
             }
 
-            if (!exists.ReturnValue)
+            // Check user is part of group
+            var error = CheckGroupMember(taskGuid, userGuid);
+            if (error != null)
             {
-                return StatusCode(404, Errors.TaskNotFound);
+                return error;
             }
 
             // Check priority is provided and parsed correctly
             if (taskPriority?.getPriority() == null)
             {
-                return StatusCode(400, Errors.PriorityInvalid);
+                return BadRequest(Errors.PriorityInvalid);
             }
 
             // Edit
@@ -104,7 +104,6 @@ namespace backend_api.Features.TaskPriority.Controller
         public ActionResult Delete(string taskId, [FromHeader] string userId)
         {
             // TODO: Check auth - Unauthorised()
-            // TODO: Check permissions - Forbidden()
 
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
@@ -115,16 +114,17 @@ namespace backend_api.Features.TaskPriority.Controller
             }
 
             // Check task exists
-            var projectTaskRepository = new ProjectTaskRepository();
-            var exists = projectTaskRepository.Exists(taskGuid);
-            if (exists.IsError)
+            var existError = CheckTaskExists(taskGuid);
+            if (existError != null)
             {
-                return StatusCode(500, exists.ErrorException.Message);
+                return existError;
             }
 
-            if (!exists.ReturnValue)
+            // Check user is part of group
+            var error = CheckGroupMember(taskGuid, userGuid);
+            if (error != null)
             {
-                return StatusCode(404, Errors.TaskNotFound);
+                return error;
             }
 
             // Delete
@@ -133,6 +133,37 @@ namespace backend_api.Features.TaskPriority.Controller
             return result.IsError
                 ? StatusCode(500, result.ErrorException.Message)
                 : StatusCode(200, result.ReturnValue);
+        }
+
+        private ActionResult CheckGroupMember(Guid taskGuid, Guid userGuid)
+        {
+            var projectTaskRepository = new ProjectTaskRepository();
+            var project = projectTaskRepository.GetProject(taskGuid);
+            if (project.IsError)
+            {
+                return StatusCode(500, project.ErrorException.Message);
+            }
+
+            var projectRepository = new ProjectRepository();
+            var inGroup = projectRepository.IsGroupMember(userGuid, project.ReturnValue.Guid);
+            if (inGroup.IsError)
+            {
+                return StatusCode(500, inGroup.ErrorException.Message);
+            }
+
+            return !inGroup.ReturnValue ? StatusCode(403, Errors.NotGroupMember) : null;
+        }
+
+        private ActionResult CheckTaskExists(Guid taskGuid)
+        {
+            var projectTaskRepository = new ProjectTaskRepository();
+            var exists = projectTaskRepository.Exists(taskGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+
+            return !exists.ReturnValue ? NotFound(Errors.TaskNotFound) : null;
         }
     }
 }

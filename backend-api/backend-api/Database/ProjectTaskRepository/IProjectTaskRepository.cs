@@ -18,6 +18,8 @@ namespace backend_api.Database.ProjectTaskRepository
         RepositoryReturn<bool> Delete(Guid projectTaskGuid);
 
         RepositoryReturn<bool> Exists(Guid projectTaskGuid);
+        
+        RepositoryReturn<Project> GetProject(Guid projectTaskGuid);
     }
 }
 

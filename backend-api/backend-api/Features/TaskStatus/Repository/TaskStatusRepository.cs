@@ -24,7 +24,7 @@ namespace backend_api.Features.TaskStatus.Repository
                     // Add task status node
                     _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)
@@ -96,7 +96,7 @@ namespace backend_api.Features.TaskStatus.Repository
                     // Add task status node
                     _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)
@@ -118,7 +118,7 @@ namespace backend_api.Features.TaskStatus.Repository
                     // Add task status node
                     _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, ""));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)

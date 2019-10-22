@@ -34,6 +34,7 @@ namespace backend_api.Database.ProjectRepository
         RepositoryReturn<bool> AddSubProject(Guid parentProjectGuid, Project newSubProject);
         
         RepositoryReturn<IEnumerable<Project>> GetSubProjects(Guid parentProjectGuid);
-        
+
+        RepositoryReturn<bool> IsGroupMember(Guid userGuid, Guid projectGuid);
     }
 }

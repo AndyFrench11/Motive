@@ -4,6 +4,9 @@
     {
         public const string InvalidGuid = "Invalid guid.";
         
+        // Projects
+        public const string NotGroupMember = "You do not have access as you are not a project contributor.";
+        
         // Tasks
         public const string TaskNotFound = "Task not found.";
         public const string StatusInvalid = "Task status provided is invalid.";

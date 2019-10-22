@@ -429,7 +429,6 @@ namespace backend_api.Database.ProjectRepository
          */
         public RepositoryReturn<bool> AddProjectMember(Guid projectGuid, Guid newMemberGuid)
         {
-//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
             try
             {
                 using (_session)
@@ -437,15 +436,6 @@ namespace backend_api.Database.ProjectRepository
                     _session.WriteTransaction(tx => AddMemberRelationship(tx, projectGuid, newMemberGuid));
                     return new RepositoryReturn<bool>(true);
                 }
-
-//                client.Connect();
-//                client.Cypher
-//                    .Match("(project:Project), (newOwner:Person)")
-//                    .Where((Person newMember) => newMember.Guid == newMemberGuid)
-//                    .AndWhere((Project project) => project.Guid == projectGuid)
-//                    .CreateUnique("(newOwner)-[:CONTRIBUTES_TO {type:ownerType}]->(project)")
-//                    .WithParam("ownerType", "type")
-//                    .ExecuteWithoutResults();
             }
             catch (ServiceUnavailableException e)
             {
@@ -463,7 +453,6 @@ namespace backend_api.Database.ProjectRepository
          */
         public RepositoryReturn<bool> RemoveProjectMember(Guid projectGuid, Guid memberGuid)
         {
-//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
             try
             {
                 using (_session)
@@ -471,13 +460,6 @@ namespace backend_api.Database.ProjectRepository
                     _session.WriteTransaction(tx => RemoveMemberRelationship(tx, projectGuid, memberGuid));
                     return new RepositoryReturn<bool>(true);
                 }
-//                client.Connect();
-//                client.Cypher
-//                    .Match("(contributor:Person)-[contributes:CONTRIBUTES_TO]-(project:Project)")
-//                    .Where((Person contributor) => contributor.Guid == memberGuid)
-//                    .AndWhere((Project project) => project.Guid == projectGuid)
-//                    .Delete("contributes")
-//                    .ExecuteWithoutResults();
             }
             catch (ServiceUnavailableException e)
             {
@@ -588,6 +570,43 @@ namespace backend_api.Database.ProjectRepository
             var records = result.Select(record => new Project(record[0].As<INode>().Properties)).ToList();
 
             return records;
+        }
+
+        public RepositoryReturn<bool> IsGroupMember(Guid userGuid, Guid projectGuid)
+        {
+            try
+            {   
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    // Find project user is part of
+                    var result = session.ReadTransaction(tx => CheckGroupMembership(tx, userGuid, projectGuid));
+                    Console.WriteLine("+++++++++++++++++");
+                    Console.WriteLine(result);
+                    Console.WriteLine("+++++++++++++++++");
+                    return result ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+        private bool CheckGroupMembership(ITransaction tx, Guid userGuid, Guid projectGuid)
+        {
+            Console.WriteLine(projectGuid);
+            Console.WriteLine(userGuid);
+            var projectId = projectGuid.ToString();
+            var userId = userGuid.ToString();
+
+            const string statement = "MATCH (member:Person)-[:CONTRIBUTES_TO]->(project:Project) " +
+                                     "WHERE project.guid = $projectId " +
+                                     "AND member.guid = $userId " + 
+                                     "RETURN project";
+            var result = tx.Run(statement, new {projectId, userId});
+            var record = result.SingleOrDefault();
+            var project = record == null ? null : new Project(record[0].As<INode>().Properties);
+            return project != null;
         }
     }
 }
