@@ -3,31 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using backend_api.Database;
 using backend_api.Features.TaskForum.Models;
+using backend_api.Models;
 using Neo4j.Driver.V1;
 
 namespace backend_api.Features.TaskForum.Repository
 {
     public class ChannelRepository: IChannelRepository
     {
-        private readonly ISession _session;
+        private readonly neo4jConnection _neo4JConnection;
 
         public ChannelRepository()
         {
-            var neo4JConnection = new neo4jConnection();
-            _session = neo4JConnection.driver.Session();
+            _neo4JConnection = new neo4jConnection();
         }
         
         public RepositoryReturn<Channel> Add(Channel channel, Guid taskGuid)
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add channel node
-                    var newChannel = _session.WriteTransaction(tx => CreateChannelNode(tx, channel));
+                    var newChannel = session.WriteTransaction(tx => CreateChannelNode(tx, channel));
                     
                     // Add has relationship to task
-                    _session.WriteTransaction(tx => AddTaskRelationship(tx, channel.Guid, taskGuid));
+                    session.WriteTransaction(tx => AddTaskRelationship(tx, channel.Guid, taskGuid));
 
                     return new RepositoryReturn<Channel>(newChannel);
                 }
@@ -77,10 +77,10 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Get all channels
-                    var foundChannels = _session.ReadTransaction(tx => RetrieveTaskChannels(tx, taskGuid));
+                    var foundChannels = session.ReadTransaction(tx => RetrieveTaskChannels(tx, taskGuid));
                     
                     return new RepositoryReturn<IEnumerable<Channel>>(foundChannels);
                 }
@@ -113,10 +113,10 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Update comment node
-                    _session.WriteTransaction(tx => UpdateChannelNode(tx, channel));
+                    session.WriteTransaction(tx => UpdateChannelNode(tx, channel));
 
                     return new RepositoryReturn<bool>(false);
                 }
@@ -147,7 +147,7 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Delete all messages for the channel first
                     var messageRepository = new MessageRepository();
@@ -159,7 +159,7 @@ namespace backend_api.Features.TaskForum.Repository
                     }
                     
                     // Delete channel node
-                    _session.WriteTransaction(tx => RemoveChannelNode(tx, channelGuid));
+                    session.WriteTransaction(tx => RemoveChannelNode(tx, channelGuid));
                     
                     return new RepositoryReturn<bool>(false);
                 }
@@ -189,11 +189,11 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Delete channel nodes
-                    _session.WriteTransaction(tx => RemoveAllChannelNodesWithMessages(tx, taskGuid));
-                    _session.WriteTransaction(tx => RemoveAllChannelNodesWithoutMessages(tx, taskGuid));
+                    session.WriteTransaction(tx => RemoveAllChannelNodesWithMessages(tx, taskGuid));
+                    session.WriteTransaction(tx => RemoveAllChannelNodesWithoutMessages(tx, taskGuid));
                     
                     return new RepositoryReturn<bool>(false);
                 }
@@ -232,5 +232,68 @@ namespace backend_api.Features.TaskForum.Repository
             
             tx.Run(statement, new {taskId});
         }
+
+        public RepositoryReturn<bool> Exists(Guid channelGuid)
+        {
+            try
+            {
+                using (var session = _neo4JConnection.driver.Session())
+                {
+                    // Find single channel
+                    var foundChannel = session.ReadTransaction(tx => RetrieveChannel(tx, channelGuid));
+                    return foundChannel != null ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private Channel RetrieveChannel(ITransaction tx, Guid channelGuid)
+        {
+            var channelId = channelGuid.ToString();
+
+            const string statement = "MATCH (channel:Channel) " + 
+                                     "WHERE channel.guid = $channelId " + 
+                                     "RETURN channel";
+            var result = tx.Run(statement, new {channelId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new Channel(record[0].As<INode>().Properties);
+        }
+
+        public RepositoryReturn<ProjectTask> GetTask(Guid channelGuid)
+        {
+            try
+            {
+                using (var session = _neo4JConnection.driver.Session())
+                {
+                    // Find the task that has the given channel
+                    var task = session.ReadTransaction(tx => RetrieveTaskFromChannel(tx, channelGuid));
+                    return new RepositoryReturn<ProjectTask>(task);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<ProjectTask>(true, e);
+            }
+        }
+        
+        private ProjectTask RetrieveTaskFromChannel(ITransaction tx, Guid channelGuid)
+        {
+            var channelId = channelGuid.ToString();
+
+            const string statement = "MATCH (task:ProjectTask)-[has:HAS]-(channel:Channel) " +
+                                     "WHERE channel.guid = $channelId " +
+                                     "RETURN task";
+            var result = tx.Run(statement, new {channelId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new ProjectTask(record[0].As<INode>().Properties);
+        }
+
     }
 }

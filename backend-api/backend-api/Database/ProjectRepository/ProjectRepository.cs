@@ -617,5 +617,42 @@ namespace backend_api.Database.ProjectRepository
 
             return records;
         }
+
+        public RepositoryReturn<bool> IsGroupMember(Guid userGuid, Guid projectGuid)
+        {
+            try
+            {   
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    // Find project user is part of
+                    var result = session.ReadTransaction(tx => CheckGroupMembership(tx, userGuid, projectGuid));
+                    Console.WriteLine("+++++++++++++++++");
+                    Console.WriteLine(result);
+                    Console.WriteLine("+++++++++++++++++");
+                    return result ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
+        private bool CheckGroupMembership(ITransaction tx, Guid userGuid, Guid projectGuid)
+        {
+            Console.WriteLine(projectGuid);
+            Console.WriteLine(userGuid);
+            var projectId = projectGuid.ToString();
+            var userId = userGuid.ToString();
+
+            const string statement = "MATCH (member:Person)-[:CONTRIBUTES_TO]->(project:Project) " +
+                                     "WHERE project.guid = $projectId " +
+                                     "AND member.guid = $userId " + 
+                                     "RETURN project";
+            var result = tx.Run(statement, new {projectId, userId});
+            var record = result.SingleOrDefault();
+            var project = record == null ? null : new Project(record[0].As<INode>().Properties);
+            return project != null;
+        }
     }
 }

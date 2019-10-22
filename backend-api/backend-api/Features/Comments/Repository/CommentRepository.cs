@@ -10,31 +10,30 @@ namespace backend_api.Features.Comments.Repository
 {
     public class CommentRepository : ICommentRepository
     {
-        private readonly ISession _session;
+        private readonly neo4jConnection _neo4JConnection;
 
         public CommentRepository()
         {
-            var neo4JConnection = new neo4jConnection();
-            _session = neo4JConnection.driver.Session();
+            _neo4JConnection = new neo4jConnection();
         }
-        
+
         public RepositoryReturn<Comment> Add(Comment comment, Guid authorGuid, Guid updateGuid)
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add comment node
-                    var newComment = _session.WriteTransaction(tx => CreateCommentNode(tx, comment));
+                    var newComment = session.WriteTransaction(tx => CreateCommentNode(tx, comment));
                     
                     // Add has relationship to task
-                    _session.WriteTransaction(tx => AddUpdateRelationship(tx, comment.Guid, updateGuid));
+                    session.WriteTransaction(tx => AddUpdateRelationship(tx, comment.Guid, updateGuid));
                     
                     // Add authored relationship
-                    _session.WriteTransaction(tx => AddAuthorRelationship(tx, comment.Guid, authorGuid));
+                    session.WriteTransaction(tx => AddAuthorRelationship(tx, comment.Guid, authorGuid));
                     
                     // Add the author to the comment return
-                    var author = _session.ReadTransaction(tx => RetrieveCommentAuthor(tx, newComment.Guid));
+                    var author = session.ReadTransaction(tx => RetrieveCommentAuthor(tx, newComment.Guid));
                     newComment.Author = author;
                     
                     return new RepositoryReturn<Comment>(newComment);
@@ -91,20 +90,20 @@ namespace backend_api.Features.Comments.Repository
                                      "CREATE UNIQUE (author)-[:AUTHORS]->(comment)";
             tx.Run(statement, new {commentId, authorId});
         }
-        
+
         public RepositoryReturn<IEnumerable<Comment>> GetAllForUpdate(Guid updateGuid)
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Get all comments
-                    var foundComments = _session.ReadTransaction(tx => RetrieveUpdateComments(tx, updateGuid));
+                    var foundComments = session.ReadTransaction(tx => RetrieveUpdateComments(tx, updateGuid));
                     
                     // For each comment, find and add the author
                     foreach (var comment in foundComments)
                     {
-                        var author = _session.ReadTransaction(tx => RetrieveCommentAuthor(tx, comment.Guid));
+                        var author = session.ReadTransaction(tx => RetrieveCommentAuthor(tx, comment.Guid));
                         comment.Author = author;
                     }
                     
@@ -151,10 +150,10 @@ namespace backend_api.Features.Comments.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Update comment node
-                    _session.WriteTransaction(tx => UpdateCommentNode(tx, comment));
+                    session.WriteTransaction(tx => UpdateCommentNode(tx, comment));
 
                     return new RepositoryReturn<bool>(false);
                 }
@@ -185,10 +184,10 @@ namespace backend_api.Features.Comments.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Delete comment node
-                    _session.WriteTransaction(tx => RemoveCommentNode(tx, commentGuid));
+                    session.WriteTransaction(tx => RemoveCommentNode(tx, commentGuid));
 
                     return new RepositoryReturn<bool>(false);
                 }
@@ -218,10 +217,10 @@ namespace backend_api.Features.Comments.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Delete all comment nodes for update
-                    _session.WriteTransaction(tx => RemoveAllCommentNodes(tx, updateGuid));
+                    session.WriteTransaction(tx => RemoveAllCommentNodes(tx, updateGuid));
 
                     return new RepositoryReturn<bool>(false);
                 }
@@ -247,5 +246,60 @@ namespace backend_api.Features.Comments.Repository
             
             tx.Run(statement, new {updateId});
         }
+        
+        public RepositoryReturn<bool> Exists(Guid commentGuid)
+        {
+            try
+            {
+                using (var session = _neo4JConnection.driver.Session())
+                {
+                    // Find single comment
+                    var foundComment = session.ReadTransaction(tx => RetrieveComment(tx, commentGuid));
+                    return foundComment != null ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+        
+        private Comment RetrieveComment(ITransaction tx, Guid commentGuid)
+        {
+            var commentId = commentGuid.ToString();
+
+            const string statement = "MATCH (comment:Comment) " + 
+                                     "WHERE comment.guid = $commentId " + 
+                                     "RETURN comment";
+            var result = tx.Run(statement, new {commentId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new Comment(record[0].As<INode>().Properties);
+        }
+
+        public RepositoryReturn<bool> IsAuthor(Guid authorGuid, Guid commentGuid)
+        {
+            try
+            {
+                using (var session = _neo4JConnection.driver.Session())
+                {
+                    // Check author
+                    var author = session.ReadTransaction(tx => RetrieveCommentAuthor(tx, commentGuid));
+                    return author.Guid == authorGuid ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (ServiceUnavailableException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+            catch (Exception e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
+
     }
 }

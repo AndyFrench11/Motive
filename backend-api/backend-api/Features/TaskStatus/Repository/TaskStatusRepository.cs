@@ -8,23 +8,22 @@ namespace backend_api.Features.TaskStatus.Repository
     public class TaskStatusRepository: ITaskStatusRepository
     {
         
-        private readonly ISession _session;
+        private readonly neo4jConnection _neo4JConnection;
 
         public TaskStatusRepository()
         {
-            var neo4JConnection = new neo4jConnection();
-            _session = neo4JConnection.driver.Session();
+            _neo4JConnection = new neo4jConnection();
         }
         public RepositoryReturn<bool> Add(Guid taskGuid, string status)
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
+                    session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)
@@ -52,10 +51,10 @@ namespace backend_api.Features.TaskStatus.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add task status node
-                    var status = _session.ReadTransaction(tx => GetStatusProperty(tx, taskGuid));
+                    var status = session.ReadTransaction(tx => GetStatusProperty(tx, taskGuid));
                     
                     return new RepositoryReturn<string>(status);
                 }
@@ -91,12 +90,12 @@ namespace backend_api.Features.TaskStatus.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
+                    session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, status));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)
@@ -113,12 +112,12 @@ namespace backend_api.Features.TaskStatus.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, ""));
+                    session.WriteTransaction(tx => SetStatusProperty(tx, taskGuid, ""));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)

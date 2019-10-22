@@ -22,5 +22,7 @@ namespace backend_api.Database.ProjectUpdateRepository
         RepositoryReturn<bool> EditAssociatedTask(Guid projectUpdateGuid);
 
         RepositoryReturn<bool> Delete(Guid projectUpdateGuid);
+
+        RepositoryReturn<bool> Exists(Guid projectUpdateGuid);
     }
 }
