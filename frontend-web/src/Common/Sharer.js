@@ -1,19 +1,29 @@
 import React from 'react'
-import {Form, List} from 'semantic-ui-react'
+import {Button, Form, List, Segment} from 'semantic-ui-react'
+import axios from "axios";
+
+const serverUrl = process.env.REACT_APP_BACKEND_ADDRESS;
 
 export default class Sharer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            emails: [
-                "test@test.com",
-            ],
+            emails: [],
             currentEmail: ""
         };
     }
 
-    checkState = () => {
-        console.log(this.state);
+    sendRequests = () => {
+        axios.patch(serverUrl + `/project/${this.props.projectId}/giveAccessTo`, this.state.emails, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true
+        });
+
+        this.setState({
+            emails: []
+        });
     };
 
     handleChange = (event, {name, value}) => {
@@ -23,8 +33,6 @@ export default class Sharer extends React.Component {
     };
 
     handleNewEmailAdded = () => {
-        console.log("BING");
-
         this.setState(state => {
             const emails = [...state.emails, this.state.currentEmail];
             return {
@@ -39,8 +47,8 @@ export default class Sharer extends React.Component {
     render() {
         let { emails, currentEmail } = this.state;
         return (
-            <div>
-                <p> Add User To Project </p>
+            <Segment>
+                <p> Add User(s) To Project </p>
                 <Form onSubmit={this.handleNewEmailAdded}>
                     <Form.Input
                         placeholder='Email'
@@ -52,7 +60,14 @@ export default class Sharer extends React.Component {
                     />
                     <List bulleted items={emails}/>
                 </Form>
-            </div>
+                <Button
+                    secondary
+                    type='submit'
+                    fluid
+                    size='large'
+                    onClick={this.sendRequests}
+                >Give Access</Button>
+            </Segment>
 
         )
     }

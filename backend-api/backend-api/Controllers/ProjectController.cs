@@ -466,9 +466,7 @@ namespace backend_api.Controllers
             Guid projectGuid = Guid.Parse(projectId);
             if (projectGuid == Guid.Empty)
                 return StatusCode(400, "Invalid parse project GUID");
-
-            //TODO check if emails legit
-
+            
             // Get the link between the requesting user and the specified project (they may not own it)
             RepositoryReturn<ProjectAccessRelationship> returnProjectAccessRelationship =
                 _projectRepository.GetUserAccessToProject(projectGuid, userLoggedInSession.userGuid);
@@ -509,6 +507,10 @@ namespace backend_api.Controllers
                 }
 
                 Person currentPerson = requestPerson.ReturnValue;
+                if (currentPerson == null)
+                {
+                    continue;
+                }
 
                 RSAParameters currentUserPublicKey =
                     rsaEngine.ConvertStringToKey(currentPerson.publicKey);
