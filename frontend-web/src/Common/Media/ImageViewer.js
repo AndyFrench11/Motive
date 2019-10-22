@@ -7,10 +7,6 @@ class ImageViewer extends Component {
     constructor(props) {
         super(props);
 
-        console.log(this.props.projectGuid);
-        console.log(this.props.imageGuid);
-
-
         this.state = {
             imageUrl: "",
         }
@@ -44,7 +40,8 @@ class ImageViewer extends Component {
         return (
             <div>
                 <Image
-                    size={this.props.size}
+                    //size='big'
+                    fluid
                     src={this.state.imageUrl}
                 />
             </div>

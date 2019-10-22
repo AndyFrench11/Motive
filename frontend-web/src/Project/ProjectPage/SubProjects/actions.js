@@ -23,7 +23,9 @@ function receiveSubProjects(json) {
 export function fetchSubProjects (parentProjectGuid) {
     return function (dispatch) {
         dispatch(requestSubProjects());
-        return fetch(serverUrl + `/project/${parentProjectGuid}/subprojects`)
+        return fetch(serverUrl + `/project/${parentProjectGuid}/subprojects`, {
+            withCredentials: true,
+        })
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred!!", error)

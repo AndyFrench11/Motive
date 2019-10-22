@@ -15,7 +15,9 @@ export function deleteProject(projectGuid) {
     return dispatch => {
         dispatch(requestDeleteProject());
     
-        return axios.delete(serverUrl + "/project/" + projectGuid)
+        return axios.delete(serverUrl + "/project/" + projectGuid, {
+            withCredentials: true,
+        })
             .then(response => dispatch(receiveDeleteProjectResponse(response)))
             .catch(error =>  {
                 console.log("The server is not running!");

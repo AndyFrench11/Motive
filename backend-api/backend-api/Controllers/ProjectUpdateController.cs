@@ -83,8 +83,6 @@ namespace backend_api.Controllers
             
             // Generate object to track this upload (and create relationships to users) in the DB
             MediaTracker newFileTracker = new MediaTracker(Path.GetExtension(filepond.FileName), filepond.ContentType);
-
-
             
             // Get the link between the requesting user and the specified project (they may not own it)
             RepositoryReturn<ProjectAccessRelationship> returnProjectAccessRelationship = 

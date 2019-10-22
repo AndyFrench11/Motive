@@ -30,7 +30,9 @@ function receiveProjectUpdates(json) {
 export function fetchProjectUpdates (projectGuid) {
     return function (dispatch) {
         dispatch(requestProjectUpdates());
-        return fetch(serverUrl + `/projectUpdate/${projectGuid}/project`)
+        return fetch(serverUrl + `/projectUpdate/${projectGuid}/project`, {
+            withCredentials: true,
+        })
             .then(
                 response => response.json(),
                 error => console.log("An error has occurred!!", error)
@@ -55,7 +57,9 @@ export function updateProjectUpdateContent(updateGuid, newContent) {
         let updateContent = {
             newContent: newContent
         }
-        return axios.patch(serverUrl + `/projectUpdate/${updateGuid}/content` , updateContent, {headers: {
+        return axios.patch(serverUrl + `/projectUpdate/${updateGuid}/content` , updateContent, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
             }
         })
@@ -98,7 +102,9 @@ export function updateProjectUpdateHighlight(updateGuid, newHighlightStatus) {
         let updateContent = {
             newHighlightStatus: newHighlightStatus
         }
-        return axios.patch(serverUrl + `/projectUpdate/${updateGuid}/highlight` , updateContent, {headers: {
+        return axios.patch(serverUrl + `/projectUpdate/${updateGuid}/highlight` , updateContent, {
+            withCredentials: true,
+            headers: {
                 'Content-Type': 'application/json',
             }
         })
@@ -138,7 +144,9 @@ export function deleteProjectUpdate(updateGuid, projectGuid) {
     return dispatch => {
         dispatch(requestDeleteProjectUpdate());
     
-        return axios.delete(serverUrl + "/projectUpdate/" + updateGuid)
+        return axios.delete(serverUrl + "/projectUpdate/" + updateGuid, {
+            withCredentials: true,
+        })
             .then(response => dispatch(receiveDeleteProjectUpdateResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
