@@ -8,6 +8,7 @@ import { postProjectUpdate, resetModalState } from "./actions";
 import dateFormat from 'dateformat';
 import TrophyImage from '../../../ProjectImages/image16.png';
 import Uploader from "../../../../Common/Uploader";
+import {fetchProjectUpdates} from "../ProjectUpdate/actions"
 
 class CreateProjectUpdateModal extends React.Component {
 
@@ -87,6 +88,7 @@ class CreateProjectUpdateModal extends React.Component {
     }
 
     onFileUpload = () => {
+        this.props.fetchProjectUpdates(this.currentProject.guid)
         this.props.closeCallback()
     };
 
@@ -209,6 +211,7 @@ class CreateProjectUpdateModal extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
+        fetchProjectUpdates: (projectGuid) => dispatch(fetchProjectUpdates(projectGuid)),
         postProjectUpdate: (projectGuid, userGuid, update) => dispatch(postProjectUpdate(projectGuid, userGuid, update)),
         resetModalState: () => dispatch(resetModalState())
     }
@@ -223,7 +226,8 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
-        createdUpdateGuid: createdUpdateGuid
+        createdUpdateGuid: createdUpdateGuid,
+        currentProject: state.projectController.result
     };
 };
 

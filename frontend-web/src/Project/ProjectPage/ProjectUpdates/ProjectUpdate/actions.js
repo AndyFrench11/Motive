@@ -1,4 +1,5 @@
 import axios from 'axios/index'
+import { SSL_OP_EPHEMERAL_RSA } from 'constants';
 
 export const REQUEST_PROJECT_UPDATES = 'REQUEST_PROJECT_UPDATES';
 export const RECEIVE_PROJECT_UPDATES = 'RECEIVE_PROJECT_UPDATES';
@@ -50,7 +51,7 @@ function requestUpdateProjectUpdateContent() {
     }
 }
 
-export function updateProjectUpdateContent(updateGuid, newContent, projectGuid) {
+export function updateProjectUpdateContent(updateGuid, newContent) {
     return dispatch => {
         dispatch(requestUpdateProjectUpdateContent());
         //Take only the values needed for the request
@@ -63,7 +64,7 @@ export function updateProjectUpdateContent(updateGuid, newContent, projectGuid) 
                 'Content-Type': 'application/json',
             }
         })
-            .then(response => dispatch(receiveUpdateProjectUpdateContentResponse(response, dispatch, projectGuid)))
+            .then(response => dispatch(receiveUpdateProjectUpdateContentResponse(response)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -73,9 +74,8 @@ export function updateProjectUpdateContent(updateGuid, newContent, projectGuid) 
     }
 }
 
-function receiveUpdateProjectUpdateContentResponse(response, dispatch, projectGuid) {
+function receiveUpdateProjectUpdateContentResponse(response) {
     if(response.status === 200) {
-        dispatch(fetchProjectUpdates(projectGuid))
         return {
             type: RECEIVE_UPDATE_PROJECT_UPDATE_CONTENT_RESPONSE,
             result: response.data,
