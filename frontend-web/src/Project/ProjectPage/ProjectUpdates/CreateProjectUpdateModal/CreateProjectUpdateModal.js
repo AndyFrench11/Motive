@@ -76,7 +76,6 @@ class CreateProjectUpdateModal extends React.Component {
         }
 
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
-        this.props.closeCallback()
     }
 
     updateHighlightStatus = () => {
