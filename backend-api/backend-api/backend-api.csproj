@@ -18,6 +18,5 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="PlaintextUploads" />
-    <Folder Include="Uploads" />
   </ItemGroup>
 </Project>

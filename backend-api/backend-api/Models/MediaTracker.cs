@@ -20,7 +20,7 @@ namespace backend_api.Models
         
         public MediaTracker(string extension, string contentHeader, byte[] salt)
         {
-            System.IO.Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, @"Uploads/"));
+            Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Uploads"));
             this.encryptedFilePath = Path.Combine(Environment.CurrentDirectory, @"Uploads/", this.Guid.ToString());;
             this.extension = extension;
             this.contentHeader = contentHeader;
@@ -39,7 +39,8 @@ namespace backend_api.Models
         
         public MediaTracker(string extension, string contentHeader)
         {
-            this.encryptedFilePath = Path.Combine(Environment.CurrentDirectory, @"Uploads/", this.Guid.ToString());;
+            Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Uploads"));
+            this.encryptedFilePath = Path.Combine(Environment.CurrentDirectory, "Uploads/", this.Guid.ToString());;
             this.extension = extension;
             this.contentHeader = contentHeader;
         }
