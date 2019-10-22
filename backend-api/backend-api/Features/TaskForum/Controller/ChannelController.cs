@@ -24,8 +24,6 @@ namespace backend_api.Features.TaskForum.Controller
         [HttpPost("{taskId}")]
         public ActionResult Post(string taskId, [FromBody] Channel channelToCreate, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -41,7 +39,7 @@ namespace backend_api.Features.TaskForum.Controller
                 return existError;
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var error = CheckGroupMember(taskGuid, userGuid);
             if (error != null)
             {
@@ -66,8 +64,6 @@ namespace backend_api.Features.TaskForum.Controller
         [HttpGet("{taskId}")]
         public ActionResult<List<Channel>> GetAll(string taskId, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -83,7 +79,7 @@ namespace backend_api.Features.TaskForum.Controller
                 return existError;
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var error = CheckGroupMember(taskGuid, userGuid);
             if (error != null)
             {
@@ -105,8 +101,6 @@ namespace backend_api.Features.TaskForum.Controller
         [HttpPatch("{channelId}")]
         public ActionResult Patch(string channelId, [FromBody] Channel channelToUpdate, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse channel guid and user guid
             var channelGuid = ValidationUtil.ParseGuid(channelId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -124,7 +118,7 @@ namespace backend_api.Features.TaskForum.Controller
                 return existError;
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var task = _channelRepository.GetTask(channelGuid);
             var error = CheckGroupMember(task.ReturnValue.Guid, userGuid);
             if (error != null)
@@ -152,8 +146,6 @@ namespace backend_api.Features.TaskForum.Controller
         [HttpDelete("{channelId}")]
         public ActionResult Delete(string channelId, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse channel guid and user guid
             var channelGuid = ValidationUtil.ParseGuid(channelId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -169,7 +161,7 @@ namespace backend_api.Features.TaskForum.Controller
                 return existError;
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var task = _channelRepository.GetTask(channelGuid);
             var error = CheckGroupMember(task.ReturnValue.Guid, userGuid);
             if (error != null)
@@ -226,7 +218,7 @@ namespace backend_api.Features.TaskForum.Controller
                 return StatusCode(500, exists.ErrorException.Message);
             }
 
-            return !exists.ReturnValue ? StatusCode(404, Errors.CommentNotFound) : null;
+            return !exists.ReturnValue ? StatusCode(404, Errors.ChannelNotFound) : null;
         }
     }
 }

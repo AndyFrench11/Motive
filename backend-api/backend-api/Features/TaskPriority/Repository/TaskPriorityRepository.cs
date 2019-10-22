@@ -7,22 +7,21 @@ namespace backend_api.Features.TaskPriority.Repository
 {
     public class TaskPriorityRepository : ITaskPriorityRepository
     {
-        private readonly ISession _session;
+        private readonly neo4jConnection _neo4JConnection;
 
         public TaskPriorityRepository()
         {
-            var neo4JConnection = new neo4jConnection();
-            _session = neo4JConnection.driver.Session();
+            _neo4JConnection = new neo4jConnection();
         }
         
         public RepositoryReturn<string> GetForTask(Guid taskGuid)
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add task status node
-                    var priority = _session.ReadTransaction(tx => GetPriorityProperty(tx, taskGuid));
+                    var priority = session.ReadTransaction(tx => GetPriorityProperty(tx, taskGuid));
                     
                     return new RepositoryReturn<string>(priority);
                 }
@@ -58,10 +57,10 @@ namespace backend_api.Features.TaskPriority.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, priority));
+                    session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, priority));
 
                     return new RepositoryReturn<bool>(false);
                 }
@@ -91,10 +90,10 @@ namespace backend_api.Features.TaskPriority.Repository
         {
             try
             {
-                using (_session)
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add task status node
-                    _session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, ""));
+                    session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, ""));
 
                     return new RepositoryReturn<bool>(false);
                 }

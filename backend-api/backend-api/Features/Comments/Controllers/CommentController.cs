@@ -30,8 +30,6 @@ namespace backend_api.Features.Comments.Controllers
             {
                 return BadRequest(Errors.InvalidGuid);
             }
-
-            // TODO: Check user is authorised - Unauthorised()
             
             // Check update exists
             var projectUpdateRepository = new ProjectUpdateRepository();
@@ -63,8 +61,6 @@ namespace backend_api.Features.Comments.Controllers
         [HttpGet("{updateId}")]
         public ActionResult<List<Comment>> GetAll(string updateId, [FromHeader]string userId)
         {
-            // TODO: Check auth/user - Unauthorised()
-            
             // Parse update guid and user guid
             var updateGuid = ValidationUtil.ParseGuid(updateId);
             var authorGuid = ValidationUtil.ParseGuid(userId);
@@ -138,8 +134,6 @@ namespace backend_api.Features.Comments.Controllers
                 return StatusCode(400, Errors.CommentEmpty);
             }
             
-            // TODO: check authorised - Unauthorised()
-            
             // Edit
             var result = _commentRepository.Edit(commentToUpdate);
             if (result.IsError)
@@ -161,8 +155,6 @@ namespace backend_api.Features.Comments.Controllers
             {
                 return BadRequest(Errors.InvalidGuid);
             }
-            
-            // TODO Check auth - Unauthorised()
             
             // Check comment exists
             var exists = _commentRepository.Exists(commentGuid);

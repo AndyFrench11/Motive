@@ -22,8 +22,10 @@
         
         // Channels
         public const string ChannelNameEmpty = "Discussion Channel name cannot be empty.";
+        public const string ChannelNotFound = "Discussion Channel not found.";
         
         // Messages
         public const string MessageEmpty = "Message cannot be empty.";
+        public const string MessageNotFound = "Message not found.";
     }
 }

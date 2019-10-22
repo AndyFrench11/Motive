@@ -10,18 +10,18 @@ namespace backend_api.Features.TaskForum.Repository
 {
     public class ChannelRepository: IChannelRepository
     {
-        private readonly neo4jConnection _neo4jConnection;
+        private readonly neo4jConnection _neo4JConnection;
 
         public ChannelRepository()
         {
-            _neo4jConnection = new neo4jConnection();
+            _neo4JConnection = new neo4jConnection();
         }
         
         public RepositoryReturn<Channel> Add(Channel channel, Guid taskGuid)
         {
             try
             {
-                using (var session = _neo4jConnection.driver.Session())
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Add channel node
                     var newChannel = session.WriteTransaction(tx => CreateChannelNode(tx, channel));
@@ -77,7 +77,7 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (var session = _neo4jConnection.driver.Session())
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Get all channels
                     var foundChannels = session.ReadTransaction(tx => RetrieveTaskChannels(tx, taskGuid));
@@ -113,7 +113,7 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (var session = _neo4jConnection.driver.Session())
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Update comment node
                     session.WriteTransaction(tx => UpdateChannelNode(tx, channel));
@@ -147,7 +147,7 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (var session = _neo4jConnection.driver.Session())
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Delete all messages for the channel first
                     var messageRepository = new MessageRepository();
@@ -189,7 +189,7 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (var session = _neo4jConnection.driver.Session())
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Delete channel nodes
                     session.WriteTransaction(tx => RemoveAllChannelNodesWithMessages(tx, taskGuid));
@@ -237,7 +237,7 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (var session = _neo4jConnection.driver.Session())
+                using (var session = _neo4JConnection.driver.Session())
                 {
                     // Find single channel
                     var foundChannel = session.ReadTransaction(tx => RetrieveChannel(tx, channelGuid));
@@ -270,9 +270,9 @@ namespace backend_api.Features.TaskForum.Repository
         {
             try
             {
-                using (var session = _neo4jConnection.driver.Session())
+                using (var session = _neo4JConnection.driver.Session())
                 {
-                    // Find task that has channel
+                    // Find the task that has the given channel
                     var task = session.ReadTransaction(tx => RetrieveTaskFromChannel(tx, channelGuid));
                     return new RepositoryReturn<ProjectTask>(task);
                 }

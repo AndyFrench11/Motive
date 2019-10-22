@@ -14,5 +14,9 @@ namespace backend_api.Features.TaskForum.Repository
         RepositoryReturn<bool> Edit(Message message);
         
         RepositoryReturn<bool> Delete(Guid messageGuid);
+        
+        RepositoryReturn<bool> Exists(Guid messageGuid);
+        
+        RepositoryReturn<Channel> GetChannel(Guid messageGuid);
     }
 }

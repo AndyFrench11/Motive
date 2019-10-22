@@ -22,8 +22,6 @@ namespace backend_api.Features.TaskPriority.Controller
         [HttpGet("{taskId}")]
         public ActionResult Get(string taskId, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -39,7 +37,7 @@ namespace backend_api.Features.TaskPriority.Controller
                 return existError;
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var error = CheckGroupMember(taskGuid, userGuid);
             if (error != null)
             {
@@ -57,11 +55,8 @@ namespace backend_api.Features.TaskPriority.Controller
         // UPDATE
         // PATCH api/taskpriority/:taskId
         [HttpPatch("{taskId}")]
-        public ActionResult Patch(string taskId, [FromBody] Models.TaskPriority taskPriority,
-            [FromHeader] string userId)
+        public ActionResult Patch(string taskId, [FromBody] Models.TaskPriority taskPriority, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -77,7 +72,7 @@ namespace backend_api.Features.TaskPriority.Controller
                 return existError;
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var error = CheckGroupMember(taskGuid, userGuid);
             if (error != null)
             {
@@ -103,8 +98,6 @@ namespace backend_api.Features.TaskPriority.Controller
         [HttpDelete("{taskId}")]
         public ActionResult Delete(string taskId, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -120,7 +113,7 @@ namespace backend_api.Features.TaskPriority.Controller
                 return existError;
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var error = CheckGroupMember(taskGuid, userGuid);
             if (error != null)
             {

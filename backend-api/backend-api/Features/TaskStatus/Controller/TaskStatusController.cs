@@ -22,8 +22,6 @@ namespace backend_api.Features.TaskStatus.Controller
         [HttpPost("{taskId}")]
         public ActionResult Post(string taskId, [FromBody] Model.TaskStatus taskStatus, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -45,7 +43,7 @@ namespace backend_api.Features.TaskStatus.Controller
                 return NotFound(Errors.TaskNotFound);
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var project = projectTaskRepository.GetProject(taskGuid);
             if (project.IsError)
             {
@@ -83,8 +81,6 @@ namespace backend_api.Features.TaskStatus.Controller
         [HttpGet("{taskId}")]
         public ActionResult<string> Get(string taskId, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -106,7 +102,7 @@ namespace backend_api.Features.TaskStatus.Controller
                 return NotFound(Errors.TaskNotFound);
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var project = projectTaskRepository.GetProject(taskGuid);
             if (project.IsError)
             {
@@ -138,8 +134,6 @@ namespace backend_api.Features.TaskStatus.Controller
         [HttpPatch("{taskId}")]
         public ActionResult Patch(string taskId, [FromBody] Model.TaskStatus taskStatus, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -161,7 +155,7 @@ namespace backend_api.Features.TaskStatus.Controller
                 return NotFound(Errors.TaskNotFound);
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var project = projectTaskRepository.GetProject(taskGuid);
             if (project.IsError)
             {
@@ -199,8 +193,6 @@ namespace backend_api.Features.TaskStatus.Controller
         [HttpDelete("{taskId}")]
         public ActionResult Delete(string taskId, [FromHeader] string userId)
         {
-            // TODO: Check auth - Unauthorised()
-
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var userGuid = ValidationUtil.ParseGuid(userId);
@@ -222,7 +214,7 @@ namespace backend_api.Features.TaskStatus.Controller
                 return NotFound(Errors.TaskNotFound);
             }
 
-            // Check user is part of group
+            // Check user is an owner of the project so has permission to access
             var project = projectTaskRepository.GetProject(taskGuid);
             if (project.IsError)
             {
