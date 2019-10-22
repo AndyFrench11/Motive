@@ -156,7 +156,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    const {taskStatusReducer, taskPriorityReducer} = state;
+    const {taskStatusReducer, taskPriorityReducer, taskAssigneeReducer} = state;
 
     const {statusController} = taskStatusReducer;
     const {status} = statusController;
