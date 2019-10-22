@@ -259,16 +259,28 @@ class ProjectTasks extends Component {
     taskDetailInformation(index) {
         const {taskList} = this.state;
         let task = taskList[index];
-        return (
-            <div>
-                <PriorityDetails
-                    priority={task.priority}
-                />
-                <StatusDetails
-                    status={task.status}
-                />
-            </div>
-        );
+
+        const {currentUser, projectOwners} = this.props;
+        let isOwner = false;
+        for (let i = 0; i < projectOwners.length; i++) {
+            if (projectOwners[i].guid === currentUser.guid) {
+                isOwner = true;
+                break;
+            }
+        }
+
+        if (isOwner) {
+            return (
+                <div>
+                    <PriorityDetails
+                        priority={task.priority}
+                    />
+                    <StatusDetails
+                        status={task.status}
+                    />
+                </div>
+            );
+        }
     }
 
     deleteButton(index) {
@@ -295,18 +307,28 @@ class ProjectTasks extends Component {
     }
 
     taskInteractionButtons(index) {
+        const {currentUser, projectOwners} = this.props;
         const {showForum} = this.state;
-        if (!showForum) {
+        let isOwner = false;
+        for (let i = 0; i < projectOwners.length; i++) {
+            if (projectOwners[i].guid === currentUser.guid) {
+                isOwner = true;
+                break;
+            }
+        }
+
+        if (!isOwner || showForum) {
             return (
                 <ButtonGroup>
                     {this.deleteButton(index)}
-                    {this.showForumButton(index)}
                 </ButtonGroup>
+
             )
         } else {
             return (
                 <ButtonGroup>
                     {this.deleteButton(index)}
+                    {this.showForumButton(index)}
                 </ButtonGroup>
             )
         }
@@ -468,6 +490,7 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 
