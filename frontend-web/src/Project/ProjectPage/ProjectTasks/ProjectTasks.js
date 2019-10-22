@@ -11,6 +11,7 @@ import TaskForum from "../../../TaskForum/TaskForum";
 import PriorityDetails from "../../../TaskPriority/PriorityDetails";
 import StatusDetails from "../../../TaskStatus/StatusDetails";
 import ButtonGroup from "react-bootstrap/es/ButtonGroup";
+import AssignmentDetails from "../../../TaskAssignment/AssignmentDetails";
 
 //Drag and Drop Properties
 // fake data generator
@@ -75,7 +76,8 @@ class ProjectTasks extends Component {
             showForum: false,
             forumTask: null,
             markAsDoneOpen: false,
-            markDone: null
+            markDone: null,
+            assignee: null
         };
 
         this.onDragEnd = this.onDragEnd.bind(this);
@@ -243,6 +245,10 @@ class ProjectTasks extends Component {
         }
     };
 
+    updateAssigneeCallback = (task, value) => {
+        this.setState({assignee: value});
+    };
+
     showTaskForum = (event, {index}) => {
         const {taskList} = this.state;
         let task = taskList[index];
@@ -257,7 +263,7 @@ class ProjectTasks extends Component {
     };
 
     taskDetailInformation(index) {
-        const {taskList} = this.state;
+        const {taskList, assignee} = this.state;
         let task = taskList[index];
 
         const {currentUser, projectOwners} = this.props;
@@ -277,6 +283,9 @@ class ProjectTasks extends Component {
                     />
                     <StatusDetails
                         status={task.status}
+                    />
+                    <AssignmentDetails
+                        assignee={assignee}
                     />
                 </div>
             );
@@ -425,6 +434,7 @@ class ProjectTasks extends Component {
                         hideTaskForumCallback={this.hideTaskForumCallback}
                         updateStatusCallback={this.updateStatusCallback}
                         updatePriorityCallback={this.updatePriorityCallback}
+                        updateAssigneeCallback={this.updateAssigneeCallback}
                     />
                 </Grid.Column>
             );

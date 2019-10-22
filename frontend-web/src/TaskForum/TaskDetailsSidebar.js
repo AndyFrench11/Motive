@@ -5,14 +5,34 @@ import {connect} from "react-redux";
 import {deleteStatus, updateStatus, getStatus} from "../TaskStatus/actions";
 import PriorityDropdown from "../TaskPriority/PriorityDropDown";
 import {deletePriority, updatePriority} from "../TaskPriority/actions";
+import AssignmentDropDown from "../TaskAssignment/AssignmentDropDown";
+import {getAssignee, updateAssignee} from "../TaskAssignment/actions";
+import taskAssigneeReducer from "../TaskAssignment/reducers";
 
 class TaskDetailsSidebar extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            status: this.props.status
+            status: this.props.status,
+            assignee: this.props.assignee
         }
+    }
+
+    componentDidMount() {
+        const {currentUser, task} = this.props;
+        this.props.fetchAssignee(currentUser.guid, task.guid).then(() => {
+            this.setState({assignee: this.props.assignee});
+            console.log(this.state.assignee);
+        });
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const {currentUser, task} = this.props;
+        this.props.fetchAssignee(currentUser.guid, task.guid).then(() => {
+            this.setState({assignee: this.props.assignee});
+            console.log(this.state.assignee);
+        });
     }
 
     getStatus = () => {
@@ -59,9 +79,22 @@ class TaskDetailsSidebar extends React.Component {
         });
     };
 
+    setAssigneeCallback = (value) => {
+        const {currentUser, task} = this.props;
+        // Update assignee request
+        this.props.setAssignee(currentUser.guid, task.guid, value).then(() => {
+            // Update state
+            this.props.fetchAssignee(currentUser.guid, task.guid).then(() => {
+                this.setState({assignee: this.props.assignee});
+                this.props.updateAssigneeCallback(task, this.props.assignee);
+            });
+        });
+    };
+
     render() {
         const {visible} = this.props;
         const {task} = this.props;
+        const {assignee} = this.state;
         return (
             <Sidebar
                 as={Menu}
@@ -95,6 +128,16 @@ class TaskDetailsSidebar extends React.Component {
                         deletePriorityCallback={this.deletePriorityCallback}
                     />
                 </Menu.Item>
+
+                <Menu.Item>
+                    <Header
+                        inverted
+                    >Assignee</Header>
+                    <AssignmentDropDown
+                        currentAssignee={assignee}
+                        setAssigneeCallback={this.setAssigneeCallback}
+                    />
+                </Menu.Item>
             </Sidebar>
         )
     }
@@ -106,7 +149,9 @@ function mapDispatchToProps(dispatch) {
         setStatus: (userGuid, taskGuid, newStatus) => dispatch(updateStatus(userGuid, taskGuid, newStatus)),
         removeStatus: (userGuid, taskGuid) => dispatch(deleteStatus(userGuid, taskGuid)),
         setPriority: (userGuid, taskGuid, newPriority) => dispatch(updatePriority(userGuid, taskGuid, newPriority)),
-        removePriority: (userGuid, taskGuid) => dispatch(deletePriority(userGuid, taskGuid))
+        removePriority: (userGuid, taskGuid) => dispatch(deletePriority(userGuid, taskGuid)),
+        setAssignee: (userGuid, taskGuid, assigneeGuid) => dispatch(updateAssignee(userGuid, taskGuid, assigneeGuid)),
+        fetchAssignee: (userGuid, taskGuid) => dispatch(getAssignee(userGuid, taskGuid))
     };
 }
 
@@ -119,9 +164,13 @@ const mapStateToProps = state => {
     const {priorityController} = taskPriorityReducer;
     const {priority} = priorityController;
 
+    const {assigneeController} = taskAssigneeReducer;
+    const {assignee} = assigneeController;
+
     return {
         status: status,
         priority: priority,
+        assignee: assignee,
         currentUser: state.authReducer.authController.currentUser
     };
 };
