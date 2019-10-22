@@ -29,9 +29,9 @@ class ProjectUpdate extends React.Component {
     };
 
     handleConfirmUpdateDeletion = () => {
-        const { update, projectGuid } = this.props;
+        const { update } = this.props;
         this.setState({ deleteUpdateConfirmOpen: false });
-        this.props.deleteProjectUpdate(update.guid, projectGuid);
+        this.props.deleteProjectUpdate(update.guid, update.relatedProjectGuid);
     };
 
     showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true });
@@ -212,8 +212,7 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
-        currentUser: state.authReducer.authController.currentUser,
-        projectGuid: state.projectController.result.guid
+        currentUser: state.authReducer.authController.currentUser
     };
 };
 
