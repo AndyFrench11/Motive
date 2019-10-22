@@ -1,5 +1,7 @@
 FROM node:8
 
+# COPY /home/gitlab-runner/server.pem /server.pem
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -9,7 +11,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY semantic.json .
 COPY semantic/ .
-COPY server.pem .
 
 
 
