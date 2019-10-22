@@ -20,7 +20,7 @@ namespace backend_api.Features.TaskPriority.Repository
             {
                 using (var session = _neo4JConnection.driver.Session())
                 {
-                    // Add task status node
+                    // Get task priority
                     var priority = session.ReadTransaction(tx => GetPriorityProperty(tx, taskGuid));
                     
                     return new RepositoryReturn<string>(priority);
@@ -59,10 +59,10 @@ namespace backend_api.Features.TaskPriority.Repository
             {
                 using (var session = _neo4JConnection.driver.Session())
                 {
-                    // Add task status node
+                    // Set task priority
                     session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, priority));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)
@@ -92,10 +92,10 @@ namespace backend_api.Features.TaskPriority.Repository
             {
                 using (var session = _neo4JConnection.driver.Session())
                 {
-                    // Add task status node
+                    // Delete task priority
                     session.WriteTransaction(tx => SetPriorityProperty(tx, taskGuid, ""));
 
-                    return new RepositoryReturn<bool>(false);
+                    return new RepositoryReturn<bool>(true);
                 }
             }
             catch (ServiceUnavailableException e)

@@ -128,6 +128,7 @@ class TaskForum extends React.Component {
                     task={task}
                     updateStatusCallback={this.props.updateStatusCallback}
                     updatePriorityCallback={this.props.updatePriorityCallback}
+                    updateAssigneeCallback={this.props.updateAssigneeCallback}
                 />
                 <Sidebar.Pusher>
                     {this.messages()}

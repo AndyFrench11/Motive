@@ -626,9 +626,6 @@ namespace backend_api.Database.ProjectRepository
                 {
                     // Find project user is part of
                     var result = session.ReadTransaction(tx => CheckGroupMembership(tx, userGuid, projectGuid));
-                    Console.WriteLine("+++++++++++++++++");
-                    Console.WriteLine(result);
-                    Console.WriteLine("+++++++++++++++++");
                     return result ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
                 }
             }
@@ -640,12 +637,10 @@ namespace backend_api.Database.ProjectRepository
 
         private bool CheckGroupMembership(ITransaction tx, Guid userGuid, Guid projectGuid)
         {
-            Console.WriteLine(projectGuid);
-            Console.WriteLine(userGuid);
             var projectId = projectGuid.ToString();
             var userId = userGuid.ToString();
 
-            const string statement = "MATCH (member:Person)-[:CONTRIBUTES_TO]->(project:Project) " +
+            const string statement = "MATCH (member:Person)-[]->(project:Project) " +
                                      "WHERE project.guid = $projectId " +
                                      "AND member.guid = $userId " + 
                                      "RETURN project";
