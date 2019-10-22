@@ -1,4 +1,5 @@
 ﻿using System;
+using backend_api.Database.ProjectTaskRepository;
 using backend_api.Features.TaskStatus.Repository;
 using backend_api.Util;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,9 @@ namespace backend_api.Features.TaskStatus.Controller
         [HttpPost("{taskId}")]
         public ActionResult Post(string taskId, [FromBody]Model.TaskStatus taskStatus, [FromHeader]string userId)
         {
+            // TODO: Check auth - Unauthorised()
+            // TODO: Check permissions - Forbidden()
+            
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
             var authorGuid = ValidationUtil.ParseGuid(userId);
@@ -28,31 +32,29 @@ namespace backend_api.Features.TaskStatus.Controller
             {
                 return BadRequest(Errors.InvalidGuid);
             }
-
             
-            // TODO: check user has access to task/project - Forbidden()
-            // TODO: task not found - NotFound()
-
-            if (taskStatus == null)
+            // Check task exists
+            var projectTaskRepository = new ProjectTaskRepository();
+            var exists = projectTaskRepository.Exists(taskGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.TaskNotFound);
+            }
+            
+            // Check status is provided and parsed correctly
+            if (taskStatus?.getStatus() == null)
             {
                 return StatusCode(400, Errors.StatusInvalid);
             }
-            
-            var status = taskStatus.getStatus();
-            // Check valid status
-            if (status == null)
-            {
-                return StatusCode(400, Errors.StatusInvalid);
-            }
 
-            var result = _taskStatusRepository.Add(taskGuid, status);
+            // Create
+            var result = _taskStatusRepository.Add(taskGuid, taskStatus.getStatus());
             
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(201, result.ReturnValue);
+            return result.IsError ? StatusCode(500, result.ErrorException.Message) : StatusCode(201, result.ReturnValue);
         }
         
         // READ
@@ -60,9 +62,8 @@ namespace backend_api.Features.TaskStatus.Controller
         [HttpGet("{taskId}")]
         public ActionResult<string> Get(string taskId, [FromHeader]string userId)
         {
-            // TODO
-            // Check auth/user - Unauthorised() and Forbidden() if no access to project
-            // Check task exists - NotFound()
+            // TODO: Check auth - Unauthorised()
+            // TODO: Check permissions - Forbidden()
             
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
@@ -71,15 +72,25 @@ namespace backend_api.Features.TaskStatus.Controller
             {
                 return BadRequest(Errors.InvalidGuid);
             }
+            
+            // Check task exists
+            var projectTaskRepository = new ProjectTaskRepository();
+            var exists = projectTaskRepository.Exists(taskGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.TaskNotFound);
+            }
 
+            // Read
             var result = _taskStatusRepository.GetForTask(taskGuid);
             
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(200, result.ReturnValue);
+            return result.IsError
+                ? StatusCode(500, result.ErrorException.Message)
+                : StatusCode(200, result.ReturnValue);
         }
 
         // UPDATE
@@ -95,30 +106,30 @@ namespace backend_api.Features.TaskStatus.Controller
                 return BadRequest(Errors.InvalidGuid);
             }
             
-            // TODO: Check valid task
+            // Check task exists
+            var projectTaskRepository = new ProjectTaskRepository();
+            var exists = projectTaskRepository.Exists(taskGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.TaskNotFound);
+            }
             
-            if (taskStatus == null)
+            // Check status is provided and parsed correctly
+            if (taskStatus?.getStatus() == null)
             {
                 return StatusCode(400, Errors.StatusInvalid);
             }
-
-            var status = taskStatus.getStatus();
-            // Check valid status
-            if (status == null)
-            {
-                return StatusCode(400, Errors.StatusInvalid);
-            }
             
-            // TODO: Check User can access task
+            // Edit
+            var result = _taskStatusRepository.Edit(taskGuid, taskStatus.getStatus());
             
-            var result = _taskStatusRepository.Edit(taskGuid, status);
-            
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(200);
+            return result.IsError
+                ? StatusCode(500, result.ErrorException.Message)
+                : StatusCode(200, result.ReturnValue);
         }
         
         // DELETE
@@ -126,10 +137,8 @@ namespace backend_api.Features.TaskStatus.Controller
         [HttpDelete("{taskId}")]
         public ActionResult Delete(string taskId, [FromHeader]string userId)
         {
-            // TODO
-            // Check auth - Unauthorised()
-            // Check permissions - Forbidden()
-            // Check task exists - NotFound()
+            // TODO: Check auth - Unauthorised()
+            // TODO: Check permissions - Forbidden()
             
             // Parse task guid and user guid
             var taskGuid = ValidationUtil.ParseGuid(taskId);
@@ -138,15 +147,25 @@ namespace backend_api.Features.TaskStatus.Controller
             {
                 return BadRequest(Errors.InvalidGuid);
             }
+            
+            // Check task exists
+            var projectTaskRepository = new ProjectTaskRepository();
+            var exists = projectTaskRepository.Exists(taskGuid);
+            if (exists.IsError)
+            {
+                return StatusCode(500, exists.ErrorException.Message);
+            }
+            if (!exists.ReturnValue)
+            {
+                return StatusCode(404, Errors.TaskNotFound);
+            }
 
+            // Delete
             var result = _taskStatusRepository.Delete(taskGuid);
             
-            if (result.IsError)
-            {
-                return StatusCode(500, result.ErrorException.Message);
-            }
-            
-            return StatusCode(200);
+            return result.IsError
+                ? StatusCode(500, result.ErrorException.Message)
+                : StatusCode(200, result.ReturnValue);
         }
     }
 }
