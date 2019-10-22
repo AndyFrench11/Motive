@@ -18,8 +18,7 @@ class ProjectUpdate extends React.Component {
 
         this.state = { 
             updatingContent: false,
-            deleteUpdateConfirmOpen: false,
-            highlight: this.props.update.highlight
+            deleteUpdateConfirmOpen: false
         };
     }
 
@@ -43,19 +42,17 @@ class ProjectUpdate extends React.Component {
     };
 
     handleHighlightStatusChange = () => {
-        const { highlight } = this.state;
         const { update } = this.props;
-        this.setState({ highlight: !highlight });
         //Do backend call!
-        this.props.updateProjectUpdateHighlight(update.guid, !highlight)
+        this.props.updateProjectUpdateHighlight(update.guid, !update.highlight, update.relatedProjectGuid)
 
     };
 
     render() {
         const { update, projectName, tags, currentUser } = this.props;
-        const { relatedPerson, relatedTask, content, dateTimeCreated, guid, comments, imageGuid, videoGuid, relatedProjectGuid } = update;
+        const { relatedPerson, relatedTask, content, dateTimeCreated, guid, comments, imageGuid, videoGuid, relatedProjectGuid, highlight } = update;
 
-        const { deleteUpdateConfirmOpen, updatingContent, highlight } = this.state;
+        const { deleteUpdateConfirmOpen, updatingContent } = this.state;
 
         const options = [
             { key: '1', text: 'Edit Update', icon: 'edit', onClick: this.handleEditUpdateClicked },

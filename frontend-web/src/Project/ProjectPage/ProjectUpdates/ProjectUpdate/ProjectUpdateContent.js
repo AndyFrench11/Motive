@@ -25,7 +25,6 @@ class ProjectUpdateContent extends React.Component {
         const { content } = this.props;
         
         if((projectUpdateInputValue !== "") && (projectUpdateInputValue !== content)) {
-
             //Update the backend!
             this.props.updateProjectUpdateContent(this.props.updateGuid, projectUpdateInputValue, this.props.relatedProjectGuid);
             this.props.updateContentStateCallback();
