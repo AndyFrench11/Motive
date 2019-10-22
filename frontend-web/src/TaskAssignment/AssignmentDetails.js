@@ -18,5 +18,8 @@ export default class AssignmentDetails extends React.Component {
                 </Label>
             );
         }
+        else {
+            return null;
+        }
     }
 }
