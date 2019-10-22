@@ -88,7 +88,7 @@ class CreateProjectUpdateModal extends React.Component {
     }
 
     onFileUpload = () => {
-        this.props.fetchProjectUpdates(this.currentProject.guid)
+        this.props.fetchProjectUpdates(this.props.currentProject.guid)
         this.props.closeCallback()
     };
 
