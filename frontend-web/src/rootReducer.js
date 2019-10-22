@@ -20,6 +20,7 @@ import subProjectReducer from "./Project/ProjectPage/SubProjects/reducers";
 import channelMessageReducer from "./TaskForum/Messages/messageReducers";
 import taskStatusReducer from "./TaskStatus/reducers";
 import taskPriorityReducer from "./TaskPriority/reducers";
+import taskAssigneeReducer from "./TaskAssignment/reducers";
 
 import {USER_LOGOUT} from "./Common/Auth/actions";
 
@@ -42,6 +43,7 @@ const appReducer = combineReducers({
     channelMessageReducer,
     taskStatusReducer,
     taskPriorityReducer,
+    taskAssigneeReducer,
     subProjectReducer
 });
 
