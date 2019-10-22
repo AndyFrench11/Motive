@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using backend_api.Features.TaskForum.Repository;
 using backend_api.Models;
 using Neo4j.Driver.V1;
@@ -127,6 +128,34 @@ namespace backend_api.Database.ProjectTaskRepository
             tx.Run("MATCH (a:ProjectTask) WHERE a.guid = $projectTaskId DETACH DELETE a", new { projectTaskId });
 
         }
+
+        public RepositoryReturn<bool> Exists(Guid projectTaskGuid)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+                    // Find single task
+                    var foundTask = session.ReadTransaction(tx => RetrieveTask(tx, projectTaskGuid));
+                    return foundTask != null ? new RepositoryReturn<bool>(true) : new RepositoryReturn<bool>(false);
+                }
+            }
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<bool>(true, e);
+            }
+        }
         
+        private ProjectTask RetrieveTask(ITransaction tx, Guid taskGuid)
+        {
+            var taskId = taskGuid.ToString();
+
+            const string statement = "MATCH (task:ProjectTask) " + 
+                                     "WHERE task.guid = $taskId " + 
+                                     "RETURN task";
+            var result = tx.Run(statement, new {taskId});
+            var record = result.SingleOrDefault();
+            return record == null ? null : new ProjectTask(record[0].As<INode>().Properties);
+        }
     }
 }

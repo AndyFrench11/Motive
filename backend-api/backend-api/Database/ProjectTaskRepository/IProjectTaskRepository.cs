@@ -16,6 +16,8 @@ namespace backend_api.Database.ProjectTaskRepository
         RepositoryReturn<bool> EditCompletionStatus(bool completed, Guid projectTaskGuid);
 
         RepositoryReturn<bool> Delete(Guid projectTaskGuid);
+
+        RepositoryReturn<bool> Exists(Guid projectTaskGuid);
     }
 }
 
