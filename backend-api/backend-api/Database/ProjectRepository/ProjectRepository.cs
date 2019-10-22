@@ -72,15 +72,15 @@ namespace backend_api.Database.ProjectRepository
         private List<Tag> RetrieveProjectTags(ITransaction tx, Guid projectGuid, Guid parentProjectGuid)
         {
             //If the project is a subproject then get the tags from its parent
-            var projectId = parentProjectGuid.ToString().Equals("00000000-0000-0000-0000-000000000000") ? 
-                projectGuid.ToString() 
+            var projectId = parentProjectGuid.ToString().Equals("00000000-0000-0000-0000-000000000000") ?
+                projectGuid.ToString()
                 : parentProjectGuid.ToString();
-            
+
             var query = "MATCH (project:Project) -- (tag:Tag) WHERE project.guid = $projectId RETURN tag";
-            
-            var result = tx.Run(query, 
+
+            var result = tx.Run(query,
                 new { projectId });
-            
+
 
             var records = result.Select(record => new Tag(record[0].As<INode>().Properties)).ToList();
 
@@ -126,7 +126,7 @@ namespace backend_api.Database.ProjectRepository
             }
         }
 
-        public RepositoryReturn<bool> Add(Project projectToAdd, Guid userGuid)
+        public RepositoryReturn<bool> Add(Project projectToAdd, Guid userGuid, string encryptedProjectPassword)
         {
             
             try
@@ -134,7 +134,7 @@ namespace backend_api.Database.ProjectRepository
                 using (var session = _neo4jConnection.driver.Session())
                 {
                     session.WriteTransaction(tx => CreateProjectNode(tx, projectToAdd));
-                    session.WriteTransaction(tx => CreateProjectRelationship(tx, projectToAdd, userGuid));
+                    session.WriteTransaction(tx => LinkUserToProject(tx, projectToAdd.Guid, userGuid, encryptedProjectPassword, AccessLevel.Owner));
 
                     session.WriteTransaction(tx => CreateTagNodes(tx, projectToAdd));
                     session.WriteTransaction(tx => CreateTagRelationships(tx, projectToAdd));
@@ -160,19 +160,67 @@ namespace backend_api.Database.ProjectRepository
                    "description: $projectDescription, " +
                    "imageIndex: $projectImageIndex, " +
                    "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
-                   "guid: $projectGuid})", 
+                   "guid: $projectGuid})",
                 new { projectName, projectDescription, projectImageIndex, projectGuid });
         }
 
-        private void CreateProjectRelationship(ITransaction tx, Project project, Guid userGuid)
+        // Creates a relationship from a user to project with a certain AccessLevel and encrypted password
+        // Use to create a new link or modify an existing
+        private void LinkUserToProject(ITransaction tx, Guid projectGuid, Guid userGuid,
+            string encryptedProjectPassword,
+            AccessLevel accessLevel)
         {
-            //Create the relationship to the project
-            string projectGuid = project.Guid.ToString();
-            string typeString = "owner";
-            string userId = userGuid.ToString();
-            tx.Run("MATCH (p:Project),(pe:Person) WHERE p.guid = $projectGuid AND pe.guid = $userId CREATE (pe)-[:CONTRIBUTES_TO {type:[$typeString]}]->(p)", new { projectGuid, userId, typeString });
+            // Looks for an existing relationship and replaces it.
+            tx.Run("MATCH (user:Person),(project:Project)\n" +
+                   $"WHERE user.guid = '{userGuid}' AND project.guid = '{projectGuid}'\n" +
+                   $"MERGE (user)-[r:{accessLevel}]->(project)\n" +
+                   $"ON CREATE SET r.encryptedKey = '{encryptedProjectPassword}'\n" +
+                   $"ON MATCH SET r.encryptedKey = '{encryptedProjectPassword}'\n"
+            );
+        }
 
+        // Deletes relationship between user and project of specific AccessLevel
+        private void RemoveUserFromProject(ITransaction tx, Guid projectGuid, Guid userGuid,
+            AccessLevel accessLevel)
+        {
+            // Looks for an existing relationship and removes it.
+            tx.Run("MATCH (user:Person),(project:Project)\n" +
+                   $"WHERE user.guid = '{userGuid}' AND project.guid = '{projectGuid}'\n" +
+                   $"MATCH (user)-[r:{accessLevel}]->(project)\n" +
+                   "DELETE r"
+            );
+        }
 
+        // Gets the link between a user and a project (which contains the AccessLevel and encrypted project password)
+        public RepositoryReturn<ProjectAccessRelationship> GetUserAccessToProject(Guid projectGuid, Guid userGuid)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+
+                    var returnedMediaAccessRelationship = session.ReadTransaction(tx =>
+                    {
+                        var result = tx.Run(
+                            $"MATCH (person:Person {{ guid: '{userGuid}' }})-[r]->(project:Project {{ guid : '{projectGuid}'}})\nRETURN r");
+
+                        var record = result.SingleOrDefault();
+                        return new ProjectAccessRelationship(record?[0].As<IRelationship>());
+                    });
+                    switch (returnedMediaAccessRelationship)
+                    {
+                        case null:
+                            return new RepositoryReturn<ProjectAccessRelationship>(null);
+                        default:
+                            return new RepositoryReturn<ProjectAccessRelationship>(returnedMediaAccessRelationship);
+                    }
+                }
+            }
+
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<ProjectAccessRelationship>(true, e);
+            }
         }
 
         private void CreateTagNodes(ITransaction tx, Project project) {
@@ -209,7 +257,7 @@ namespace backend_api.Database.ProjectRepository
                        "completed: $completed, " +
                        "orderIndex: $orderIndex, " +
                        "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
-                       "guid: $taskGuid})", 
+                       "guid: $taskGuid})",
                     new { taskName, completed, orderIndex, taskGuid });
             }
         }
@@ -411,7 +459,7 @@ namespace backend_api.Database.ProjectRepository
             string projectId = projectGuid.ToString();
             tx.Run("MATCH (p:Project) -- (pu:ProjectUpdate) WHERE p.guid = $projectId DETACH DELETE pu", new { projectId });
         }
-        
+
         private void RemoveProjectTasks(ITransaction tx, Guid projectGuid)
         {
             string projectId = projectGuid.ToString();
@@ -427,31 +475,20 @@ namespace backend_api.Database.ProjectRepository
         /**
          * Add a relationship between a project and a given user.
          */
-        public RepositoryReturn<bool> AddProjectMember(Guid projectGuid, Guid newMemberGuid)
+        public RepositoryReturn<bool> AddProjectMembers(Guid projectGuid, IDictionary<Guid, Tuple<AccessLevel, string>> newMemberInfo)
         {
-//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
             try
             {
-                using (_session)
+                using (var session = _neo4jConnection.driver.Session())
                 {
-                    _session.WriteTransaction(tx => AddMemberRelationship(tx, projectGuid, newMemberGuid));
+                    foreach (KeyValuePair<Guid, Tuple<AccessLevel, string>> userGuidToInfo in newMemberInfo)
+                    {
+                        session.WriteTransaction(tx => LinkUserToProject(tx, projectGuid, userGuidToInfo.Key, userGuidToInfo.Value.Item2, userGuidToInfo.Value.Item1));
+                    }
                     return new RepositoryReturn<bool>(true);
                 }
-
-//                client.Connect();
-//                client.Cypher
-//                    .Match("(project:Project), (newOwner:Person)")
-//                    .Where((Person newMember) => newMember.Guid == newMemberGuid)
-//                    .AndWhere((Project project) => project.Guid == projectGuid)
-//                    .CreateUnique("(newOwner)-[:CONTRIBUTES_TO {type:ownerType}]->(project)")
-//                    .WithParam("ownerType", "type")
-//                    .ExecuteWithoutResults();
             }
-            catch (ServiceUnavailableException e)
-            {
-                return new RepositoryReturn<bool>(true, e);
-            }
-            catch (Exception e)
+            catch (Neo4jException e)
             {
                 return new RepositoryReturn<bool>(true, e);
             }
@@ -461,29 +498,20 @@ namespace backend_api.Database.ProjectRepository
         /**
          * Remove a relationship between a project and a given member.
          */
-        public RepositoryReturn<bool> RemoveProjectMember(Guid projectGuid, Guid memberGuid)
+        public RepositoryReturn<bool> RemoveProjectMembers(Guid projectGuid, IDictionary<Guid, AccessLevel> membersToRemove)
         {
-//            var client = new GraphClient(new Uri(_databaseHttpUrl + "/db/data"), _dbUser, _dbPw);
             try
             {
-                using (_session)
+                using (var session = _neo4jConnection.driver.Session())
                 {
-                    _session.WriteTransaction(tx => RemoveMemberRelationship(tx, projectGuid, memberGuid));
+                    foreach (KeyValuePair<Guid, AccessLevel> memberToRemove in membersToRemove)
+                    {
+                        session.WriteTransaction(tx => RemoveUserFromProject(tx, projectGuid, memberToRemove.Key, memberToRemove.Value));
+                    }
                     return new RepositoryReturn<bool>(true);
                 }
-//                client.Connect();
-//                client.Cypher
-//                    .Match("(contributor:Person)-[contributes:CONTRIBUTES_TO]-(project:Project)")
-//                    .Where((Person contributor) => contributor.Guid == memberGuid)
-//                    .AndWhere((Project project) => project.Guid == projectGuid)
-//                    .Delete("contributes")
-//                    .ExecuteWithoutResults();
             }
-            catch (ServiceUnavailableException e)
-            {
-                return new RepositoryReturn<bool>(true, e);
-            }
-            catch (Exception e)
+            catch (Neo4jException e)
             {
                 return new RepositoryReturn<bool>(true, e);
             }
@@ -494,26 +522,26 @@ namespace backend_api.Database.ProjectRepository
         {
             var projectId = projectGuid.ToString();
             var newMemberId = newMemberGuid.ToString();
-            
+
             const string statement = "MATCH (project:Project), (newMember:Person) " +
                                      "WHERE project.guid = $projectId " +
-                                     "AND newMember.guid = $newMemberId " + 
+                                     "AND newMember.guid = $newMemberId " +
                                      "CREATE UNIQUE (newMember)-[:CONTRIBUTES_TO]->(project)";
             tx.Run(statement, new {projectId, newMemberId});
         }
-        
+
         private void RemoveMemberRelationship(ITransaction tx, Guid projectGuid, Guid memberGuid)
         {
             var projectId = projectGuid.ToString();
             var memberId = memberGuid.ToString();
-            
+
             const string statement = "MATCH (member:Person)-[contributes:CONTRIBUTES_TO]-(project:Project) " +
-                                     "WHERE member.guid = $memberId " + 
+                                     "WHERE member.guid = $memberId " +
                                      "AND project.guid = $projectId " +
                                      "DELETE contributes";
             tx.Run(statement, new {memberId, projectId});
         }
-        
+
         public RepositoryReturn<bool> AddSubProject(Guid parentProjectGuid, Project newSubProject)
         {
             try
@@ -546,7 +574,7 @@ namespace backend_api.Database.ProjectRepository
                    "imageIndex: $projectImageIndex, " +
                    "dateTimeCreated: localdatetime({ timezone: 'Pacific/Auckland' }), " +
                    "parentProjectGuid: $parentProjectId, " +
-                   "guid: $projectGuid})", 
+                   "guid: $projectGuid})",
                 new { projectName, projectDescription, projectImageIndex, parentProjectId, projectGuid });
         }
 
@@ -557,18 +585,18 @@ namespace backend_api.Database.ProjectRepository
             string childProjectId = subProject.Guid.ToString();
             tx.Run("MATCH (parent:Project),(child:Project) " +
                    "WHERE parent.guid = $parentProjectId AND child.guid = $childProjectId " +
-                   "CREATE (child)-[:IS_SUBPROJECT_OF]->(parent)", 
+                   "CREATE (child)-[:IS_SUBPROJECT_OF]->(parent)",
                 new { parentProjectId, childProjectId });
         }
-        
+
         public RepositoryReturn<IEnumerable<Project>> GetSubProjects(Guid parentProjectGuid)
         {
             try
-            {   
+            {
                 using (_session)
                 {
                     var returnedSubProjects = _session.ReadTransaction(tx => RetrieveSubProjects(tx, parentProjectGuid));
-                    
+
                     return new RepositoryReturn<IEnumerable<Project>>(returnedSubProjects);
                 }
             }
@@ -577,12 +605,12 @@ namespace backend_api.Database.ProjectRepository
                 return new RepositoryReturn<IEnumerable<Project>>(true, e);
             }
         }
-        
+
         private List<Project> RetrieveSubProjects(ITransaction tx, Guid parentProjectGuid)
         {
             var parentProjectId = parentProjectGuid.ToString();
             var result = tx.Run("MATCH (child:Project) -[:IS_SUBPROJECT_OF]-> (parent:Project) " +
-                                "WHERE parent.guid = $parentProjectId RETURN child", 
+                                "WHERE parent.guid = $parentProjectId RETURN child",
                 new { parentProjectId });
 
             var records = result.Select(record => new Project(record[0].As<INode>().Properties)).ToList();

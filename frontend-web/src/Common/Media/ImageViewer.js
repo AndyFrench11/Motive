@@ -1,15 +1,23 @@
 import React, {Component} from 'react';
 import {Image} from "semantic-ui-react";
 
+const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
+
 class ImageViewer extends Component {
     constructor(props) {
         super(props);
 
-        this.fetchImage("https://localhost:8081/api/upload?resourceGuid=" + this.props.imageGuid);
+        console.log(this.props.projectGuid);
+        console.log(this.props.imageGuid);
+
 
         this.state = {
             imageUrl: "",
         }
+    }
+
+    componentDidMount() {
+        this.fetchImage(serverURL + `/projectupdate/${this.props.projectGuid}/media/${this.props.imageGuid}`);
     }
 
     readResponseAsBlob = (response) => {

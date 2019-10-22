@@ -122,12 +122,6 @@ class Login extends Component {
                                 <br/>
                                 <br/>
                                 <br/>
-                                <Button color='facebook'>
-                                    <Icon name='facebook' /> Facebook
-                                </Button>
-                                <Button color='google plus'>
-                                    <Icon name='google plus' /> Google Plus
-                                </Button>
                             </Grid.Row>
                         </Grid.Column>
                     </Grid>

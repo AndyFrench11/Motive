@@ -4,14 +4,16 @@ import {
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import uuidv4 from 'uuid/v4';
+import { postProjectUpdate, resetModalState } from "./actions";
 import dateFormat from 'dateformat';
-import { postProjectUpdate } from "./actions";
 import TrophyImage from '../../../ProjectImages/image16.png';
+import Uploader from "../../../../Common/Uploader";
 
 class CreateProjectUpdateModal extends React.Component {
 
     constructor(props) {
         super(props);
+        this.props.resetModalState();
 
         this.taskOptions = this.props.project.taskList.map((task, index) => {
             return {
@@ -24,14 +26,16 @@ class CreateProjectUpdateModal extends React.Component {
         const { completedTaskIndex } = this.props;
 
         if(completedTaskIndex !== -1) {
-            this.state = { 
+            this.state = {
+                mediaUploadUrl: "",
                 contentInput: "",
                 selectedTaskGuid: this.props.project.taskList[completedTaskIndex].guid,
                 markedAsHighlight: false,
             };
     
         } else {
-            this.state = { 
+            this.state = {
+                mediaUploadUrl: "",
                 contentInput: "",
                 selectedTaskGuid: "",
                 markedAsHighlight: false,
@@ -39,12 +43,20 @@ class CreateProjectUpdateModal extends React.Component {
                 currentAnimation: 'shake'
             };
         }
+    }
 
+    componentDidUpdate(prevProps) {
+        // When we receive the file
+        if (this.props.createdUpdateGuid !== null &&  this.props.createdUpdateGuid !== prevProps.createdUpdateGuid) {
+            this.setState({mediaUploadUrl: `/projectupdate/${this.props.project.guid}/media/${this.props.createdUpdateGuid}`}, () => {
+                this.refs.uploaderComponent.beginProcessFile();
+            });
+        }
     }
 
     updateContentInput = (event, {value}) => {
         this.setState({ contentInput: value });
-    }
+    };
 
     updateSelectedTask = (event, { key, value }) => {
         this.setState({ selectedTaskGuid: value });
@@ -55,14 +67,14 @@ class CreateProjectUpdateModal extends React.Component {
         const defaultTaskGuid = "00000000-0000-0000-0000-000000000000";
         const currentDateTime = new Date();
         var event = dateFormat(currentDateTime, "yyyy-mm-dd") + "T" +  dateFormat(currentDateTime, "HH:MM:ss") + ".667000000"
-        const update = { 
-            content: contentInput, 
+        const update = {
+            content: contentInput,
             highlight: markedAsHighlight,
             taskGuid: selectedTaskGuid !== "" ? selectedTaskGuid : defaultTaskGuid,
             guid: uuidv4(),
             dateTimeCreated: event
         }
-    
+
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
         this.props.closeCallback()
     }
@@ -75,10 +87,18 @@ class CreateProjectUpdateModal extends React.Component {
         }));
     }
 
+    onFileUpload = () => {
+        this.props.closeCallback()
+    };
+
+    sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    };
+
     render() {
 
         const { user, project, completedTaskIndex } = this.props;
-        const { markedAsHighlight, animationVisible, currentAnimation } = this.state;
+        const { markedAsHighlight, animationVisible, currentAnimation, mediaUploadUrl } = this.state;
 
         return (
             <Modal open={true} onClose={this.props.closeCallback} closeIcon>
@@ -172,7 +192,7 @@ class CreateProjectUpdateModal extends React.Component {
                                 <Divider/>
                             }
                         </Form>
-
+                        <Uploader uploadUrl={ mediaUploadUrl } ref='uploaderComponent' onFileUploaded={this.onFileUpload} />
                     </Segment>
                 </Modal.Content>
                 <Modal.Actions>
@@ -191,17 +211,20 @@ class CreateProjectUpdateModal extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         postProjectUpdate: (projectGuid, userGuid, update) => dispatch(postProjectUpdate(projectGuid, userGuid, update)),
-    };
+        resetModalState: () => dispatch(resetModalState())
+    }
 }
 
 const mapStateToProps = state => {
     const { createProjectUpdateReducer } = state;
     const { createProjectUpdateController } = createProjectUpdateReducer;
-    const { isUpdating, lastUpdated, result } = createProjectUpdateController;
+    const { isUpdating, lastUpdated, result, createdUpdateGuid } = createProjectUpdateController;
+
     return {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
+        createdUpdateGuid: createdUpdateGuid
     };
 };
 

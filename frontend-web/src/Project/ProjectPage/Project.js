@@ -66,25 +66,7 @@ class ProjectPageLayout extends React.Component {
     };
 
     closeCreateProjectUpdateModal = (project, user, update) => {
-        // if(update !== undefined) {
-        //     const { projectUpdates } = this.props;
-        //     const { localProjectUpdates } = this.state;
-        //     const updates = localProjectUpdates !== null ? localProjectUpdates : projectUpdates;
 
-        //     const relatedTask = project.taskList.filter((task) => task.guid === update.taskGuid);
-        //     const updateCopy = Object.assign({}, update, {
-        //         relatedPerson: user,
-        //         relatedProject: project
-        //     });
-        //     if(relatedTask === []) {
-        //         updateCopy['relatedTask'] = relatedTask
-        //     }
-        //     updates.push(updateCopy);
-
-        //     this.setState({localProjectUpdates: updates, createProjectUpdateModalOpen: false})
-        // } else {
-        //     this.setState({ createProjectUpdateModalOpen: false })
-        // }       
         this.setState({ createProjectUpdateModalOpen: false })
     };
 

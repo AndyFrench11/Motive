@@ -49,10 +49,7 @@ namespace backend_api.Controllers
                     Console.WriteLine(greeting);
                     Console.WriteLine("----------------------");
                 }
-
             }
-
-
             return "Yay!";
         }
 
