@@ -122,7 +122,6 @@ namespace backend_api.Database.ProjectUpdateRepository
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }
-
             }
             catch (Neo4jException e)
             {

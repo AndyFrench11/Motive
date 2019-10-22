@@ -37,6 +37,63 @@ namespace backend_api.Database.MediaRepository
             }
         }
 
+        public RepositoryReturn<Tuple<MediaTracker, MediaType>> GetByProjectGuid(Guid projectUpdateGuid)
+        {
+            try
+            {
+                using (var session = _neo4jConnection.driver.Session())
+                {
+
+                    var returnedMediaTracker = session.ReadTransaction(tx =>
+                    {
+                        var result = tx.Run(
+                            $"MATCH (update:ProjectUpdate)-[r]->(media:Media) " +
+                            $"WHERE update.guid = '{projectUpdateGuid}'" +
+                            "RETURN media");
+
+                        //Do a check to see if result.single() is empty
+                        var record = result.SingleOrDefault();
+                        if (record == null)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return new MediaTracker(record[0].As<INode>().Properties);
+                        }
+                    });
+                    
+                    var returnedMediaType = session.ReadTransaction(tx =>
+                    {
+                        var result = tx.Run(
+                            $"MATCH (update:ProjectUpdate)-[r]->(media:Media) " +
+                            $"WHERE update.guid = '{projectUpdateGuid}'" +
+                            "RETURN type(r)");
+
+                        //Do a check to see if result.single() is empty
+                        var record = result.SingleOrDefault();
+                        if (record == null)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return new MediaTracker(record[0].As<INode>().Properties);
+                        }
+                    });
+                    
+                    
+
+                    return new RepositoryReturn<Tuple<MediaTracker, MediaType>>(new Tuple<MediaTracker, MediaType>(returnedMediaTracker, MediaType.Image));
+                }
+            }
+
+            catch (Neo4jException e)
+            {
+                return new RepositoryReturn<Tuple<MediaTracker, MediaType>>(true, e);
+            }
+        }
+
         private void CreateMediaNode(ITransaction tx, MediaTracker newFileTracker)
         {
             tx.Run("CREATE(newMedia:Media {" +

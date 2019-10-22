@@ -16,6 +16,10 @@ namespace backend_api.Models
         public List<Comment> comments { get; set; }
         //public List<Tag> relatedTags { get; set; }
         public string dateTimeCreated { get; set; }
+        
+        public string photoGuid { get; set; }
+        
+        public string videoGuid { get; set; }
 
         public ProjectUpdate()
         {
