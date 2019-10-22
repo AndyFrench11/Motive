@@ -209,7 +209,6 @@ namespace backend_api.Crypto
 
 
             // Return the encrypted bytes from the memory stream, need to add the salt for decryption
-
             byte[] encryptedWithSalt = new byte[encrypted.Length + 8];
             
             Array.Copy(encrypted, 0, encryptedWithSalt, 0, encrypted.Length);

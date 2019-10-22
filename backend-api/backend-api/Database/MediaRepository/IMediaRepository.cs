@@ -10,6 +10,8 @@ namespace backend_api.Database.MediaRepository
         RepositoryReturn<bool> Create(MediaTracker newFileTracker, Guid updateGuid, MediaType mediaType);
 
         RepositoryReturn<MediaTracker> GetByGuid(Guid mediaGuid);
+        RepositoryReturn<Tuple<MediaTracker, MediaType>> GetByProjectGuid(Guid projectUpdateGuid);
+
         RepositoryReturn<MediaTracker> Update(Guid mediaGuid, Guid userGuid);
 
         RepositoryReturn<bool> Delete(Guid mediaGuid, Guid userGuid);

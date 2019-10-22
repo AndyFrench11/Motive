@@ -63,28 +63,25 @@ namespace backend_api.Database.MediaRepository
                         }
                     });
                     
-                    var returnedMediaType = session.ReadTransaction(tx =>
+                    MediaType returnedMediaType = session.ReadTransaction(tx =>
                     {
                         var result = tx.Run(
                             $"MATCH (update:ProjectUpdate)-[r]->(media:Media) " +
                             $"WHERE update.guid = '{projectUpdateGuid}'" +
                             "RETURN type(r)");
 
-                        //Do a check to see if result.single() is empty
-                        var record = result.SingleOrDefault();
-                        if (record == null)
+                        var res = result.Select(record => record[0].As<string>()).ToList().SingleOrDefault();
+
+                        if (res != null)
                         {
-                            return null;
+                            Enum.TryParse(res, out MediaType foundMediaType);
+                            return foundMediaType;
                         }
-                        else
-                        {
-                            return new MediaTracker(record[0].As<INode>().Properties);
-                        }
+
+                        return MediaType.None;
                     });
                     
-                    
-
-                    return new RepositoryReturn<Tuple<MediaTracker, MediaType>>(new Tuple<MediaTracker, MediaType>(returnedMediaTracker, MediaType.Image));
+                    return new RepositoryReturn<Tuple<MediaTracker, MediaType>>(new Tuple<MediaTracker, MediaType>(returnedMediaTracker, returnedMediaType));
                 }
             }
 

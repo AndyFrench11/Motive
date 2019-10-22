@@ -11,6 +11,7 @@ using backend_api.Database.ProjectUpdateRepository;
 using backend_api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace backend_api.Controllers
 {
@@ -68,6 +69,7 @@ namespace backend_api.Controllers
         // POST -> api/projectupdate/{projectGuid}/media/{projectupdateGuid}
         [HttpPost("{projectGuid}/media/{projectUpdateGuid}")]
         [DisableRequestSizeLimit]
+        [ValidSessionRequired]
         public IActionResult ReceiveFileFromClient([FromForm] IFormFile filepond, string projectGuid, string projectUpdateGuid)
         {
             string sessionId = Request.Cookies["sessionId"];
@@ -81,13 +83,8 @@ namespace backend_api.Controllers
             
             // Generate object to track this upload (and create relationships to users) in the DB
             MediaTracker newFileTracker = new MediaTracker(Path.GetExtension(filepond.FileName), filepond.ContentType);
-            
-            // Create a new file password (only decryptable to the owner at upload)
-            string newFilePasswordPlainText = Convert.ToBase64String(CryptoHelpers.GetRandomBytes(16));
-            
-            // Encrypt the file with the newly generated password
-            var stream = filepond.OpenReadStream();
-            newFileTracker.salt = aesEngine.EncryptStream(stream, newFileTracker.encryptedFilePath, newFilePasswordPlainText);
+
+
             
             // Get the link between the requesting user and the specified project (they may not own it)
             RepositoryReturn<ProjectAccessRelationship> returnProjectAccessRelationship = 
@@ -111,22 +108,22 @@ namespace backend_api.Controllers
                 return StatusCode(401, "You do not have correct access privileges to this resource");
             }
             
-            // Get the user's public key
-            RepositoryReturn<Person> fetchAccount = _personRepository.GetByGuid(userLoggedInSession.userGuid);
-            if (fetchAccount.IsError)
-            {
-                return StatusCode(500, fetchAccount.ErrorException.Message);
-            }
-            
             RSAEngine rsaEngine = new RSAEngine();
-            RSAParameters userPublicKey = rsaEngine.ConvertStringToKey(fetchAccount.ReturnValue.publicKey);
+            
+            // Decrypt the project key with the user's private key
+            RSAParameters privateKey = rsaEngine.ConvertStringToKey(userLoggedInSession.privateKey);
 
-            // Encrypt the password with the user's public key (therefore only accessible to their private key)
-            string ownerEncryptedPassword = Convert.ToBase64String(rsaEngine.EncryptString(newFilePasswordPlainText, userPublicKey));
-
+            // Got the plaintext project key
+            string plainTextProjectKey =
+                rsaEngine.DecryptString(Convert.FromBase64String(returnProjectAccessRelationship.ReturnValue.EncryptedMediaKey), privateKey);
+            
+            // Encrypt the file with the found project key
+            var stream = filepond.OpenReadStream();
+            newFileTracker.salt = aesEngine.EncryptStream(stream, newFileTracker.encryptedFilePath, plainTextProjectKey);
+            
             MediaType fileMediaType = newFileTracker.GetMediaType();
             // Encrypt headers so the content type and extension aren't visible in DB (mandatory)
-            newFileTracker.EncryptHeaders(newFilePasswordPlainText);
+            newFileTracker.EncryptHeaders(plainTextProjectKey);
             
             RepositoryReturn<bool> returnCreate = _mediaRepository.Create(
                 newFileTracker, Guid.Parse(projectUpdateGuid), fileMediaType);
@@ -137,6 +134,66 @@ namespace backend_api.Controllers
             }
             
             return StatusCode(201, newFileTracker.Guid);
+        }
+        
+        
+        // GET -> api/projectupdate/{projectGuid}/media/{mediaGuid}
+        [HttpGet("{projectGuid}/media/{mediaGuid}")]
+        [ValidSessionRequired]
+        public IActionResult SendSecureFileToClient(string projectGuid, string mediaGuid)
+        {
+            string sessionId = Request.Cookies["sessionId"];
+            Session userLoggedInSession = SessionsController.GetLoggedInSession(sessionId);
+            
+            RepositoryReturn<MediaTracker> returnMediaTracker = _mediaRepository.GetByGuid(Guid.Parse(mediaGuid));
+            
+            if (returnMediaTracker.IsError)
+            {
+                return StatusCode(500, returnMediaTracker.ErrorException.Message);
+            }
+
+            if (returnMediaTracker.ReturnValue == null)
+            {
+                return StatusCode(404);
+            }
+
+            MediaTracker queriedMediaTracker = returnMediaTracker.ReturnValue;
+
+            RepositoryReturn<ProjectAccessRelationship> returnProjectAccessRelationship = _projectRepository.GetUserAccessToProject(Guid.Parse(projectGuid),
+                userLoggedInSession.userGuid);
+            
+            if (returnProjectAccessRelationship.IsError)
+            {
+                return StatusCode(500, returnProjectAccessRelationship.ErrorException.Message);
+            }
+            
+            if (returnProjectAccessRelationship.ReturnValue == null)
+            {
+                // Owner has not given access to this user, no relationship exists
+                return StatusCode(404, "Unauthorised access to resource, check if owner has given access");
+            }
+            
+            RSAEngine rsaEngine = new RSAEngine();
+            
+            // Get the user's private key to fetch the media decryption key
+            RSAParameters privateKey = rsaEngine.ConvertStringToKey(userLoggedInSession.privateKey);
+
+            // Get the project key (individually encrypted for this current user)
+            string plainTextProjectKey =
+                rsaEngine.DecryptString(Convert.FromBase64String(returnProjectAccessRelationship.ReturnValue.EncryptedMediaKey), privateKey);
+
+            // Decrypt the media type headers
+            queriedMediaTracker.DecryptHeaders(plainTextProjectKey);
+            
+            // Stream the decrypted file to the user
+            AESEngine aesEngine = new AESEngine();
+            return new FileStreamResult(aesEngine.DecryptFileToStream(queriedMediaTracker.encryptedFilePath,
+                plainTextProjectKey,
+                queriedMediaTracker.salt), 
+                new MediaTypeHeaderValue(queriedMediaTracker.contentHeader))
+            {
+                FileDownloadName = "resource" + queriedMediaTracker.extension
+            };
         }
         
         // Get all of the updates for a single project

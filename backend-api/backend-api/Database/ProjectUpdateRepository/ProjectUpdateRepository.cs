@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using backend_api.Database.MediaRepository;
 using backend_api.Features.Comments.Repository;
 using backend_api.Models;
 using Neo4j.Driver.V1;
@@ -18,6 +19,7 @@ namespace backend_api.Database.ProjectUpdateRepository
         }
 
 
+        
         public RepositoryReturn<IEnumerable<ProjectUpdate>> GetAllForPerson(Guid personGuid)
         {
             try
@@ -54,6 +56,19 @@ namespace backend_api.Database.ProjectUpdateRepository
                         var comments = 
                             session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
                         update.comments = comments.ReturnValue.ToList();
+                        
+                        IMediaRepository mediaRepository = new MediaRepository.MediaRepository();
+                        Tuple<MediaTracker, MediaType> relatedMedia = mediaRepository.GetByProjectGuid(update.Guid).ReturnValue;
+                        
+                        if (relatedMedia.Item2 == MediaType.Image)
+                        {
+                            update.imageGuid = relatedMedia.Item1.Guid;
+                        } else if (relatedMedia.Item2 == MediaType.Video)
+                        {
+                            update.videoGuid = relatedMedia.Item1.Guid;
+                        }
+
+                        update.relatedProjectGuid = returnedProject.Guid;
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }
@@ -119,6 +134,19 @@ namespace backend_api.Database.ProjectUpdateRepository
                         var comments = 
                             session.ReadTransaction(tx => commentRepository.GetAllForUpdate(update.Guid));
                         update.comments = comments.ReturnValue.ToList();
+                        
+                        IMediaRepository mediaRepository = new MediaRepository.MediaRepository();
+                        Tuple<MediaTracker, MediaType> relatedMedia = mediaRepository.GetByProjectGuid(update.Guid).ReturnValue;
+                        
+                        if (relatedMedia.Item2 == MediaType.Image)
+                        {
+                            update.imageGuid = relatedMedia.Item1.Guid;
+                        } else if (relatedMedia.Item2 == MediaType.Video)
+                        {
+                            update.videoGuid = relatedMedia.Item1.Guid;
+                        }
+
+                        update.relatedProjectGuid = projectGuid;
                     }
                     return new RepositoryReturn<IEnumerable<ProjectUpdate>>(returnedUpdates);
                 }
