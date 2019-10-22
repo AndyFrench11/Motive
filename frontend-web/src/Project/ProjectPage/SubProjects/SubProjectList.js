@@ -94,8 +94,8 @@ class SubProjectList extends React.Component {
 
     render() {
 
-        const { isRetrievingSubProjects } = this.props;
-        if (isRetrievingSubProjects) {
+        const { subProjects } = this.props;
+        if (subProjects === undefined || subProjects === null) {
             return (
                 <Grid divided='vertically' style={{marginTop: '5em'}} centered>
                     <LoaderInlineCentered/>
@@ -105,7 +105,6 @@ class SubProjectList extends React.Component {
 
             var photoList = Object.keys(images);
 
-            const { subProjects } = this.props;
             const { currentProject } = this.props;
             const tags = currentProject.tagList;
 
