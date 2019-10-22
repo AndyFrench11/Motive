@@ -134,12 +134,12 @@ function requestDeleteProjectUpdate() {
     }
 }
 
-export function deleteProjectUpdate(updateGuid) {
+export function deleteProjectUpdate(updateGuid, projectGuid) {
     return dispatch => {
         dispatch(requestDeleteProjectUpdate());
     
         return axios.delete(serverUrl + "/projectUpdate/" + updateGuid)
-            .then(response => dispatch(receiveDeleteProjectUpdateResponse(response)))
+            .then(response => dispatch(receiveDeleteProjectUpdateResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -149,8 +149,9 @@ export function deleteProjectUpdate(updateGuid) {
     }
 }
 
-function receiveDeleteProjectUpdateResponse(response) {
+function receiveDeleteProjectUpdateResponse(response, dispatch, projectGuid) {
     if(response.status === 200) {
+        dispatch(fetchProjectUpdates(projectGuid))
         return {
             type: RECEIVE_DELETE_PROJECT_UPDATE_RESPONSE,
             result: response.data,

@@ -30,7 +30,7 @@ class CreateProjectUpdateModal extends React.Component {
                 mediaUploadUrl: "",
                 contentInput: "",
                 selectedTaskGuid: this.props.project.taskList[completedTaskIndex].guid,
-                markedAsHighlight: false
+                markedAsHighlight: false,
             };
     
         } else {
@@ -76,6 +76,7 @@ class CreateProjectUpdateModal extends React.Component {
         }
 
         this.props.postProjectUpdate(this.props.project.guid, this.props.user.guid, update)
+        this.props.closeCallback()
     }
 
     updateHighlightStatus = () => {
@@ -198,7 +199,7 @@ class CreateProjectUpdateModal extends React.Component {
                     <Button color='red' inverted onClick={this.props.closeCallback}>
                         <Icon name='remove'/> Cancel
                     </Button>
-                    <Button color='green' inverted onClick={this.confirmNewUpdate}>
+                    <Button color='green' disabled={this.state.contentInput === ""} inverted onClick={this.confirmNewUpdate}>
                         <Icon name='checkmark'/> Update
                     </Button>
                 </Modal.Actions>

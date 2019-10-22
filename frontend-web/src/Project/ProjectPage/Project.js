@@ -19,7 +19,6 @@ import CreateProjectUpdateModal from "./ProjectUpdates/CreateProjectUpdateModal/
 import ProjectUpdateList from "./ProjectUpdates/ProjectUpdate/ProjectUpdateList";
 import ProjectTimeline from "./ProjectTimeline/ProjectTimeline";
 import SubProjectList from "./SubProjects/SubProjectList";
-import { fetchSubProjects } from './SubProjects/actions';
 
 function importAll(r) {
     let images = {};
@@ -52,8 +51,6 @@ class ProjectPageLayout extends React.Component {
         const { projectguid } = this.props.match.params;
         dispatch(fetchProject(projectguid));
         dispatch(fetchProjectProfiles(projectguid));
-        dispatch(fetchProjectUpdates(projectguid));
-        dispatch(fetchSubProjects(projectguid));
     }
 
     showUpdateProjectPhotoModal = () => {
@@ -69,25 +66,7 @@ class ProjectPageLayout extends React.Component {
     };
 
     closeCreateProjectUpdateModal = (project, user, update) => {
-        // if(update !== undefined) {
-        //     const { projectUpdates } = this.props;
-        //     const { localProjectUpdates } = this.state;
-        //     const updates = localProjectUpdates !== null ? localProjectUpdates : projectUpdates;
 
-        //     const relatedTask = project.taskList.filter((task) => task.guid === update.taskGuid);
-        //     const updateCopy = Object.assign({}, update, {
-        //         relatedPerson: user,
-        //         relatedProject: project
-        //     });
-        //     if(relatedTask === []) {
-        //         updateCopy['relatedTask'] = relatedTask
-        //     }
-        //     updates.push(updateCopy);
-
-        //     this.setState({localProjectUpdates: updates, createProjectUpdateModalOpen: false})
-        // } else {
-        //     this.setState({ createProjectUpdateModalOpen: false })
-        // }       
         this.setState({ createProjectUpdateModalOpen: false })
     };
 
@@ -118,12 +97,15 @@ class ProjectPageLayout extends React.Component {
         const subProject = this.props.ownersProjects.find((ownerProject) => ownerProject.guid === project.parentProjectGuid);
         return (
             <Grid.Column width={7}>
-                <ProjectName projectName={project.name} projectGuid={project.guid}/>
+                <ProjectName/>
+
                 {isSubProject && 
                     <Header size='tiny' style={{'marginTop': '0em'}}>Sub Project of '{subProject.name}'</Header>
                 }
-                <ProjectDescription projectDescription={project.description} projectGuid={project.guid}/>
-                <ProjectTags tagList={project.tagList} projectGuid={project.guid} isSubProject={isSubProject}/>
+                <ProjectDescription/>
+                <ProjectTags isSubProject={isSubProject}/>
+
+
                 <Grid.Row style={{'marginTop': '1em'}}>
                     <Button animated size='small' onClick={this.showCreateProjectUpdateModal}>
                         <Button.Content visible>Create new project update!</Button.Content>
@@ -186,73 +168,6 @@ class ProjectPageLayout extends React.Component {
         }
     }
 
-    renderProjectUpdates(project) {
-        const { projectUpdates } = this.props;
-        if (projectUpdates === null || projectUpdates === undefined) {
-            return (
-                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
-                    <LoaderInlineCentered/>
-                </Grid>
-            )
-        } else {
-            
-            const updates = projectUpdates;
-
-            return (
-                <ProjectUpdateList project={project} projectUpdates={updates} listType="projectUpdates"/>
-            );
-        }
-    }
-
-    renderProjectHighlights(project) {
-        const { projectUpdates } = this.props;
-        if (projectUpdates === null || projectUpdates === undefined) {
-            return (
-                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
-                    <LoaderInlineCentered/>
-                </Grid>
-            )
-        } else {
-            const highlights = projectUpdates.filter((update) => update.highlight); 
-            return (
-                <ProjectUpdateList project={project} projectUpdates={highlights} listType="projectHighlights"/>
-            );
-        }
-    
-    }
-
-    renderProjectTimeline(tasks) {
-        const { projectUpdates } = this.props;
-        if (projectUpdates === null || projectUpdates === undefined) {
-            return (
-                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
-                    <LoaderInlineCentered/>
-                </Grid>
-            )
-        } else {
-            return (
-                <ProjectTimeline updates={projectUpdates} tasks={tasks}/>
-            )
-        }
-        
-    }
-
-    renderSubProjects(tags, parentProjectGuid) {
-        const { subProjects } = this.props;
-        if (subProjects === null || subProjects === undefined) {
-            return (
-                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
-                    <LoaderInlineCentered/>
-                </Grid>
-            )
-        } else {
-
-            return (
-                <SubProjectList parentProjectGuid={parentProjectGuid} subProjects={subProjects} tags={tags}/>
-            );
-        }
-    }
-
     checkRender() {
 
         if (this.props.project === null || this.props.project === undefined) {
@@ -296,8 +211,8 @@ class ProjectPageLayout extends React.Component {
                 </Grid>
 
                 <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
-
-                {this.renderProjectTimeline(project.taskList)}
+                
+                <ProjectTimeline tasks={project.taskList}/>
 
                 <Divider style={{ marginLeft: '5em', marginRight: '5em'}}/>
 
@@ -336,15 +251,15 @@ class ProjectPageLayout extends React.Component {
                 }
 
                 {activeMenuItem === "Updates" &&
-                    this.renderProjectUpdates(project)
+                    <ProjectUpdateList project={project} listType="projectUpdates"/>
                 }
 
                 {activeMenuItem === "Highlights" &&
-                    this.renderProjectHighlights(project)                        
+                    <ProjectUpdateList project={project} listType="projectHighlights"/>                      
                 }
 
                 {activeMenuItem === "Sub-Projects" &&
-                    this.renderSubProjects(project.tagList, project.guid)                        
+                    <SubProjectList project={project}/>                    
                 }
 
                 {activeMenuItem === "Settings" &&
@@ -368,17 +283,11 @@ class ProjectPageLayout extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { projectController, projectOwnersController, projectUpdateReducer, subProjectReducer } = state;
+    const { projectController, projectOwnersController } = state;
 
     const { isRetrieving, lastUpdated, result } = projectController;
 
     const { isRetrievingOwners, owners } = projectOwnersController;
-
-    const { projectUpdateController } = projectUpdateReducer;
-    const { isRetrievingProjectUpdates, updates} = projectUpdateController;
-
-    const { subProjectController } = subProjectReducer;
-    const { isRetrievingSubProjects, subProjects } = subProjectController;
 
     return {
         isRetrieving: isRetrieving,
@@ -386,10 +295,6 @@ const mapStateToProps = state => {
         lastUpdated: lastUpdated,
         isRetrievingOwners: isRetrievingOwners,
         projectOwners: owners,
-        isRetrievingProjectUpdates: isRetrievingProjectUpdates,
-        projectUpdates: updates,
-        isRetrievingSubProjects: isRetrievingSubProjects,
-        subProjects: subProjects,
         ownersProjects: state.profilePage.projects.items
     };
 };

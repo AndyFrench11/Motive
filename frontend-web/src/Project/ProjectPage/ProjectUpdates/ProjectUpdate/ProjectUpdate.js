@@ -29,10 +29,9 @@ class ProjectUpdate extends React.Component {
     };
 
     handleConfirmUpdateDeletion = () => {
-        const { update } = this.props;
+        const { update, projectGuid } = this.props;
         this.setState({ deleteUpdateConfirmOpen: false });
-        this.props.deleteUpdateCallback(this.props.index);
-        this.props.deleteProjectUpdate(update.guid);
+        this.props.deleteProjectUpdate(update.guid, projectGuid);
     };
 
     showDeleteUpdateConfirm = () => this.setState({ deleteUpdateConfirmOpen: true });
@@ -200,7 +199,7 @@ class ProjectUpdate extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        deleteProjectUpdate: (updateGuid) => dispatch(deleteProjectUpdate(updateGuid)),
+        deleteProjectUpdate: (updateGuid, projectGuid) => dispatch(deleteProjectUpdate(updateGuid, projectGuid)),
         updateProjectUpdateHighlight: (updateGuid, newHighlightStatus) => dispatch(updateProjectUpdateHighlight(updateGuid, newHighlightStatus))
     };
 }
@@ -213,7 +212,8 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
-        currentUser: state.authReducer.authController.currentUser
+        currentUser: state.authReducer.authController.currentUser,
+        projectGuid: state.projectController.result.guid
     };
 };
 

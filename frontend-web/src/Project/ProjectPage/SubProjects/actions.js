@@ -49,7 +49,7 @@ export function postSubProject(parentProjectGuid, subProject) {
                 'Content-Type': 'application/json',
             }
         })
-            .then(response => dispatch(receiveNewProjectUpdateResponse(response)))
+            .then(response => dispatch(receiveNewProjectUpdateResponse(response, dispatch, parentProjectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -59,8 +59,9 @@ export function postSubProject(parentProjectGuid, subProject) {
     }
 }
 
-function receiveNewProjectUpdateResponse(response) {
+function receiveNewProjectUpdateResponse(response, dispatch, parentProjectGuid) {
     if(response.status === 201) {
+        dispatch(fetchSubProjects(parentProjectGuid))
         return {
             type: RECEIVE_NEW_SUBPROJECT_RESPONSE,
             result: response.data,

@@ -1,12 +1,14 @@
 import React from 'react'
 import {
-    Button, Segment, Header, Item, TransitionablePortal, Modal, Icon
+    Button, Segment, Header, Item, TransitionablePortal, Modal, Icon, Grid
 } from 'semantic-ui-react'
 import {connect} from "react-redux";
 import { Route } from 'react-router-dom';
 import NewProjectForm from "../../CreateNewProject/ModalForm";
 import uuidv4 from 'uuid/v4';
 import { postSubProject } from './actions';
+import LoaderInlineCentered from "../../../Common/Loader";
+import { fetchSubProjects } from './actions';
 
 function importAll(r) {
     let images = {};
@@ -22,12 +24,15 @@ class SubProjectList extends React.Component {
         super(props);
 
         this.state = { 
-            subProjects: this.props.subProjects,
             modalVisible: false,
             submitButtonDisabled: true,
             selectedImageIndex: -1
         };
 
+    }
+
+    componentDidMount() {
+        this.props.fetchSubProjects(this.props.currentProject.guid);
     }
 
     componentDidUpdate(oldProps) {
@@ -44,12 +49,6 @@ class SubProjectList extends React.Component {
             }
         }
     }
-
-    // deleteSubProject = (index) => {
-    //     const { subProjects } = this.state;
-    //     subProjects.splice(index, 1);
-    //     this.setState({subProjects: subProjects})
-    // }
 
     showModal = () => {
         this.setState({modalVisible: true});
@@ -68,25 +67,22 @@ class SubProjectList extends React.Component {
         //Get the parentProjectGuid from somewhere
         //Add the new project to the local state
 
-        const { subProjects, selectedImageIndex } = this.state;
-        const { newProjectValues, tags } = this.props;
+        const { selectedImageIndex } = this.state;
+        const { currentProject, newProjectValues } = this.props;
 
         const newSubProject = {
             name: newProjectValues.projectNameInput,
             description: newProjectValues.descriptionInput,
             taskList: newProjectValues.taskList,
-            tagList: tags,
+            tagList: currentProject.tagList,
             imageIndex: selectedImageIndex,
             guid: uuidv4()
         };
 
-        subProjects.push(newSubProject);
-
-        this.props.postSubProject(this.props.parentProjectGuid, newSubProject);
+        this.props.postSubProject(currentProject.guid, newSubProject);
 
         this.setState({
             modalVisible: false, 
-            subProjects: subProjects,
             submitButtonDisabled: true,
             selectedImageIndex: -1
         });
@@ -97,102 +93,122 @@ class SubProjectList extends React.Component {
     };
 
     render() {
-        var photoList = Object.keys(images);
 
-        const { subProjects } = this.state;
-        const { tags } = this.props;
-
-        if(subProjects.length === 0) {
-            
+        const { isRetrievingSubProjects } = this.props;
+        if (isRetrievingSubProjects) {
             return (
-                <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
-                    <Header icon>
-                        <Icon name='idea outline' />
-                        There are no Sub Projects for this project.
-                    </Header>
-                    <Button onClick={this.showModal}>Create Sub Project</Button>
-                    <TransitionablePortal open={this.state.modalVisible}
-                                          transition={{animation: 'fade up', duration: 500}}>
-                        <Modal open={true} onClose={this.closeModal} closeIcon>
-                            <Modal.Header>Create a New Project</Modal.Header>
-                            <Modal.Content>
-                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={true} tags={tags}/>
-                            </Modal.Content>
-                            <Modal.Actions>
-                                <Button
-                                    positive
-                                    icon='checkmark'
-                                    labelPosition='right'
-                                    content="All good to go!"
-                                    onClick={this.handleModalSubmit}
-                                    disabled={this.state.submitButtonDisabled}
-                                />
-                            </Modal.Actions>
-                        </Modal>
-                    </TransitionablePortal>
-                </Segment>
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
             )
-        } 
-        else {
+        } else {
 
-            return(
-                <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
-                    <Item.Group link divided>
-                        {subProjects.map((project, index) => {
-                            return (
-                                <Route render={({ history }) => (
-                                    <Item key={index} onClick={() => { history.push(`/project/${project.guid}/`) }}>
-                                        <Item.Image size='tiny' src={images[photoList[project.imageIndex]]} />
-                                        <Item.Content>
-                                            <Item.Header>{project.name}</Item.Header>
-                                            <Item.Description>{project.description}</Item.Description>
-                                        </Item.Content>
-                                    </Item>
-                                )} />
-                        )})}
-                    </Item.Group>
-                    <Button onClick={this.showModal}>Would you like to create another Sub Project?</Button>
-                    <TransitionablePortal open={this.state.modalVisible}
-                                          transition={{animation: 'fade up', duration: 500}}>
-                        <Modal open={true} onClose={this.closeModal} closeIcon>
-                            <Modal.Header>Create a New Project</Modal.Header>
-                            <Modal.Content>
-                                <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={true} tags={tags}/>
-                            </Modal.Content>
-                            <Modal.Actions>
-                                <Button
-                                    positive
-                                    icon='checkmark'
-                                    labelPosition='right'
-                                    content="All good to go!"
-                                    onClick={this.handleModalSubmit}
-                                    disabled={this.state.submitButtonDisabled}
-                                />
-                            </Modal.Actions>
-                        </Modal>
-                    </TransitionablePortal>
-                </Segment>
-            );
+            var photoList = Object.keys(images);
+
+            const { subProjects } = this.props;
+            const { currentProject } = this.props;
+            const tags = currentProject.tagList;
+
+            if(subProjects.length === 0) {
+                
+                return (
+                    <Segment placeholder style={{marginRight: '5em', marginLeft: '5em'}}>
+                        <Header icon>
+                            <Icon name='idea outline' />
+                            There are no Sub Projects for this project.
+                        </Header>
+                        <Button onClick={this.showModal}>Create Sub Project</Button>
+                        <TransitionablePortal open={this.state.modalVisible}
+                                            transition={{animation: 'fade up', duration: 500}}>
+                            <Modal open={true} onClose={this.closeModal} closeIcon>
+                                <Modal.Header>Create a New Project</Modal.Header>
+                                <Modal.Content>
+                                    <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={true} tags={tags}/>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button
+                                        positive
+                                        icon='checkmark'
+                                        labelPosition='right'
+                                        content="All good to go!"
+                                        onClick={this.handleModalSubmit}
+                                        disabled={this.state.submitButtonDisabled}
+                                    />
+                                </Modal.Actions>
+                            </Modal>
+                        </TransitionablePortal>
+                    </Segment>
+                )
+            } 
+            else {
+
+                return(
+                    <Segment style={{ marginLeft: '5em', marginRight: '5em'}}>
+                        <Item.Group link divided>
+                            {subProjects.map((project, index) => {
+                                return (
+                                    <Route render={({ history }) => (
+                                        <Item key={index} onClick={() => { history.push(`/project/${project.guid}/`) }}>
+                                            <Item.Image size='tiny' src={images[photoList[project.imageIndex]]} />
+                                            <Item.Content>
+                                                <Item.Header>{project.name}</Item.Header>
+                                                <Item.Description>{project.description}</Item.Description>
+                                            </Item.Content>
+                                        </Item>
+                                    )} />
+                            )})}
+                        </Item.Group>
+                        <Button onClick={this.showModal}>Would you like to create another Sub Project?</Button>
+                        <TransitionablePortal open={this.state.modalVisible}
+                                            transition={{animation: 'fade up', duration: 500}}>
+                            <Modal open={true} onClose={this.closeModal} closeIcon>
+                                <Modal.Header>Create a New Project</Modal.Header>
+                                <Modal.Content>
+                                    <NewProjectForm updateSelectedImageIndex={this.updateSelectedImageIndex} isSubProject={true} tags={tags}/>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button
+                                        positive
+                                        icon='checkmark'
+                                        labelPosition='right'
+                                        content="All good to go!"
+                                        onClick={this.handleModalSubmit}
+                                        disabled={this.state.submitButtonDisabled}
+                                    />
+                                </Modal.Actions>
+                            </Modal>
+                        </TransitionablePortal>
+                    </Segment>
+                );
+            }
         }
   }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
+        fetchSubProjects: (projectGuid) => dispatch(fetchSubProjects(projectGuid)),
         postSubProject: (parentProjectGuid, subProject) => dispatch(postSubProject(parentProjectGuid, subProject))
     };
 }
 
 const mapStateToProps = state => {
-    const { createProjectController, form } = state;
+    const { createProjectController, form, subProjectReducer } = state;
     const { isPosting, lastUpdated, result } = createProjectController;
     const { newProject } = form;
+
+    const { subProjectController } = subProjectReducer;
+    const { isRetrievingSubProjects, subProjects } = subProjectController;
+
     return {
         newProjectValues: newProject && newProject.values,
         projectCreationSubmitSucceeded: newProject && newProject.submitSucceeded, 
         isPosting: isPosting,
         result: result,
         lastUpdated: lastUpdated,
+        isRetrievingSubProjects: isRetrievingSubProjects,
+        subProjects: subProjects,
+        currentProject: state.projectController.result
     }
 };
 
