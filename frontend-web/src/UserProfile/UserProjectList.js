@@ -32,8 +32,7 @@ class UserProjectList extends React.Component {
     }
 
     componentDidMount() {
-        const { userguid } = this.props.userGuid;
-        this.props.fetchProjects(userguid);
+        this.props.fetchProjects(this.props.currentUser.guid);
     }
 
     componentDidUpdate(oldProps) {
@@ -67,7 +66,7 @@ class UserProjectList extends React.Component {
     handleModalSubmit = () => {
         //Add the new project to the local state
         const { selectedImageIndex } = this.state;
-        const { newProjectValues, userGuid } = this.props;
+        const { newProjectValues, currentUser } = this.props;
 
         const newProject = {
             name: newProjectValues.projectNameInput,
@@ -78,7 +77,7 @@ class UserProjectList extends React.Component {
             guid: uuidv4()
         };
 
-        this.props.postProject(userGuid, newProject);
+        this.props.postProject(currentUser.guid, newProject);
 
 
         this.setState({
@@ -195,7 +194,8 @@ const mapStateToProps = state => {
         isPosting: isPosting,
         result: result,
         lastUpdated: lastUpdated,
-        projects: state.profilePage.projects.items
+        projects: state.profilePage.projects.items,
+        currentUser: state.authReducer.authController.currentUser
     }
 };
 

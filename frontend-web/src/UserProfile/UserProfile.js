@@ -73,7 +73,6 @@ class UserProfile extends React.Component {
     }
 
     render() {
-        const { userguid } = this.props.match.params;
         return (
             <div>
                 <TopNavBar/>
@@ -83,7 +82,7 @@ class UserProfile extends React.Component {
                         <Grid.Column centered>
                             <Header as='h2' style={{ 'text-align': 'center' }}>Projects</Header>
                             <Divider/>
-                                <UserProjectList userGuid={userguid}/>
+                                <UserProjectList/>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
