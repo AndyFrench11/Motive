@@ -41,14 +41,8 @@ class UserProfile extends React.Component {
     componentDidMount() {
         const { userguid } = this.props.match.params;
         this.props.fetchProfile(userguid);
-        this.props.fetchProjects(userguid);
     }
 
-    // if(typeof this.props.result !== 'undefined') {
-    //     //Causing issues
-    //     //this.props.history.push(`/project/${this.props.result}`)
-    // }
-    // else 
 
     ProfileHeader() {
         
@@ -78,25 +72,8 @@ class UserProfile extends React.Component {
         }
     }
 
-
-    ProjectList() {
-        if (this.props.projects.items === undefined || this.props.projects.items === null ) {
-            return (
-                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
-                    <LoaderInlineCentered/>
-                </Grid>
-            )
-        } else {
-            const { userguid } = this.props.match.params;
-
-            return (
-                <UserProjectList projects={this.props.projects.items} userGuid={userguid}/>
-            )
-
-        }
-    }
-
     render() {
+        const { userguid } = this.props.match.params;
         return (
             <div>
                 <TopNavBar/>
@@ -106,7 +83,7 @@ class UserProfile extends React.Component {
                         <Grid.Column centered>
                             <Header as='h2' style={{ 'text-align': 'center' }}>Projects</Header>
                             <Divider/>
-                            {this.ProjectList()}
+                                <UserProjectList userGuid={userguid}/>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -121,7 +98,6 @@ class UserProfile extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchProjects: (guid) => dispatch(fetchProjects(guid)),
         fetchProfile: (guid) => dispatch(fetchProfile(guid))
     };
 }
@@ -136,12 +112,10 @@ const mapStateToProps = state => {
             isSigningIn: isPosting,
             result: result,
             lastUpdated: lastUpdated,
-            profile: state.profilePage.profile,
-            projects: state.profilePage.projects
+            profile: state.profilePage.profile
         }
         : {
-            profile: state.profilePage.profile,
-            projects: state.profilePage.projects
+            profile: state.profilePage.profile
         };
 };
 

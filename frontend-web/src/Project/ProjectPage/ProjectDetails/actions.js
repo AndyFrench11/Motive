@@ -1,4 +1,5 @@
 import axios from 'axios/index'
+import { fetchProject } from "../../actions"
 
 export const REQUEST_UPDATE_PROJECT_NAME = 'REQUEST_UPDATE_PROJECT_NAME';
 export const RECEIVE_UPDATE_PROJECT_NAME_RESPONSE = 'RECEIVE_UPDATE_PROJECT_NAME_RESPONSE';
@@ -39,7 +40,7 @@ export function updateProjectName(projectGuid, newProjectName) {
                 'Content-Type': 'application/json',
             }
         })
-            .then(response => dispatch(receiveUpdateProjectNameResponse(response)))
+            .then(response => dispatch(receiveUpdateProjectNameResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -49,8 +50,9 @@ export function updateProjectName(projectGuid, newProjectName) {
     }
 }
 
-function receiveUpdateProjectNameResponse(response) {
+function receiveUpdateProjectNameResponse(response, dispatch, projectGuid) {
     if(response.status === 200) {
+        dispatch(fetchProject(projectGuid));
         return {
             type: RECEIVE_UPDATE_PROJECT_NAME_RESPONSE,
             result: response.data,
@@ -83,7 +85,7 @@ export function updateProjectDescription(projectGuid, newProjectDescription) {
                 'Content-Type': 'application/json',
             }
         })
-            .then(response => dispatch(receiveUpdateProjectDescriptionResponse(response)))
+            .then(response => dispatch(receiveUpdateProjectDescriptionResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -93,8 +95,9 @@ export function updateProjectDescription(projectGuid, newProjectDescription) {
     }
 }
 
-function receiveUpdateProjectDescriptionResponse(response) {
+function receiveUpdateProjectDescriptionResponse(response, dispatch, projectGuid) {
     if(response.status === 200) {
+        dispatch(fetchProject(projectGuid));
         return {
             type: RECEIVE_UPDATE_PROJECT_DESCRIPTION_RESPONSE,
             result: response.data,
@@ -168,7 +171,7 @@ export function postTag(projectGuid, tag) {
                 'Content-Type': 'application/json'
             }
         })
-            .then(response => dispatch(receiveNewTagResponse(response)))
+            .then(response => dispatch(receiveNewTagResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -178,8 +181,9 @@ export function postTag(projectGuid, tag) {
     }
 }
 
-function receiveNewTagResponse(response) {
+function receiveNewTagResponse(response, dispatch, projectGuid) {
     if(response.status === 201) {
+        dispatch(fetchProject(projectGuid));
         return {
             type: RECEIVE_NEW_TAG_RESPONSE,
             result: response.data,
@@ -208,7 +212,7 @@ export function removeTag(projectGuid, tag) {
                 'tagName': tag.name
             }
         })
-            .then(response => dispatch(receiveRemoveTagResponse(response)))
+            .then(response => dispatch(receiveRemoveTagResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -218,8 +222,9 @@ export function removeTag(projectGuid, tag) {
     }
 }
 
-function receiveRemoveTagResponse(response) {
+function receiveRemoveTagResponse(response, dispatch, projectGuid) {
     if(response.status === 200) {
+        dispatch(fetchProject(projectGuid));
         return {
             type: RECEIVE_REMOVE_TAG_RESPONSE,
             result: response.data,

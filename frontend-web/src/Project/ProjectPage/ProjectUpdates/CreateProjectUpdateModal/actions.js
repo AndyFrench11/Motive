@@ -1,4 +1,5 @@
 import axios from 'axios/index'
+import { fetchProjectUpdates } from "../ProjectUpdate/actions"
 
 export const REQUEST_NEW_PROJECT_UPDATE = 'REQUEST_NEW_PROJECT_UPDATE';
 export const RECEIVE_NEW_PROJECT_UPDATE_RESPONSE = 'RECEIVE_NEW_PROJECT_UPDATE_RESPONSE';
@@ -21,7 +22,7 @@ export function postProjectUpdate(projectGuid, userGuid, update) {
                 'userGuid': userGuid
             }
         })
-            .then(response => dispatch(receiveNewProjectUpdateResponse(response)))
+            .then(response => dispatch(receiveNewProjectUpdateResponse(response, dispatch, projectGuid)))
             .catch(error =>  {
                 console.log("The server is not running!");
                 console.log("Need to update UI with error!");
@@ -31,8 +32,9 @@ export function postProjectUpdate(projectGuid, userGuid, update) {
     }
 }
 
-function receiveNewProjectUpdateResponse(response) {
+function receiveNewProjectUpdateResponse(response, dispatch, projectGuid) {
     if(response.status === 201) {
+        dispatch(fetchProjectUpdates(projectGuid))
         return {
             type: RECEIVE_NEW_PROJECT_UPDATE_RESPONSE,
             result: response.data,

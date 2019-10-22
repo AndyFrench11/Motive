@@ -9,8 +9,7 @@ import { updateProjectDescription } from "./actions";
 class ProjectDescription extends React.Component {
     state = { 
         updatingProjectDescription: false,
-        projectDescriptionInputValue: "",
-        projectDescription: this.props.projectDescription
+        projectDescriptionInputValue: ""
     };
 
     updateProjectDescriptionState = () => {
@@ -22,15 +21,14 @@ class ProjectDescription extends React.Component {
     }
 
     updateProjectDescription = () => {
-        const { projectDescriptionInputValue, projectDescription } = this.state;
-        if((projectDescriptionInputValue !== "") && (projectDescriptionInputValue !== projectDescription)) {
+        const { projectDescriptionInputValue } = this.state;
+        if((projectDescriptionInputValue !== "") && (projectDescriptionInputValue !== this.props.currentProject.description)) {
             this.setState({
                 updatingProjectDescription: false,
-                projectDescriptionInputValue: "",
-                projectDescription: projectDescriptionInputValue
+                projectDescriptionInputValue: ""
             });
             //Update the backend!
-            this.props.updateProjectDescription(this.props.projectGuid, projectDescriptionInputValue);
+            this.props.updateProjectDescription(this.props.currentProject.guid, projectDescriptionInputValue);
             
             
         } else {
@@ -43,14 +41,15 @@ class ProjectDescription extends React.Component {
     }
 
     render() {
-        const { projectDescription, updatingProjectDescription } = this.state;
+        const { updatingProjectDescription } = this.state;
+        const { description } = this.props.currentProject;
         return (
             <Grid.Row>
                 {updatingProjectDescription ?  
                     <Form>
                         <Grid>
                             <Grid.Column width={10}>
-                                <TextArea defaultValue={projectDescription} onChange={this.updateProjectDescriptionInputValue} />
+                                <TextArea defaultValue={description} onChange={this.updateProjectDescriptionInputValue} />
                             </Grid.Column>
                             <Grid.Column width={2}>
                                 <Grid.Row>
@@ -64,7 +63,7 @@ class ProjectDescription extends React.Component {
                         </Grid>
                     </Form>
                     : 
-                    <Segment compact onClick={this.updateProjectDescriptionState}>{projectDescription}</Segment> 
+                    <Segment compact onClick={this.updateProjectDescriptionState}>{description}</Segment> 
                 }
             </Grid.Row>
         );
@@ -85,6 +84,7 @@ const mapStateToProps = state => {
         isUpdating: isUpdating,
         result: result,
         lastUpdated: lastUpdated,
+        currentProject: state.projectController.result
     };
 };
 
