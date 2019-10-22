@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import ReactPlayer from "react-player";
+import LoaderInlineCentered from "../../Common/Loader";
+import {Grid} from "semantic-ui-react";
 
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
 
@@ -37,16 +39,25 @@ class VideoPlayer extends Component {
     }
 
     render() {
-        return (
-            <div>
-                <ReactPlayer
-                    url={this.state.videoUrl}
-                    controls
-                    playing={this.state.isPlaying}
-                    volume={0}
-                />
-            </div>
-        );
+        const {videoUrl} = this.state;
+        if(videoUrl === "") {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            );
+        } else {
+            return (
+                <div>
+                    <ReactPlayer
+                        url={this.state.videoUrl}
+                        controls
+                        playing={this.state.isPlaying}
+                        volume={0}
+                    />
+                </div>
+            );
+        }
     };
 }
 export default VideoPlayer

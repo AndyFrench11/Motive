@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Image} from "semantic-ui-react";
+import {Image, Grid} from "semantic-ui-react";
+import LoaderInlineCentered from "../../Common/Loader";
 
 const serverURL = process.env.REACT_APP_BACKEND_ADDRESS;
 
@@ -41,14 +42,24 @@ class ImageViewer extends Component {
     };
 
     render() {
-        return (
-            <div>
-                <Image
-                    size={this.props.size}
-                    src={this.state.imageUrl}
-                />
-            </div>
-        );
+        const {imageUrl} = this.state;
+        if(imageUrl === "") {
+            return (
+                <Grid divided='vertically' style={{marginTop: '5em'}} centered>
+                    <LoaderInlineCentered/>
+                </Grid>
+            );
+        } else {
+            return (
+                <div>
+                    <Image
+                        size={this.props.size}
+                        src={this.state.imageUrl}
+                    />
+                </div>
+            );
+        }
+
     };
 }
 export default ImageViewer
